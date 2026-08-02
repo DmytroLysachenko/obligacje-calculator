@@ -177,6 +177,21 @@ describe('SyncEngine', () => {
     );
   });
 
+  it('marks full sync partial when macro data uses a fallback provider', async () => {
+    mocks.syncMacroData.mockResolvedValue({
+      inflation: 2.5,
+      nbp: 3.75,
+      wibor3m: null,
+      wibor6m: null,
+      status: 'partial',
+    });
+    const engine = new SyncEngine([], mocks.logger);
+
+    await engine.runFullSync();
+
+    expect(mocks.record).toHaveBeenCalledWith(expect.objectContaining({ status: 'partial' }));
+  });
+
   it('uses the planned incremental start year when no backfill year is requested', async () => {
     mocks.resolveFullSyncStartYear.mockResolvedValue(2025);
 

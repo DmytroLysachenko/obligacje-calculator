@@ -112,9 +112,7 @@ export function resolveGlobalDataFreshness(
   const nbpCheckIsStale = nbpCheckDate
     ? differenceInDays(now, nbpCheckDate) > NBP_CHECK_STALE_DAYS
     : true;
-  const usesPartialReference = criticalSeries.some(
-    (series) => series.lastSyncStatus === 'partial' && series.slug !== CANONICAL_NBP_SLUG,
-  );
+  const usesPartialReference = criticalSeries.some((series) => series.lastSyncStatus === 'partial');
   const bondOfferIsDegraded =
     !latestBondOfferRun ||
     latestBondOfferRun.status === 'partial' ||

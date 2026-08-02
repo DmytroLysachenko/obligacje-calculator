@@ -1,4 +1,3 @@
-import { GusSyncProvider } from './providers/gus';
 import { YahooFinanceSyncProvider } from './providers/yahoo-finance';
 import { SyncEngine } from './sync-engine';
 import { createSyncLogger } from './sync-logger';
@@ -16,7 +15,6 @@ export function createDefaultSyncEngine(scope = 'SyncEngine') {
         symbol: 'GC=F',
         seriesSlug: 'gold-usd',
       }),
-      new GusSyncProvider(),
     ],
     createSyncLogger(scope),
   );

@@ -20,6 +20,7 @@ export interface ProviderSyncRepository {
       status: 'success';
     },
   ): Promise<void>;
+  markSeriesSyncFailure(seriesId: string, error: string): Promise<void>;
 }
 
 export function createDefaultProviderSyncRepository(): ProviderSyncRepository {
@@ -55,6 +56,16 @@ export function createDefaultProviderSyncRepository(): ProviderSyncRepository {
           lastDataPointDate: values.latestDate,
           lastSyncStatus: values.status,
           lastSyncError: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(dataSeries.id, seriesId));
+    },
+    async markSeriesSyncFailure(seriesId, error) {
+      await db
+        .update(dataSeries)
+        .set({
+          lastSyncStatus: 'failed',
+          lastSyncError: error,
           updatedAt: new Date(),
         })
         .where(eq(dataSeries.id, seriesId));

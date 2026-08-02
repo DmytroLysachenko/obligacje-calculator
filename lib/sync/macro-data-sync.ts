@@ -236,6 +236,10 @@ export async function syncMacroData() {
       nbp: latestNbpRate?.value ?? null,
       wibor3m: null,
       wibor6m: null,
+      status:
+        nbpUsesFallback || cpiFetch.status === 'rejected'
+          ? ('partial' as const)
+          : ('success' as const),
     };
 
     return results;
