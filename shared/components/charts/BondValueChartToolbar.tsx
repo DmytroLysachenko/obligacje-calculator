@@ -19,6 +19,7 @@ interface ChartToolbarProps {
   showNbpControl: boolean;
   onGranularityChange: (step: ChartStep) => void;
   onOverlayChange: (key: 'showInflationOverlay' | 'showNbpOverlay', value: boolean) => void;
+  leadingControls?: React.ReactNode;
   t: ChartTranslate;
 }
 
@@ -33,12 +34,14 @@ export function BondValueChartToolbar({
   showNbpControl,
   onGranularityChange,
   onOverlayChange,
+  leadingControls,
   t,
 }: ChartToolbarProps) {
   return (
     <div className="flex flex-col gap-3 border-b border-border pb-3 xl:flex-row xl:items-center xl:justify-between">
       <ChartLegendStrip items={legendItems} className="border-b-0 pb-0" />
       <div className="flex flex-wrap items-center gap-2">
+        {leadingControls ? <div className="mr-1">{leadingControls}</div> : null}
         {availableGranularities.map((step) => (
           <button
             key={step}

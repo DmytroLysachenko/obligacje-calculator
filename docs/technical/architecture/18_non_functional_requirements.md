@@ -1,28 +1,52 @@
 # 18. Non-Functional Requirements
 
-Quality and performance standards for the platform.
+## Offline-data safety
+
+The application does not promise offline calculations. It must show a clear
+network or data failure rather than silently using stale financial inputs. An
+offline mode may be introduced only with versioned assets, explicit data-as-of
+state, update handling, and dedicated browser tests.
+
+Quality and performance standards for the platform. Numeric budgets below are
+release targets verified by browser/lab checks, not promises about every
+network, device, or third-party provider condition.
+
+## Service-level objectives and measurement
+
+| Area | Target | Measurement and evidence |
+| --- | --- | --- |
+| Core Web Vitals | p75 LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1 on public routes | Aggregate-only field telemetry after the external-evidence gate; lab budgets prevent regression before field evidence exists. |
+| API reliability | p95 successful API latency ≤ 800 ms and 5xx rate < 1% per rolling 30 days | Correlated server metrics, excluding expected client validation failures. |
+| Availability | Monthly authenticated readiness success ≥ 99.5% | Cloud Run readiness observation and post-deploy smoke receipt. |
+| Reference-data freshness | Current offer/sync status displayed with its as-of value; failed sync never claims current data | Sync ledger and freshness UI checks. |
+| Recovery | RPO ≤ 24 h and RTO ≤ 4 h | Managed backup/PITR and isolated restore drill; this remains externally gated. |
+| Accessibility | WCAG 2.2 AA automated checks on trusted routes; manual keyboard, zoom, forced-colors, and chart review every release tranche | Playwright/axe artifacts plus manual review record. |
+| Supported browsers | Current stable Chromium, Firefox, and WebKit desktop; current Chromium mobile viewport | CI smoke matrix and release-browser record. |
+| Security patches | Critical dependency/security fixes assessed within 24 h and remediated or mitigated within 7 days | Dependabot/CodeQL findings and release record. |
+| Privacy and retention | No scenario inputs, raw URLs, account IDs, or user agents in vital telemetry; aggregate vital data retained for 30 days | Schema, cleanup job, and privacy review receipt. |
+| Boundary size | Portfolio imports ≤ 256 KiB and 500 lots; share payloads follow their route schema limits | Route-schema boundary tests. |
 
 ## 1. Correctness & Precision
 
-- **NFR1.1:** Calculations must match official PKO BP / Bond portal results with a margin of < 0.01 PLN.
-- **NFR1.2:** Use high-precision decimal math libraries (Decimal.js). No floating-point errors.
-- **NFR1.3:** Calculations must be unit-tested against at least 50 historical edge cases.
+- **NFR1.1:** Supported calculation scenarios must have reviewed golden and edge-case regressions; discrepancies with official offer terms block release until understood.
+- **NFR1.2:** Financial arithmetic uses Decimal.js at defined rounding boundaries; JavaScript floating-point values are not used for settlement decisions.
+- **NFR1.3:** Touched financial behavior must add focused regression coverage rather than rely on a fixed test-count claim.
 
 ## 2. Performance
 
-- **NFR2.1:** Initial page load < 2 seconds on 4G.
-- **NFR2.2:** Calculator re-calculation on input change < 100ms.
-- **NFR2.3:** Charts must render smoothly with up to 10,000 data points (long-term simulations).
+- **NFR2.1:** Public-route lab budgets are enforced by Lighthouse and browser diagnostics; production field targets require a separate aggregate RUM evidence record.
+- **NFR2.2:** Calculation interactions must preserve cancellation and never commit a stale response; performance changes require a measured regression test or benchmark.
+- **NFR2.3:** Charts expose an accessible summary and data-table path, and performance work preserves those fallbacks.
 
 ## 3. Availability & Reliability
 
-- **NFR3.1:** The app must work offline (PWA) for previously cached assets and calculators.
-- **NFR3.2:** Graceful degradation: If the external API (NBP/GUS) is down, use local cached data and show a "Stale Data" warning.
+- **NFR3.1:** The app does not offer offline calculation. A network failure is shown instead of a potentially stale financial result.
+- **NFR3.2:** Sync failures preserve last-known-good reference data and expose freshness status; they do not silently claim current data.
 
 ## 4. Security & Privacy
 
-- **NFR4.1:** No financial data should be sent to the server in "Anonymous Mode."
-- **NFR4.2:** Compliance with GDPR (RODO) for any future account features.
+- **NFR4.1:** Anonymous calculation requests are processed by server APIs only as needed to calculate; telemetry excludes query strings, account IDs, and scenario inputs.
+- **NFR4.2:** Account and shared-scenario data processing follows the published retention and operational-evidence policy; production deletion/backup evidence remains an operations gate.
 - **NFR4.3:** Use CSP (Content Security Policy) to prevent XSS.
 
 ## 5. Accessibility

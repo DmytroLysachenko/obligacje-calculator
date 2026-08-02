@@ -80,8 +80,8 @@ describe('comparison layout contract', () => {
     expect(persistence).not.toContain("'obligacje.comparison-calculator.v1'");
     expect(persistence).not.toContain("'obligacje.comparison-calculator.v2'");
     expect(persistence).toContain('committedInputsA: BondInputs | null;');
-    expect(hook).toContain('setCommittedInputsA(inputsA);');
-    expect(hook).toContain('setCommittedInputsB(inputsB);');
+    expect(hook).toContain('splitComparisonEnvelope(session.committedResult)');
+    expect(hook).toContain('session.committedInputs');
   });
 
   it('renders committed result inputs instead of projecting old results onto edited inputs', () => {
@@ -119,14 +119,13 @@ describe('comparison layout contract', () => {
     const clientState = read(files.clientState);
     const persistenceEffects = read(files.persistenceEffects);
 
-    expect(hook).toContain('const displayIsDirty = useMemo(() => {');
+    expect(hook).toContain('const isDirty = getComparisonDirtyState({');
     expect(hook).toContain('getComparisonDirtyState({');
     expect(calculatorState).toContain('areCalculatorStatesEqual(inputsA, committedInputsA)');
     expect(calculatorState).toContain('areCalculatorStatesEqual(inputsB, committedInputsB)');
     expect(clientState).toContain('preserveStableState(previous, {');
     expect(persistenceEffects).toContain('applyComparisonMacroDefaults(previous, defaults)');
-    expect(hook).toContain('useComparisonPersistenceEffects({');
-    expect(hook).toContain('isDirty: displayIsDirty');
+    expect(hook).toContain('isDirty,');
   });
 
   it('keeps comparison table date-aligned instead of pairing timeline rows by index', () => {
@@ -186,11 +185,17 @@ describe('comparison layout contract', () => {
     );
     expect(container).toContain("historyMode: 'push' | 'replace' = 'push'");
     expect(container).toContain("? 'pushState' : 'replaceState'");
-    expect(container).toContain("syncComparisonUrl(comparisonUrlState, 'replace')");
-    expect(hook).toContain('setSharedConfig(initialUrlState.sharedConfig);');
+    expect(container).not.toContain("syncComparisonUrl(comparisonUrlState, 'replace')");
+    expect(hook).toContain('session.setDraftInputs({');
     expect(deepLink).toContain('export function parseComparisonUrlState');
     expect(deepLink).toContain('export function withComparisonUrlState');
     expect(deepLink).toContain('const URL_KEYS = [');
     expect(deepLink).toContain("'horizonB'");
+  });
+
+  it('does not resync comparison state when its own URL write changes search parameters', () => {
+    const container = read(files.container);
+
+    expect(container).not.toContain('}, [comparisonUrlState, syncComparisonUrl]);');
   });
 });

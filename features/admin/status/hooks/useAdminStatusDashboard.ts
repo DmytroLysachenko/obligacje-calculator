@@ -14,7 +14,6 @@ export function useAdminStatusDashboard() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [secret, setSecret] = useState('');
   const [pendingMode, setPendingMode] = useState<'full-sync' | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastTone, setToastTone] = useState<'success' | 'error'>('success');
@@ -24,7 +23,7 @@ export function useAdminStatusDashboard() {
     setError(null);
 
     try {
-      setData(await adminClient.getStatus(secret));
+      setData(await adminClient.getStatus());
     } catch (err: unknown) {
       setError(
         err instanceof ApiClientError && err.status === 401
@@ -34,7 +33,7 @@ export function useAdminStatusDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [secret, t]);
+  }, [t]);
 
   const executeSync = useCallback(
     async (mode: AdminSyncMode) => {
@@ -42,7 +41,7 @@ export function useAdminStatusDashboard() {
       setError(null);
 
       try {
-        await adminClient.runSync(secret, mode);
+        await adminClient.runSync(mode);
         await fetchStatus();
         setToastTone('success');
         setToastMessage(t('admin.sync_success'));
@@ -58,26 +57,12 @@ export function useAdminStatusDashboard() {
         setSyncing(false);
       }
     },
-    [fetchStatus, secret, t],
+    [fetchStatus, t],
   );
 
   useEffect(() => {
-    const savedSecret = localStorage.getItem('SYNC_SECRET');
-    if (savedSecret) {
-      setSecret(savedSecret);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (secret && !data && loading) {
-      void fetchStatus();
-    }
-  }, [secret, data, loading, fetchStatus]);
-
-  const handleSaveSecret = useCallback(() => {
-    localStorage.setItem('SYNC_SECRET', secret);
     void fetchStatus();
-  }, [fetchStatus, secret]);
+  }, [fetchStatus]);
 
   const requestSync = useCallback((mode: AdminSyncMode) => {
     setPendingMode(mode);
@@ -102,14 +87,11 @@ export function useAdminStatusDashboard() {
     error,
     loading,
     syncing,
-    secret,
-    setSecret,
     toastMessage,
     toastTone,
     clearToast: () => setToastMessage(null),
     pendingMode,
     fetchStatus,
-    handleSaveSecret,
     requestSync,
     cancelSync,
     confirmSync,

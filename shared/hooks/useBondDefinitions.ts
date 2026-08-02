@@ -1,40 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { apiGet } from '@/shared/lib/api-client';
+import { ClientResource } from '@/shared/lib/client-resource';
 
-let cachedDefinitions: Record<BondType, BondDefinition> | null = null;
+import { useClientResource } from './useClientResource';
+
+const definitionsResource = new ClientResource<Record<BondType, BondDefinition>>({
+  maxAgeMs: 15 * 60_000,
+  staleAfterMs: 5 * 60_000,
+});
 
 export function useBondDefinitions() {
-  const [definitions, setDefinitions] = useState<Record<BondType, BondDefinition> | null>(
-    cachedDefinitions,
+  const fetchDefinitions = useCallback(
+    () => apiGet<Record<BondType, BondDefinition>>('/api/bond-definitions'),
+    [],
   );
-  const [isLoading, setIsLoading] = useState(!cachedDefinitions);
-  const [error, setError] = useState<Error | null>(null);
+  const resource = useClientResource(definitionsResource, fetchDefinitions);
 
-  useEffect(() => {
-    if (cachedDefinitions) {
-      setIsLoading(false);
-      return;
-    }
-
-    async function fetchDefinitions() {
-      try {
-        const data = await apiGet<Record<BondType, BondDefinition>>('/api/bond-definitions');
-        cachedDefinitions = data;
-        setDefinitions(data);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error(String(err)));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchDefinitions();
-  }, []);
-
-  return { definitions, isLoading, error };
+  return { definitions: resource.data, ...resource };
 }

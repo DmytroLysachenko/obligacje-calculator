@@ -45,6 +45,11 @@ export const REQUIRED_READINESS_TABLES = [
   'account',
   'session',
   'verificationToken',
+  'shared_single_scenarios',
+  'admin_audit_events',
+  'rate_limit_windows',
+  'web_vital_aggregates',
+  '__drizzle_migrations',
 ];
 
 export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {

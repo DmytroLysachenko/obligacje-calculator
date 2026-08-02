@@ -8,13 +8,14 @@ import { cn } from '@/lib/utils';
 const Switch = React.forwardRef<
   React.ElementRef<typeof SwitchPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root>
->(({ className, ...props }, ref) => (
+>(({ className, 'aria-label': ariaLabel, ...props }, ref) => (
   <SwitchPrimitive.Root
     className={cn(
       'peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border border-border transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-muted',
       className,
     )}
     {...props}
+    aria-label={ariaLabel ?? 'Toggle setting'}
     ref={ref}
   >
     <SwitchPrimitive.Thumb

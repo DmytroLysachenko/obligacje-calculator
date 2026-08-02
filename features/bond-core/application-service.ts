@@ -1,4 +1,8 @@
-import { getBondDefinitionsMap, getGlobalDataFreshness } from '@/lib/data/market-data';
+import {
+  getBondDefinitionsMap,
+  getGlobalDataFreshness,
+  getTaxRulesRevision,
+} from '@/lib/data/market-data';
 import { createServerLogger } from '@/lib/server/logging';
 
 import { BondDefinition } from './constants/bond-definitions';
@@ -17,8 +21,9 @@ import { BondType } from './types';
 const logger = createServerLogger('CalculationService');
 
 export interface CalculationServiceDependencies {
-  cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set'>;
+  cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set' | 'invalidateNamespace'>;
   getDataFreshness: () => Promise<CalculationDataFreshness>;
+  getTaxRulesRevision: () => Promise<string>;
   getDefinitions: () => Promise<Record<BondType, BondDefinition>>;
   getHandler: (kind: ScenarioKind) => ScenarioHandler<unknown, unknown>;
 }
@@ -26,6 +31,7 @@ export interface CalculationServiceDependencies {
 const defaultDependencies: CalculationServiceDependencies = {
   cache: calculationCache,
   getDataFreshness: getGlobalDataFreshness,
+  getTaxRulesRevision,
   getDefinitions: getBondDefinitionsMap,
   getHandler: (kind) => HandlerFactory.getHandler(kind),
 };
@@ -50,18 +56,24 @@ export class CalculationApplicationService {
       payload: sanitizedPayload,
     } as unknown as CalculationScenarioRequest;
 
-    // 2. Check cache with sanitized inputs
+    // Context revisions are part of financial correctness: an identical request
+    // must not reuse a result calculated against an older offer/data snapshot.
+    const [dataFreshness, dbDefinitions, taxRulesRevision] = await Promise.all([
+      this.dependencies.getDataFreshness(),
+      this.dependencies.getDefinitions(),
+      this.dependencies.getTaxRulesRevision(),
+    ]);
+
+    // 2. Check cache with sanitized inputs and authoritative freshness metadata.
     const cacheKey = this.dependencies.cache.generateKey({
       modelVersion: MODEL_VERSION,
       request: sanitizedRequest,
+      dataRevision: JSON.stringify({ dataFreshness, taxRulesRevision }),
     });
     const cachedResult = this.dependencies.cache.get(cacheKey);
     if (cachedResult) {
       return cachedResult as CalculationEnvelope<unknown>;
     }
-
-    const dataFreshness = await this.dependencies.getDataFreshness();
-    const dbDefinitions = await this.dependencies.getDefinitions();
 
     try {
       const handler = this.dependencies.getHandler(sanitizedRequest.kind);
@@ -76,6 +88,10 @@ export class CalculationApplicationService {
       logger.error(`FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
     }
+  }
+
+  invalidateAuthoritativeData(namespace = '') {
+    this.dependencies.cache.invalidateNamespace(namespace);
   }
 }
 

@@ -122,15 +122,15 @@ export function ComparisonResultsPanel({
             columns="grid-cols-1 md:grid-cols-3"
             className="ui-surface-flush shadow-none"
           />
-          <div className="grid gap-3 2xl:grid-cols-[minmax(0,1fr)_280px]">
+          <div className="grid overflow-hidden border-y border-border bg-card 2xl:grid-cols-[minmax(0,1fr)_minmax(250px,0.3fr)]">
             <MetricStrip
               items={comparisonMetrics}
               columns="grid-cols-1 md:grid-cols-2"
-              className="ui-surface-flush shadow-none"
+              className="border-0 shadow-none"
             />
             <ResultActionGrid
               actions={exportActions}
-              className="ui-action-row-end border-0 bg-transparent px-0 py-3 lg:w-auto"
+              className="grid-cols-1 border-x-0 border-b-0 bg-muted/20 px-5 py-4 2xl:w-auto 2xl:border-l 2xl:border-t-0"
             />
           </div>
         </div>
@@ -149,6 +149,7 @@ export function ComparisonResultsPanel({
           summary={chartSummary}
           defaultGranularity={chartStep}
           onGranularityChange={onChartStepChange}
+          preferenceScope="comparison"
           ariaLabel={t('comparison.performance_over_time')}
           heightClassName="h-[360px] md:h-[440px] xl:h-[500px]"
         />

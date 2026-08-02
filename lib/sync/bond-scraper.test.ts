@@ -59,4 +59,38 @@ describe('bond offer scraper', () => {
       }),
     ).toBeNull();
   });
+
+  it('ignores an expiring series mentioned outside an offer heading', () => {
+    const html = `
+      <p>Obligacje ROR0726 mogą zostać zamienione w lipcu.</p>
+      <h4><strong>1-roczne obligacje <strong>ROR0727</strong></strong></h4>
+      <p><strong>W pierwszym miesięcznym</strong> okresie odsetkowym wynosi<strong>&nbsp;4,00%</strong>.<br />
+      Stałej <strong>marży</strong> w wysokości <strong>0,00%</strong>.</p>
+    `;
+
+    expect(
+      parseOfferFromGovPage(html, { symbol: 'ROR', firstYearRate: 0, margin: 0 }),
+    ).toMatchObject({
+      seriesCode: 'ROR0727',
+      firstYearRate: 4,
+      source: 'gov.pl',
+    });
+  });
+
+  it('parses a first annual rate phrased as "jest równe"', () => {
+    const html = `
+      <h4><strong>4-letnie obligacje COI0730</strong></h4>
+      <p><strong>W pierwszym, rocznym</strong> okresie odsetkowym jest równe <strong>4,75%</strong>.<br />
+      Stałej marży w wysokości <strong>1,50%</strong>.</p>
+    `;
+
+    expect(
+      parseOfferFromGovPage(html, { symbol: 'COI', firstYearRate: 0, margin: 0 }),
+    ).toMatchObject({
+      seriesCode: 'COI0730',
+      firstYearRate: 4.75,
+      margin: 1.5,
+      source: 'gov.pl',
+    });
+  });
 });

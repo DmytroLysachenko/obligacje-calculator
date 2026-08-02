@@ -23,7 +23,7 @@ export function ChartSection({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-3">
           <div className="mt-0.5 border-l-2 border-border pl-3 text-foreground">
-            <BarChart3 className="h-4 w-4" />
+            <BarChart3 className="h-4 w-4" aria-hidden="true" />
           </div>
           <div className="space-y-2">
             <h3 className="ui-section-title">{title}</h3>

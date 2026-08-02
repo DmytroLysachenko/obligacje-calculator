@@ -34,6 +34,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Testing & Quality Assurance](./technical/architecture/23_testing_and_quality_assurance.md) - Correctness.
 - [Deployment & DevOps](./technical/architecture/24_deployment_and_devops.md) - CI/CD strategy.
 - [Engineering and Coding Rules](./technical/architecture/26_engineering_and_coding_rules.md) - Strict repo rules for i18n, component structure, code hygiene, and maintainability.
+- [HTTP Boundary Contract](./technical/architecture/33_http_boundary_contract.md) - Request identity, rate limits, correlation, telemetry, and administrative route rules.
 - [Project Map](./technical/architecture/28_project_map.md) - Repository ownership map for app, feature, shared, server, data, sync, and docs layers.
 
 ### 3. Domain Knowledge
@@ -56,6 +57,8 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [00. Current Product Roadmap](./plans/00_roadmap.md) - Current roadmap centered on the trusted-core production scope.
 - [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Long-term direction after scope narrowing.
 - [08. Cloud Run Release Candidate Plan](./plans/08_cloud_run_release_candidate_plan.md) - First Cloud Run deploy checklist for the trusted-core production scope.
+- [09. Comprehensive Codebase Quality, Security, and Refactor Plan](./plans/09_comprehensive_codebase_quality_security_refactor_plan.md) - Full-codebase audit and prioritized remediation program for security, correctness, data integrity, architecture, testing, performance, UI/UX, accessibility, scalability, operations, and documentation.
+- [10. Security, Resilience, and Adversarial Evidence Audit](./plans/10_security_resilience_evidence_audit.md) - Threat model, endpoint authorization matrix, adversarial runtime evidence, migration and supply-chain verification, load results, cross-browser/accessibility findings, and security acceptance criteria.
 
 ### 6. Archived Plans
 
@@ -67,7 +70,10 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Cloud Run Private Preview Access](./operations/02_cloud_run_private_preview.md) - Fast local proxy access to the private Cloud Run preview and required deployment secrets.
 - [Local Development Workflow](./operations/03_local_development.md) - WSL-first Docker Compose, Taskfile, local DB, and smoke-check workflow.
 - [Private Preview Verification](./operations/04_private_preview_verification.md) - Redacted operational readiness evidence and manual checks.
+- [Redacted Operational Evidence Template](./operations/evidence-template.md) - Required record for cloud, IAM, backup, load-test, and deployment controls.
+- [Durable Synchronization Contract](./operations/05_durable_sync_contract.md) - Event ownership, retries, retention cleanup, and external Inngest evidence gate.
+- [External Evidence Gate](./operations/06_external_evidence_gate.md) - Redacted proof required before repository controls are described as deployed.
 
 ---
 
-_Last Updated: July 4, 2026 - App is in production-readiness cleanup for the trusted-core Cloud Run scope. Active docs distinguish current release work from archived recovery/refactor history, document the current feature folder vocabulary, and track unused-code cleanup through `pnpm scan:unused`._
+_Last Updated: July 30, 2026 - App is in production-readiness remediation for the trusted-core Cloud Run scope. The comprehensive codebase audit ledger distinguishes repository evidence from pending external operational evidence._

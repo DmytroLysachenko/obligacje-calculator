@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
 import { isDatabaseConfigured } from '@/db';
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { createServerLogger } from '@/lib/server/logging';
 import {
   ensureGuestPortfolioOwner,
@@ -124,6 +123,7 @@ export function applyPortfolioOwnerCookie(response: NextResponse, owner: Portfol
   response.cookies.set(GUEST_PORTFOLIO_COOKIE, owner.ownerId, {
     httpOnly: true,
     sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
     path: '/',
     maxAge: GUEST_COOKIE_MAX_AGE,
   });
@@ -132,11 +132,9 @@ export function applyPortfolioOwnerCookie(response: NextResponse, owner: Portfol
 }
 
 export async function getOwnedPortfolio(ownerId: string, portfolioId: string) {
-  await ensurePortfolioSchemaCompat();
   return findPortfolioByOwner(ownerId, portfolioId);
 }
 
 export async function getOwnedLot(ownerId: string, lotId: string) {
-  await ensurePortfolioSchemaCompat();
   return findOwnedLotByOwner(ownerId, lotId);
 }

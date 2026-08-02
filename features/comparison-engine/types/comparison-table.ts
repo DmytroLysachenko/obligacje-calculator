@@ -9,7 +9,6 @@ export interface ComparisonTableProps {
   bondTypeB: string;
   formatCurrency: (val: number) => string;
   chartStep: ChartStep;
-  onChartStepChange: (step: ChartStep) => void;
 }
 
 export type ComparisonSummaryRow = {

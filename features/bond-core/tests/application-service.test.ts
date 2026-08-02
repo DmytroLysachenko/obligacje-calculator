@@ -14,6 +14,7 @@ vi.mock('@/lib/data/market-data', () => ({
   getBondDefinitions: vi.fn().mockResolvedValue([]),
   getBondDefinitionsMap: vi.fn().mockResolvedValue({}),
   getGlobalDataFreshness: vi.fn().mockResolvedValue({ status: 'fresh', usedFallback: false }),
+  getTaxRulesRevision: vi.fn().mockResolvedValue('tax-rules-2026'),
   getHistoricalAverages: vi.fn().mockResolvedValue({
     inflation: { '1y': 5.0, '5y': 4.0, '10y': 3.5 },
     nbpRate: { '1y': 6.75, '5y': 4.5, '10y': 3.5 },

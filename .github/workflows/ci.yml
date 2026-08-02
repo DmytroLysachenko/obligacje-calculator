@@ -104,6 +104,46 @@ jobs:
             echo "- Production build: \`pnpm build\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
+  database-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: obligacje
+          POSTGRES_PASSWORD: obligacje
+          POSTGRES_DB: obligacje_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U obligacje -d obligacje_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://obligacje:obligacje@127.0.0.1:5432/obligacje_test
+      TEST_DATABASE_URL: postgresql://obligacje:obligacje@127.0.0.1:5432/obligacje_test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: HUSKY=0 pnpm install --frozen-lockfile
+
+      - name: Enable UUID extension required by reviewed schema
+        run: PGPASSWORD=obligacje psql -h 127.0.0.1 -U obligacje -d obligacje_test -c 'CREATE EXTENSION IF NOT EXISTS pgcrypto;'
+
+      - name: Verify migrated PostgreSQL constraints and rollback
+        run: pnpm test:db
+
   docker-build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -140,7 +180,6 @@ jobs:
         run: |
           docker run --detach --name obligacje-calculator-ci \
             --publish 8080:8080 \
-            --env DATABASE_URL=postgresql://obligacje:obligacje@localhost:5432/obligacje?sslmode=disable \
             --env AUTH_SECRET=ci-development-auth-secret-change-me \
             --env SYNC_SECRET=ci-development-sync-secret-change-me \
             --env NEXT_PUBLIC_APP_URL=http://127.0.0.1:8080 \
@@ -177,6 +216,8 @@ jobs:
     env:
       PLAYWRIGHT_SMOKE: '1'
       NEXT_PUBLIC_PLAYWRIGHT_SMOKE: '1'
+      NEXT_PUBLIC_DEPLOYMENT_TIER: production
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3100
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -202,8 +243,11 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Browser smoke and web vitals
-        run: pnpm test:browser:ci
+      - name: Browser smoke, accessibility, and web vitals
+        run: pnpm test:browser:ci && pnpm test:a11y
+
+      - name: Lighthouse quality gate
+        run: pnpm test:lighthouse
 
       - name: Upload browser reports
         if: failure()
@@ -213,7 +257,33 @@ jobs:
           path: |
             playwright-report
             test-results
+            .lighthouseci
           if-no-files-found: ignore
+
+  browser-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PLAYWRIGHT_SMOKE: '1'
+      NEXT_PUBLIC_PLAYWRIGHT_SMOKE: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: HUSKY=0 pnpm install --frozen-lockfile
+      - name: Install Firefox and WebKit
+        run: pnpm exec playwright install --with-deps firefox webkit
+      - name: Build
+        run: pnpm build
+      - name: Cross-browser smoke and accessibility
+        run: pnpm test:browser:matrix
 
       - name: Browser smoke summary
         if: always()
@@ -222,7 +292,8 @@ jobs:
             echo "### Browser smoke"
             echo ""
             echo "- Routes: home, education, single calculator, comparison, economic data"
-            echo "- Checks: title, main landmark, navigation label, console/page errors, failed requests, 5xx responses"
+            echo "- Checks: title, main landmark, navigation label, axe WCAG 2.2 AA, console/page errors, failed requests, 5xx responses"
+            echo "- Lighthouse: accessibility, best practices, SEO, LCP, and CLS"
             echo "- Diagnostics: browser-diagnostics attachment and Playwright trace on failure"
             echo "- Browser gate: \`pnpm test:browser:ci\`"
           } >> "${GITHUB_STEP_SUMMARY}"

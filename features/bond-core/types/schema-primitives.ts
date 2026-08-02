@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { IsoCalendarDateSchema } from './iso-calendar-date';
+
 export const finiteNumber = (label: string) =>
   z.number().finite({ message: `${label} must be a finite number` });
 
@@ -22,9 +24,9 @@ export const HistoricalDataMapSchema = z
   )
   .optional();
 
-export const DateStringSchema = z.string().refine((value) => !Number.isNaN(Date.parse(value)), {
-  message: 'Invalid date string',
-});
+// Calculator requests model calendar dates, not instants. Keep the legacy export
+// name for callers while enforcing the one canonical date contract everywhere.
+export const DateStringSchema = IsoCalendarDateSchema;
 
 export const DateRangeInputsSchema = z.object({
   purchaseDate: DateStringSchema,

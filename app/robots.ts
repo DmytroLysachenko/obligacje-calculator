@@ -1,8 +1,14 @@
 import { MetadataRoute } from 'next';
 
-import { getCanonicalUrl } from '@/lib/site-url';
+import { getCanonicalUrl, isIndexableDeployment } from '@/lib/site-url';
 
 export default function robots(): MetadataRoute.Robots {
+  if (!isIndexableDeployment()) {
+    return {
+      rules: { userAgent: '*', disallow: '/' },
+    };
+  }
+
   return {
     rules: {
       userAgent: '*',

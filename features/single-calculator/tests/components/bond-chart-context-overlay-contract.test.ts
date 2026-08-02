@@ -40,9 +40,9 @@ describe('single calculator chart context overlay contract', () => {
     expectContains(source, 'const rightDomain');
     expectContains(source, 'showInflationControl');
     expectNotContains(source, 'showInflationControl={isInflationIndexedBondType');
-    expectContains(shared, 'loadChartDisplayPreferences(defaultGranularity, preferenceScope)');
-    expectContains(shared, 'const showInflationOverlay = preferences.showInflationOverlay;');
-    expectContains(shared, 'const showNbpOverlay = preferences.showNbpOverlay;');
+    expectContains(shared, 'useChartDisplayPreferences({');
+    expectContains(shared, 'showInflationOverlay,');
+    expectContains(shared, 'showNbpOverlay,');
     expectContains(shared, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
     expectContains(sharedPlot, 'margin={{ top: 12, right: 44, left: 24, bottom: 20 }}');
     expectContains(sharedPlot, 'yAxisId="right"');

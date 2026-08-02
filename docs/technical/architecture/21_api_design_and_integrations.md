@@ -1,5 +1,48 @@
 # 21. API Design & Integrations
 
+## Public error and correlation contract
+
+Every route wrapped by the shared API handler returns an `x-request-id` header.
+Clients may supply a safe identifier for a distributed trace; malformed,
+oversized, or script-like values are replaced by a server-generated UUID. The
+same identifier appears in a public problem response so a user can report a
+failure without seeing provider, database, or authorization details.
+
+Problem responses expose a stable code, HTTP status, safe user-facing detail,
+and field issues where validation failed. Full causes are retained only by the
+redacting server logger. Route handlers do not stringify caught exceptions into
+an HTTP body. Rate-limited responses include `RateLimit-*`, `Retry-After`, and
+the correlation identifier.
+
+New route policy is declared at the boundary:
+
+1. decode and size-limit untrusted input;
+2. resolve trusted client identity;
+3. consume the named endpoint policy;
+4. perform authenticated domain work; and
+5. return a stable response or mapped problem.
+
+This ordering prevents expensive work before a request is known to be allowed
+and makes logs and support diagnostics useful without weakening privacy.
+
+### Request-ID verification
+
+Tests cover preservation of valid IDs, replacement of invalid values, and the
+header/problem pairing. Integration tests for every sensitive route must verify
+that unauthorized, validation, rate-limit, and unexpected-error responses keep
+the same identifier. Never put authorization headers, URL query values, account
+IDs, or scenario inputs into an identifier or public problem payload.
+
+Correlation is per request, not per session or user. It expires with the log
+retention policy and cannot be treated as an authorization credential.
+
+Support staff use it only to locate redacted server diagnostics.
+
+It is never displayed as a user secret.
+
+Correlation IDs are excluded from product analytics and financial exports; they
+exist solely for short-lived support diagnostics.
+
 This document describes the **current retained API surface** and the real external integrations behind it.
 
 It replaces the older abstract design that no longer matched the application.

@@ -57,7 +57,7 @@ export function RegularInvestmentYearlyBucketsSection({
             count: yearlyBuckets.length,
           })}
         >
-          {visibleYearlyBuckets.map((bucket) => (
+          {yearlyBuckets.map((bucket) => (
             <article
               key={`mobile-${bucket.year}`}
               className="border-t border-border py-5"
@@ -93,7 +93,7 @@ export function RegularInvestmentYearlyBucketsSection({
           ))}
         </ResponsiveTableSheet>
 
-        <div className="ui-table-frame hidden lg:block">
+        <div className="ui-table-frame ui-content-visibility hidden lg:block">
           <TableScrollHint>{t('regular_summary.yearly_mobile_description')}</TableScrollHint>
           <Table
             className="w-full table-fixed text-sm tabular-nums"
@@ -101,37 +101,40 @@ export function RegularInvestmentYearlyBucketsSection({
           >
             <TableCaption>{t('regular_summary.yearly_description')}</TableCaption>
             <TableHeader>
-              <TableRow className="h-12 hover:bg-transparent">
-                <TableHead scope="col" className="sticky top-0 z-10 w-[16%] bg-background">
+              <TableRow className="h-14 hover:bg-transparent">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 w-[14%] whitespace-normal bg-background leading-4"
+                >
                   {t('common.year')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[12%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[11%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('regular_summary.lots_label')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[19%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('regular_summary.invested')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[19%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('regular_summary.interest')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[17%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('bonds.tax')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[20%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('regular_summary.net_value')}
                 </TableHead>

@@ -5,6 +5,7 @@ import React from 'react';
 import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import { ChartKeyInsight } from '@/shared/components/charts/ChartKeyInsight';
 import {
   AppLanguage,
   buildBondChartDisplayPoints,
@@ -146,32 +147,45 @@ export const BondChart: React.FC<BondChartProps> = ({
       {
         key: 'primary',
         label: showRealValue ? t('common.real_value') : t('common.nominal_value'),
-        color: showRealValue ? '#4E8F71' : '#111111',
+        color: showRealValue ? 'var(--chart-series-real)' : 'var(--chart-series-primary)',
       },
       {
         key: 'secondary',
         label: showRealValue ? t('common.nominal_value') : t('common.real_value'),
-        color: showRealValue ? '#111111' : '#4E8F71',
+        color: showRealValue ? 'var(--chart-series-primary)' : 'var(--chart-series-real)',
         secondary: true,
       },
     ],
     [showRealValue, t],
   );
 
+  const firstPoint = chartData[0];
+  const lastPoint = chartData.at(-1);
+
   return (
-    <BondValueChart
-      data={chartData}
-      series={series}
-      formatCurrency={formatCurrency}
-      leftDomain={leftDomain}
-      rightDomain={rightDomain}
-      summary={chartSummary}
-      defaultGranularity={displayStep}
-      onGranularityChange={onDisplayStepChange}
-      availableGranularities={['monthly', 'quarterly', 'yearly']}
-      showInflationControl
-      showNbpControl={isFloatingNbpBondType(inputs.bondType)}
-      ariaLabel={t('bonds.value_chart_label')}
-    />
+    <div className="ui-control-stack">
+      {firstPoint && lastPoint ? (
+        <ChartKeyInsight
+          start={Number(firstPoint.primary)}
+          end={Number(lastPoint.primary)}
+          realEnd={Number(showRealValue ? lastPoint.primary : lastPoint.secondary)}
+        />
+      ) : null}
+      <BondValueChart
+        data={chartData}
+        series={series}
+        formatCurrency={formatCurrency}
+        leftDomain={leftDomain}
+        rightDomain={rightDomain}
+        summary={chartSummary}
+        defaultGranularity={displayStep}
+        onGranularityChange={onDisplayStepChange}
+        preferenceScope={`single-${inputs.bondType}`}
+        availableGranularities={['monthly', 'quarterly', 'yearly']}
+        showInflationControl
+        showNbpControl={isFloatingNbpBondType(inputs.bondType)}
+        ariaLabel={t('bonds.value_chart_label')}
+      />
+    </div>
   );
 };

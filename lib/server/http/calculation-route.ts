@@ -19,6 +19,7 @@ import {
 } from '@/features/bond-core/types/schemas';
 
 import { apiHandler } from './api-handler';
+import { calculationRateLimitPolicy } from './rate-limiter';
 import { readJsonBody } from './read-json-body';
 import { okJson } from './responses';
 
@@ -41,15 +42,18 @@ const scenarioSchemas = {
 export function createCalculationRoute<
   TKind extends keyof PayloadByScenarioKind & CalculationScenarioRequest['kind'],
 >(kind: TKind) {
-  return apiHandler(async (req: NextRequest) => {
-    const payload = (await readJsonBody(
-      req,
-      scenarioSchemas[kind],
-    )) as PayloadByScenarioKind[TKind];
-    const request = parseCalculationScenarioRequest({ kind, payload });
+  return apiHandler(
+    async (req: NextRequest) => {
+      const payload = (await readJsonBody(
+        req,
+        scenarioSchemas[kind],
+      )) as PayloadByScenarioKind[TKind];
+      const request = parseCalculationScenarioRequest({ kind, payload });
 
-    const envelope = await calculationService.calculate(request as CalculationScenarioRequest);
+      const envelope = await calculationService.calculate(request as CalculationScenarioRequest);
 
-    return okJson(envelope);
-  });
+      return okJson(envelope);
+    },
+    { rateLimitPolicy: calculationRateLimitPolicy },
+  );
 }

@@ -9,7 +9,6 @@ const files = {
   recalculate: 'shared/components/feedback/RecalculateButton.tsx',
   confirm: 'shared/components/feedback/ConfirmActionDialog.tsx',
   toast: 'shared/components/feedback/AppToast.tsx',
-  designRefactor: 'docs/ui/design-refactor-contract.test.ts',
   accessibility: 'shared/components/accessibility/responsive-accessibility-contract.test.ts',
 } as const;
 
@@ -32,14 +31,14 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 }
 
 describe('feedback overlay surface contracts', () => {
-  it('keeps the floating recalculation panel flat and action-led', () => {
+  it('keeps the floating recalculation panel compact and action-led', () => {
     const source = read(files.recalculate);
 
-    expectContains(source, 'fixed inset-x-3 bottom-3 z-50');
     expectContains(
       source,
-      'border border-border bg-background px-4 py-4 text-foreground shadow-none',
+      'fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50',
     );
+    expectContains(source, 'ui-action-dock px-4 py-4 text-foreground');
     expectContains(source, 'h-11 w-full rounded-md px-5 text-sm font-semibold');
     expectContains(
       source,
@@ -49,7 +48,7 @@ describe('feedback overlay surface contracts', () => {
     expectContains(source, 'loading || disabled');
     expectContains(source, 'aria-live="polite"');
     expectContains(source, 'role="status"');
-    expectContains(source, 'sm:w-[min(22rem,calc(100vw-1.5rem))]');
+    expectContains(source, 'sm:w-[min(23rem,calc(100vw-2.5rem))]');
 
     expectNoFragments(source, [
       'rounded-lg border border-border bg-background px-4 py-4 text-foreground shadow-lg',
@@ -82,8 +81,7 @@ describe('feedback overlay surface contracts', () => {
     expectNoFragments(source, [
       'w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-lg',
       'rounded-md bg-warning/10 p-3 text-warning',
-      'shadow-lg',
-      'bg-card p-6',
+      'rounded-xl',
     ]);
   });
 
@@ -115,13 +113,9 @@ describe('feedback overlay surface contracts', () => {
     ]);
   });
 
-  it('keeps global visual contracts aware of feedback and accessibility rules', () => {
-    const design = read(files.designRefactor);
+  it('keeps accessibility rules aware of feedback behavior', () => {
     const accessibility = read(files.accessibility);
 
-    expectContains(design, 'keeps feedback widgets compact and token-based');
-    expectContains(design, 'shared/components/feedback/RecalculateButton.tsx');
-    expectContains(design, 'shared/components/feedback/AppToast.tsx');
     expectContains(
       accessibility,
       'keeps chart containers keyboard reachable when they expose summaries',

@@ -7,14 +7,18 @@ import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
-import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 
 import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 
-export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
+export function SidebarWorkspaceUtility({
+  pathname,
+  canManageWorkspace,
+}: {
+  pathname: string;
+  canManageWorkspace: boolean;
+}) {
   const { t } = useAppI18n();
-  const { canManageWorkspace } = usePortfolioAccess();
   const { portfolios, selectedPortfolioId, selectedPortfolio, setSelectedPortfolioId, refetch } =
     useWorkspacePortfolios({
       enabled: canManageWorkspace,

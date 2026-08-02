@@ -197,3 +197,31 @@ export const getTaxRulesForYear = cache(async (year: number) => {
     return null;
   }
 });
+
+/**
+ * A compact revision token for cache identity. It intentionally contains no
+ * tax values, only the latest persisted rule version that can affect results.
+ */
+export async function getTaxRulesRevision() {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
+    return 'bootstrap-tax-rules';
+  }
+
+  const cacheKey = 'tax-rules-revision';
+  const cached = getCached<string>(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const latest = await db.query.taxRules.findFirst({
+      orderBy: [desc(taxRules.updatedAt), desc(taxRules.year)],
+      columns: { year: true, updatedAt: true },
+    });
+    const revision = latest
+      ? `${latest.year}:${latest.updatedAt?.toISOString() ?? 'unknown'}`
+      : 'no-tax-rules';
+    setCache(cacheKey, revision);
+    return revision;
+  } catch {
+    return 'tax-rules-unavailable';
+  }
+}

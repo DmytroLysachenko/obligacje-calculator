@@ -1,4 +1,5 @@
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { isIsoCalendarDate } from '@/features/bond-core/types/iso-calendar-date';
 import type {
   ScenarioOverride,
   SharedComparisonConfig,
@@ -152,9 +153,5 @@ function parseNumber(value: string | null, min: number, max: number) {
 }
 
 function parseDate(value: string | null) {
-  return value &&
-    /^\d{4}-\d{2}-\d{2}$/.test(value) &&
-    !Number.isNaN(Date.parse(`${value}T00:00:00Z`))
-    ? value
-    : null;
+  return value && isIsoCalendarDate(value) ? value : null;
 }

@@ -20,6 +20,15 @@ export function setCache(key: string, data: unknown) {
   macroCache.set(key, { data, timestamp: Date.now() });
 }
 
+/** Clears a coherent data namespace after an authoritative synchronization. */
+export function invalidateCached(prefix = '') {
+  for (const key of macroCache.keys()) {
+    if (key.startsWith(prefix)) {
+      macroCache.delete(key);
+    }
+  }
+}
+
 export function getSeriesReferenceDate(series: {
   slug: string;
   frequency?: string | null;

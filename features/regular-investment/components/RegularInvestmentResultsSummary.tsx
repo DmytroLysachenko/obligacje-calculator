@@ -15,6 +15,7 @@ import { FinancialInsightStrip } from '@/shared/components/results/FinancialInsi
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { RecentLotList } from '@/shared/components/results/RecentLotList';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
+import { ScenarioDecisionRail } from '@/shared/components/results/ScenarioDecisionRail';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { buildRegularInvestmentYearBuckets } from '@/shared/lib/regular-investment-display';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
@@ -23,6 +24,7 @@ import { RegularInvestmentYearlyBucketsSection } from './RegularInvestmentYearly
 
 export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({
   results,
+  inputs,
   dataQualityFlags = [],
 }) => {
   const { t, locale: language } = useAppI18n();
@@ -101,6 +103,13 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         actions={summaryActions}
       />
 
+      <ScenarioDecisionRail
+        bondType={inputs.bondType}
+        horizonLabel={`${results.timeline.length} ${t('common.duration_months')}`}
+        investedLabel={formatCurrency(results.totalInvested)}
+        outcomeLabel={formatCurrency(results.finalNominalValue)}
+      />
+
       <MetricStrip
         items={primaryStats}
         columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
@@ -121,7 +130,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         />
       </section>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start">
+      <div className="ui-compact-flow">
         <RegularInvestmentYearlyBucketsSection
           yearlyBuckets={yearlyBuckets}
           formatCurrency={formatCurrency}
@@ -133,7 +142,10 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           note={t('regular_summary.recent_note')}
           items={recentLotItems}
           compact
-          className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"
+          initialItemCount={5}
+          showAllLabel={t('common.show_all', { count: recentLotItems.length })}
+          showLessLabel={t('common.show_less')}
+          className="border-y border-border py-6"
         />
       </div>
     </div>

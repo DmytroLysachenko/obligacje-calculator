@@ -6,6 +6,10 @@
     "settings": "Settings",
     "theme": "Theme",
     "calculate": "Calculate",
+    "plan": "Plan",
+    "summary": "Summary",
+    "details": "Details",
+    "section_navigation": "Calculator sections",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -20,10 +24,12 @@
     "inflation": "Inflation",
     "interest_rate": "Interest Rate",
     "loading": "Loading...",
+    "not_available": "Not available",
     "language": "Language",
     "period": "Period",
     "recalculate": "Recalculate",
     "calculating": "Calculating...",
+    "error": "Calculation needs attention",
     "status_idle": "Status update",
     "status_loading": "Calculation in progress",
     "status_complete": "Calculation complete",
@@ -100,6 +106,19 @@
     "description": "Calculators stay available without an account. Saving lots, importing portfolios, sharing portfolio links, and exporting notebook data require an authenticated workspace.",
     "provider_title": "Choose an OAuth provider",
     "oauth_only_note": "OAuth sign-in only. Password accounts are not supported.",
+    "use_calculator": "Use the calculator without signing in",
+    "unavailable_title": "Sign-in is not configured",
+    "unavailable_description": "An OAuth provider must be enabled before portfolio access is available.",
+    "benefits": {
+      "organize": {
+        "title": "Keep real bond lots together",
+        "description": "Record purchases, quantities, and maturity dates in one private workspace."
+      },
+      "control": {
+        "title": "Share & export on your terms",
+        "description": "Create portfolio links and exports only after you choose to sign in."
+      }
+    },
     "providers": {
       "google": "Continue with Google",
       "facebook": "Continue with Facebook"
@@ -139,6 +158,7 @@
     "retirement": "Retirement Planner"
   },
   "sidebar": {
+    "continue_label": "Continue where you left off",
     "workspace_title": "Workspace",
     "workspace_desc": "Choose active portfolio before saving new bond lots.",
     "portfolio_selector_label": "Current portfolio",
@@ -371,6 +391,8 @@
   },
   "bonds": {
     "single_calculator": "Investment Simulation",
+    "previous_offer_reference": "This committed calculation uses a previous bond offer. Recalculate to use the current offer.",
+    "recalculate_current_offer": "Use current offer",
     "glossary": {
       "savings_goal": "The amount you want to accumulate by the end of your investment. The calculator helps determine how much you need to invest today to reach this goal.",
       "capitalization": "The process of adding earned interest to the principal, so that in the next period, interest is calculated on a larger amount (compound interest).",
@@ -570,6 +592,19 @@
       "action": "Action",
       "results_stable": "Results stay stable until you intentionally rerun with new committed inputs.",
       "stale_results": "Inputs changed. Results below are stale until you rerun the calculation.",
+      "draft_saved": "Draft saved on this device",
+      "chart_key_insight": "Key chart insight",
+      "chart_key_insight_copy": "Read the ending values first; use the line shape to understand the path, not as the only source of exact numbers.",
+      "decision_summary": "Decision summary",
+      "decision_bond": "Bond",
+      "decision_horizon": "Horizon",
+      "decision_invested": "Invested",
+      "decision_result_link": "Summary",
+      "decision_details_link": "Chart and schedule",
+      "draft_ready": "Your current scenario is ready",
+      "draft_description": "Changed inputs are stored locally until you clear them.",
+      "restore_draft": "Restore draft",
+      "clear_draft": "Clear draft",
       "fix_blocking": "Fix blocking inputs first, then calculate.",
       "calculation_context": "Calculation Context",
       "how_to_read_title": "How to read this run",
@@ -1204,10 +1239,13 @@
       "mobile_amount": "Amount",
       "table_summary": "Each row shows one maturity month, how many lots finish there, and how much net value returns.",
       "table_filters": {
-        "all": "All months",
-        "peak": "Peak only",
-        "clustered": "Clustered"
+        "all": "All maturity months",
+        "peak": "Peak maturity month",
+        "clustered": "Concentrated maturities"
       },
+      "empty_filter": "No maturity months match this view.",
+      "show_all_months": "Show all maturity months",
+      "cluster_threshold": "At least {count} lots mature in the same month.",
       "table_count_suffix": "months",
       "table_month": "Month",
       "table_lots": "Lots",
@@ -1478,6 +1516,8 @@
     "public_share_desc": "This portfolio currently has a public share link.",
     "private_share_desc": "This portfolio is currently kept private.",
     "delete_portfolio": "Delete portfolio",
+    "back_to_portfolios": "Back to portfolios",
+    "open_lot_calculator": "Open {bondType} lot in calculator",
     "column_type": "Type",
     "column_duration": "Duration",
     "column_amount": "Amount",

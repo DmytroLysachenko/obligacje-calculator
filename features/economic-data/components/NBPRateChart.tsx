@@ -61,8 +61,12 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
       fallbackStatusLabel={t('economic.reference_state.fallback')}
       syncedStatusLabel={t('economic.reference_state.synced')}
     >
-      <ChartContainer height={420}>
-        <ResponsiveContainer width="100%" height="100%">
+      <ChartContainer
+        height={420}
+        ariaLabel={t('bonds.nbp_rate_short')}
+        summary={t('economic.nbp_target')}
+      >
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={1}>
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
@@ -79,7 +83,7 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
               axisLine={false}
             />
             <Tooltip content={<EconomicChartTooltip metricLabel={t('bonds.nbp_rate_short')} />} />
-            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
             <Area
               type="stepAfter"
               dataKey="rate"

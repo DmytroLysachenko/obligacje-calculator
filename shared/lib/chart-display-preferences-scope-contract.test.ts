@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+
 import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
@@ -29,16 +30,18 @@ describe('chart display preference scope contract', () => {
     const s = await read('shared/components/charts/BondValueChart.tsx');
     expect(s).toContain('preferenceScope?: string;');
     expect(s).toContain('preferenceScope,');
-    expect(s).toContain('loadChartDisplayPreferences(defaultGranularity, preferenceScope)');
+    expect(s).toContain('useChartDisplayPreferences({');
   });
   it('passes scope through every preference update', async () => {
-    const s = await read('shared/components/charts/BondValueChart.tsx');
+    const s = await read('shared/hooks/useChartDisplayPreferences.ts');
     const hits = s.split('saveChartDisplayPreferences(next, preferenceScope)').length - 1;
     expect(hits).toBe(3);
   });
   it('updates the synchronization effect when its scope changes', async () => {
-    const s = await read('shared/components/charts/BondValueChart.tsx');
-    expect(s).toContain('[defaultGranularity, granularity, onGranularityChange, preferenceScope]');
+    const s = await read('shared/hooks/useChartDisplayPreferences.ts');
+    expect(s).toContain(
+      '[defaultGranularity, onGranularityChange, preferenceScope, preferences.granularity]',
+    );
   });
   it('keeps SSR storage reads safe', async () => {
     const s = await read('shared/lib/chart-display-preferences.ts');
@@ -74,26 +77,30 @@ describe('chart display preference scope contract', () => {
     expect(source).toContain('showInflationOverlay: true');
   });
 
-  it('keeps the chart component responsible only for wiring its scope', async () => {
+  it('moves browser preference lifecycle behind a dedicated hook', async () => {
     const source = await read('shared/components/charts/BondValueChart.tsx');
-    expect(source).toContain('const [preferences, setPreferences] = React.useState(() =>');
-    expect(source).toContain('const showInflationOverlay = preferences.showInflationOverlay;');
-    expect(source).toContain('const showNbpOverlay = preferences.showNbpOverlay;');
-    expect(source).toContain('const granularity = preferences.granularity;');
+    const hook = await read('shared/hooks/useChartDisplayPreferences.ts');
+    expect(source).toContain(
+      "import { useChartDisplayPreferences } from '@/shared/hooks/useChartDisplayPreferences';",
+    );
+    expect(source).toContain('setGranularity: handleGranularityChange');
+    expect(source).toContain('setOverlay: updateOverlayPreference');
+    expect(hook).toContain('const [preferences, setPreferences] = useState(() =>');
+    expect(hook).toContain('const hasSyncedInitialPreference = useRef(false)');
   });
 
   it('does not duplicate browser-storage handling in the chart component', async () => {
     const source = await read('shared/components/charts/BondValueChart.tsx');
-    expect(source).toContain("from '@/shared/lib/chart-display-preferences'");
+    expect(source).toContain("from '@/shared/hooks/useChartDisplayPreferences'");
     expect(source).not.toContain('window.localStorage.getItem');
     expect(source).not.toContain('window.localStorage.setItem');
   });
 
   it('persists granularity and overlay choices through the same API', async () => {
-    const source = await read('shared/components/charts/BondValueChart.tsx');
-    expect(source).toContain('const handleGranularityChange = (nextStep: ChartStep) =>');
+    const source = await read('shared/hooks/useChartDisplayPreferences.ts');
+    expect(source).toContain('const setGranularity = (nextStep: ChartStep) =>');
     expect(source).toContain("key: 'showInflationOverlay' | 'showNbpOverlay'");
-    expect(source).toContain('const updateOverlayPreference = (');
+    expect(source).toContain('const setOverlay = (');
     expect(source).toContain('setPreferences((current) => {');
   });
 });

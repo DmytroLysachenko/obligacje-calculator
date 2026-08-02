@@ -4,6 +4,32 @@ This document defines the repository-wide coding rules for application code, sha
 
 These rules are intentionally strict. They exist to stop legacy shortcuts from re-entering the codebase and to ensure that every touched area moves toward a cleaner, more trustworthy system.
 
+## Deep-module boundaries
+
+Modules own a coherent decision and expose the smallest interface their
+consumers need. HTTP routes declare policy and delegate; repositories enforce
+owner predicates and transactions; adapters isolate external services. Do not
+leave a replacement path active after its migration is complete.
+
+Dependencies point inward: pages and route handlers may compose feature and
+server interfaces; features may depend on domain and shared display modules;
+shared UI may not import server/database code; only `lib/server/**` and
+`lib/data/**` cross the persistence or provider boundary. The module that owns
+an interface also owns its adapter choice, tests, and replacement/deletion plan.
+
+- Untrusted data is decoded once at its boundary and database constraints defend
+  values whose corruption would be dangerous.
+- Runtime application identities never execute schema DDL; ordered migrations
+  are the only persistent-schema deployment interface.
+- Cancellation is an explicit asynchronous outcome, never a successful null
+  value. A stale calculation may not overwrite a newer committed result.
+- Multi-write financial commands are transactional and have rollback tests.
+- Browser clients never persist administrator bearer credentials.
+- Refactors delete superseded code and source-spelling contracts when behavior,
+  types, lint boundaries, or integration tests protect the real invariant.
+- A delivery updates its relevant documentation in the same change and names
+  the focused behavioral check that proves the boundary still holds.
+
 ## 1. Core Principles
 
 All new code and all touched old code must follow:
@@ -430,7 +456,7 @@ The default review posture for this repository is to reject these patterns rathe
 
 ## 10.1 Release Clean-Code Gates
 
-`docs/technical/architecture/clean-code-contract.test.ts` enforces the current clean-code boundaries:
+`tests/contracts/architecture/clean-code-contract.test.ts` enforces the current clean-code boundaries:
 
 - no stale TODO/FIXME/debug markers in production paths
 - direct browser fetch only through approved client modules

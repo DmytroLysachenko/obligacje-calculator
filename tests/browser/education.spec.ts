@@ -9,8 +9,7 @@ import {
 async function openOfferComparison(page: Page) {
   const disclosure = page
     .locator('details')
-    .filter({ has: page.locator('summary') })
-    .first();
+    .filter({ has: page.getByText('Porównaj wybrane', { exact: true }) });
   await disclosure.locator('summary').click();
   await expect(disclosure).toHaveAttribute('open', '');
   return disclosure;

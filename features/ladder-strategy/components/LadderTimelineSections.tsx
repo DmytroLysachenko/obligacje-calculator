@@ -1,6 +1,15 @@
 'use client';
 
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 import { LADDER_CHART_MODES } from '@/features/ladder-strategy/constants/timeline';
@@ -59,8 +68,10 @@ interface LadderTimelineChartSectionProps {
   chartMode: LadderChartMode;
   chartData: Array<LadderMaturityBucket | LadderYearBucket>;
   displayedRows: LadderMaturityBucket[];
+  filteredRows: LadderMaturityBucket[];
   monthlyBuckets: LadderMaturityBucket[];
   filteredRowCount: number;
+  clusteredThreshold: number;
   tableFilter: LadderTableFilter;
   rowLimit: TableRowLimit;
   totalLots: number;
@@ -77,8 +88,10 @@ export function LadderTimelineChartSection({
   chartMode,
   chartData,
   displayedRows,
+  filteredRows,
   monthlyBuckets,
   filteredRowCount,
+  clusteredThreshold,
   tableFilter,
   rowLimit,
   totalLots,
@@ -118,10 +131,14 @@ export function LadderTimelineChartSection({
         </span>{' '}
         {t('ladder_page.timeline.chart_note_description')}
       </p>
-      <ChartContainer responsiveHeightClassName="h-[320px] md:h-[360px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <ChartContainer
+        responsiveHeightClassName="h-[320px] md:h-[360px]"
+        ariaLabel={t('ladder_page.timeline.chart_title')}
+        summary={t('ladder_page.timeline.chart_description')}
+      >
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={1}>
           <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="displayDate" tickLine={false} axisLine={false} fontSize={11} />
             <YAxis
               tickLine={false}
@@ -137,15 +154,24 @@ export function LadderTimelineChartSection({
               ]}
               labelFormatter={(label) => `${label}`}
             />
-            <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="amount" fill="hsl(var(--chart-data))" radius={[4, 4, 0, 0]}>
+              <LabelList
+                dataKey="amount"
+                position="top"
+                formatter={(value) => formatCurrency(Number(value ?? 0))}
+                className="fill-muted-foreground text-[10px]"
+              />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>
 
       <LadderTimelineTable
         displayedRows={displayedRows}
+        filteredRows={filteredRows}
         monthlyBuckets={monthlyBuckets}
         filteredRowCount={filteredRowCount}
+        clusteredThreshold={clusteredThreshold}
         tableFilter={tableFilter}
         rowLimit={rowLimit}
         totalLots={totalLots}

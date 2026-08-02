@@ -1,5 +1,13 @@
 # Obligacje Calculator
 
+## Offline behavior
+
+The application deliberately does not register a service worker and is not an
+offline calculator. Financial calculations depend on current offer and market
+data, so presenting a silently cached result would be misleading. Browser
+assets follow normal HTTP caching; a failed network request is shown as an
+error rather than an offline financial result.
+
 Production-focused simulation platform for Polish treasury bonds, recurring bond plans, comparison scenarios, and reference macro-data.
 
 The current product direction is conservative and trust-first:
@@ -38,6 +46,7 @@ Important code boundaries:
 - `lib/data/`: cached read models and data retrieval helpers
 - `lib/server/`: server-only services, repositories, sync/admin orchestration, HTTP helpers
 - `db/schema.ts`: canonical Drizzle schema entrypoint
+- `drizzle/`: ordered, migration-only schema authority; runtime routes never execute DDL
 - `db/seed/`: seed modules split by concern
 
 Current production-readiness notes:
@@ -56,7 +65,7 @@ Current production-readiness notes:
 2. Set environment variables in `.env.local` using the deployment documentation and project-specific secrets.
 3. Prepare the database if needed:
    ```bash
-   npx drizzle-kit generate
+   pnpm db:migrate
    pnpm run db:seed:production
    ```
 4. Start the app:
@@ -67,7 +76,9 @@ Current production-readiness notes:
 ### Quality Checks
 
 ```bash
-pnpm test
+pnpm test:ci
+pnpm test:release
+pnpm test:db # requires an isolated TEST_DATABASE_URL
 pnpm test:core
 pnpm test:browser
 pnpm test:web-vitals
@@ -75,6 +86,10 @@ pnpm lint
 pnpm exec tsc --noEmit
 pnpm scan:unused
 ```
+
+`pnpm test:ci` is the full Vitest suite; `pnpm test:release` is a faster,
+curated release signal and does not replace it. `pnpm test:db` applies the
+checked-in migration journal only to a disposable database.
 
 `pnpm scan:unused` should not report confirmed unused files. Export findings are
 triaged as API-surface candidates because framework exports, scenario schemas,
@@ -137,12 +152,21 @@ checks live in [Deployment & DevOps](./docs/technical/architecture/24_deployment
 For local production-image verification:
 
 ```bash
-task prod:container
-task smoke:prod-container
+pnpm build
+pnpm smoke:local -- --base-url http://127.0.0.1:3000 --check-content-type
 ```
 
 GitHub Actions is the production Cloud Run deployment source of truth. The
-checked-in `cloudbuild.yaml` remains an aligned manual fallback.
+checked-in `cloudbuild.yaml` remains an aligned manual fallback. Before a
+production promotion, use the documented migration identity, run
+`pnpm check:prod-config`, and retain the required redacted post-deploy evidence.
+
+## Security reporting
+
+Do not include credentials, tokens, portfolio data, or personal information in
+an issue. Report a suspected vulnerability privately to the project maintainer;
+the maintainer will acknowledge it, coordinate remediation, and document a
+redacted incident record where operational follow-up is required.
 
 ## Product Guardrails
 
@@ -151,3 +175,4 @@ checked-in `cloudbuild.yaml` remains an aligned manual fallback.
 - no display settings that change engine truth
 - guest users may calculate and preview workspace surfaces, but portfolio/workspace mutations stay gated behind signed-in access
 - secondary tools should remain explicitly demoted and not compete with the flagship calculator flows
+- administrative UI actions require an authenticated session whose email is in `ADMIN_EMAIL_ALLOWLIST`; `SYNC_SECRET` is reserved for machine-to-machine operational requests

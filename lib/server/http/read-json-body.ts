@@ -3,6 +3,30 @@ import { z } from 'zod';
 
 import { CalculationDomainError } from '@/features/bond-core/errors';
 
+export class RequestBodyTooLargeError extends Error {
+  constructor(public readonly maxBytes: number) {
+    super('Request body exceeds the configured limit.');
+  }
+}
+
+export async function readBoundedJsonBody<TSchema extends z.ZodTypeAny>(
+  req: NextRequest,
+  schema: TSchema,
+  maxBytes: number,
+): Promise<z.infer<TSchema>> {
+  const declaredLength = Number(req.headers.get('content-length') ?? 0);
+  if (!Number.isFinite(declaredLength) || declaredLength > maxBytes) {
+    throw new RequestBodyTooLargeError(maxBytes);
+  }
+
+  const text = await req.text();
+  if (new TextEncoder().encode(text).byteLength > maxBytes) {
+    throw new RequestBodyTooLargeError(maxBytes);
+  }
+
+  return schema.parse(JSON.parse(text));
+}
+
 export async function readJsonBody<TSchema extends z.ZodTypeAny>(
   req: NextRequest,
   schema: TSchema,

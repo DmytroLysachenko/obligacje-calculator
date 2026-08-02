@@ -1,21 +1,37 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import {
   type CalculationClientErrorPayload,
   postCalculation,
 } from '@/shared/lib/calculation-client';
+import {
+  getCalculationRequestMessage,
+  initialCalculationRequestState,
+  isAbortError,
+  reduceCalculationRequestState,
+} from '@/shared/lib/calculation-request-state';
 import { postCalculationInWorker } from '@/shared/lib/calculation-worker-client';
 
 interface CalculationRequestOptions {
   preferWorker?: boolean;
 }
 
+export class CalculationCancelled extends Error {
+  constructor() {
+    super('Calculation cancelled');
+    this.name = 'CalculationCancelled';
+  }
+}
+
 export function useCalculationRequest() {
-  const [isCalculating, setIsCalculating] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [state, dispatch] = useReducer(
+    reduceCalculationRequestState,
+    initialCalculationRequestState,
+  );
   const abortControllerRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
 
   const clearCurrentRequest = useCallback(() => {
     if (abortControllerRef.current) {
@@ -33,24 +49,30 @@ export function useCalculationRequest() {
       clearCurrentRequest();
 
       const controller = new AbortController();
+      const requestId = requestIdRef.current + 1;
+      requestIdRef.current = requestId;
       abortControllerRef.current = controller;
 
-      setIsCalculating(true);
-      setIsError(false);
+      dispatch({ type: 'start', requestId });
 
       try {
         const result = await request(controller.signal);
+        dispatch({ type: 'succeed', requestId });
         return result;
       } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          // Silently ignore abort errors for the status state
-          return null as unknown as T;
+        if (isAbortError(error)) {
+          dispatch({ type: 'cancel', requestId });
+          throw new CalculationCancelled();
         }
-        setIsError(true);
+        dispatch({
+          type: 'fail',
+          requestId,
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
         throw error;
       } finally {
         if (abortControllerRef.current === controller) {
-          setIsCalculating(false);
+          abortControllerRef.current = null;
         }
       }
     },
@@ -58,12 +80,14 @@ export function useCalculationRequest() {
   );
 
   const clearError = useCallback(() => {
-    setIsError(false);
+    dispatch({ type: 'clear-error' });
   }, []);
 
   return {
-    isCalculating,
-    isError,
+    isCalculating: state.phase === 'running',
+    isError: state.phase === 'failed',
+    requestState: state,
+    requestMessage: getCalculationRequestMessage(state),
     run,
     clearError,
     post: useCallback(

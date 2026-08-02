@@ -1,6 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+import {
+  isTrustedMutationOrigin,
+  requiresOriginCheck,
+} from '@/lib/server/http/mutation-origin';
 import { createDomainErrorResponse, createUnauthorizedResponse } from '@/lib/server/http/responses';
 
 import {
@@ -15,8 +18,6 @@ export interface PortfolioRouteContext {
 }
 
 export async function getPortfolioRouteContext(): Promise<PortfolioRouteContext> {
-  await ensurePortfolioSchemaCompat();
-
   return {
     owner: await resolvePortfolioOwner(),
   };
@@ -45,8 +46,12 @@ export function withPortfolioOwnerResponse(response: NextResponse, owner: Portfo
 }
 
 export async function withAuthenticatedPortfolioOwner(
+  request: NextRequest,
   handler: (owner: PortfolioOwnerContext) => Promise<NextResponse> | NextResponse,
 ) {
+  if (requiresOriginCheck(request.method) && !isTrustedMutationOrigin(request)) {
+    return createUnauthorizedResponse();
+  }
   const authContext = await getAuthenticatedPortfolioRouteContext();
   if (!authContext.ok) return authContext.response;
 

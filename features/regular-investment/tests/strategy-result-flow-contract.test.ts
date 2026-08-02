@@ -39,11 +39,12 @@ describe('strategy result flow contracts', () => {
 
     expectContains(
       source,
-      'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start',
+      'grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start',
     );
     expectContains(source, '<RecentLotList');
     expectContains(source, 'compact');
-    expectContains(source, 'className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"');
+    expectContains(source, 'initialItemCount={5}');
+    expectContains(source, "showLessLabel={t('common.show_less')}");
     expectContains(source, '<RegularInvestmentYearlyBucketsSection');
     expectContains(yearly, '<SectionBlock');
     expectContains(yearly, '<ResponsiveTableSheet');
@@ -65,7 +66,9 @@ describe('strategy result flow contracts', () => {
     expectContains(source, 'className?: string;');
     expectContains(source, 'compact?: boolean;');
     expectContains(source, 'compact = false');
-    expectContains(source, "cn('space-y-5 border-y border-border py-6', className)");
+    expectContains(source, "cn('space-y-5 border-t border-border pt-6', className)");
+    expectContains(source, 'initialItemCount?: number;');
+    expectContains(source, 'const visibleItems = initialItemCount');
     expectContains(source, "compact ? 'space-y-1.5' : 'space-y-2'");
     expectContains(source, "compact ? 'px-3 py-2' : 'px-4 py-3'");
     expectContains(source, "compact ? 'py-3 first:pt-0 last:pb-0' : 'py-4 first:pt-0 last:pb-0'");
@@ -90,7 +93,7 @@ describe('strategy result flow contracts', () => {
     const sections = read(files.ladderSections);
     const table = read(files.ladderTable);
 
-    expectContains(source, '<div className="space-y-8">');
+    expectContains(source, '<div className="ui-compact-flow">');
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip');
     expectContains(source, '<LadderTimelineChartSection');

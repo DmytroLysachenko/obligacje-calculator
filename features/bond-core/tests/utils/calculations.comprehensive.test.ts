@@ -201,6 +201,13 @@ describe('Comprehensive Bond Calculations', () => {
     expect(Array.isArray(results.dataQualityFlags)).toBe(true);
   });
 
+  it('shows the invested principal as the immediate early-exit payout', () => {
+    const results = calculateBondInvestment(baseInputs);
+    const purchasePoint = results.timeline[0];
+
+    expect(purchasePoint.earlyWithdrawalValue).toBe(results.initialInvestment);
+  });
+
   it('marks projected macro segments when historical data is unavailable', () => {
     const inputs = {
       ...baseInputs,

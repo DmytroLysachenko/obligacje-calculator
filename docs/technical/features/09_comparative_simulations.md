@@ -17,7 +17,7 @@ Current ownership:
 
 - `features/comparison-engine/components/ComparisonContainer.tsx` owns two-scenario state and chart step selection.
 - `features/comparison-engine/components/ComparisonResultsPanel.tsx` adapts comparison results into `BondValueChartPoint[]`.
-- `shared/components/charts/BondValueChart.tsx` owns chart state, context overlay preferences, and toolbar/plot wiring.
+- `shared/components/charts/BondValueChart.tsx` owns toolbar/plot wiring; `shared/hooks/useChartDisplayPreferences.ts` owns URL and local-storage display preferences.
 - `shared/components/charts/BondValueChartPlot.tsx` owns the Recharts plot.
 - `shared/components/charts/BondValueChartToolbar.tsx` owns legend and overlay controls.
 - `shared/components/charts/BondValueChartTooltipParts.tsx` owns grouped tooltip rendering.
@@ -47,4 +47,4 @@ Source contracts intentionally follow concrete ownership after refactors:
 - chart ownership: `features/comparison-engine/tests/comparison-chart-scope-contract.test.ts`
 - chart verdict and tooltip separation: `features/comparison-engine/tests/comparison-chart-verdict-contract.test.ts`
 - multi-asset chart model behavior: `features/comparison-engine/tests/components/multi-asset-chart-model.test.ts`
-- design/token boundaries: `docs/ui/design-refactor-contract.test.ts`
+- design/token guidance: `docs/ui/DESIGN_SYSTEM.md`

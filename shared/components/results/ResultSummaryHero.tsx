@@ -23,14 +23,24 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
   actions = [],
   aside,
 }: ResultSummaryHeroProps) {
+  const headingId = React.useId();
+
   return (
-    <section className="overflow-hidden border-y border-border bg-background">
+    <section
+      className="overflow-hidden border-y border-border bg-background"
+      aria-labelledby={headingId}
+    >
       <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 max-w-4xl space-y-4 p-5 md:p-6">
-          <div className="surface-chip">{eyebrow}</div>
+          <p className="ui-eyebrow">{eyebrow}</p>
 
           <div className="space-y-2">
-            <h2 className="financial-number ui-primary-metric min-w-0 break-words">{value}</h2>
+            <h2
+              id={headingId}
+              className="financial-number ui-primary-metric min-w-0 whitespace-nowrap"
+            >
+              {value}
+            </h2>
             <p className="ui-body max-w-4xl text-muted-foreground">{description}</p>
           </div>
         </div>
@@ -46,7 +56,9 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
 
       {narrative || deltaText ? (
         <div className="w-full space-y-3 border-t border-border bg-background px-5 py-4 md:px-6">
-          {narrative ? <p className="ui-body">{narrative}</p> : null}
+          {narrative ? (
+            <p className="ui-body max-w-[var(--layout-reading-max)]">{narrative}</p>
+          ) : null}
           {deltaText ? <p className="ui-meta">{deltaText}</p> : null}
         </div>
       ) : null}

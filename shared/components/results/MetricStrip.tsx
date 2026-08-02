@@ -9,6 +9,7 @@ export interface MetricStripItem {
   value: string;
   description?: string;
   tone?: string;
+  emphasis?: 'primary' | 'supporting';
 }
 
 interface MetricStripProps {
@@ -23,17 +24,18 @@ export const MetricStrip = React.memo(function MetricStrip({
   className,
 }: MetricStripProps) {
   return (
-    <section className={cn('border-y border-border', className)}>
+    <section className={cn('ui-metric-strip', className)}>
       <div className={cn('grid divide-y divide-border md:divide-y-0', columns)}>
         {items.map((item) => (
           <div
             key={item.label}
-            className="min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0"
+            className="min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-5 md:first:border-l-0 md:first:pl-0"
           >
             <p className="ui-meta font-semibold">{item.label}</p>
             <p
               className={cn(
-                'financial-number ui-large-metric min-w-0 break-words text-foreground',
+                'financial-number min-w-0 whitespace-nowrap text-foreground',
+                item.emphasis === 'supporting' ? 'ui-supporting-metric' : 'ui-large-metric',
                 item.tone,
               )}
             >

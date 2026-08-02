@@ -99,6 +99,30 @@ describe('single bond cycle engine', () => {
     expect(result.netPayoutValue).toBeGreaterThan(150);
   });
 
+  it('records the initial purchase once rather than repeating it at the first accrual checkpoint', () => {
+    const definition = BOND_DEFINITIONS[BondType.EDO];
+    const result = calculateBondInvestment(
+      singlePayload({
+        bondType: BondType.EDO,
+        firstYearRate: definition.firstYearRate,
+        margin: definition.margin,
+        duration: definition.duration,
+        earlyWithdrawalFee: definition.earlyWithdrawalFee,
+        isCapitalized: definition.isCapitalized,
+        payoutFrequency: definition.payoutFrequency,
+        withdrawalDate: '2036-06-16',
+        investmentHorizonMonths: 120,
+      }),
+    );
+
+    const purchaseEvents = result.timeline
+      .flatMap((point) => point.events ?? [])
+      .filter((event) => event.type === SimulationEventType.PURCHASE);
+
+    expect(purchaseEvents).toHaveLength(1);
+    expect(purchaseEvents[0].date).toBe(result.timeline[0].cycleEndDate);
+  });
+
   it('records early redemption fees before native maturity', () => {
     const definition = BOND_DEFINITIONS[BondType.COI];
     const result = calculateBondInvestment(

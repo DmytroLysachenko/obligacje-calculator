@@ -34,7 +34,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(async (owner) => {
+  return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const validated = await readJsonBody(req, InvestmentLotSchema);
 
     try {
@@ -50,7 +50,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
 });
 
 export const DELETE = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(async (owner) => {
+  return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 

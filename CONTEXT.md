@@ -4,6 +4,18 @@ This context defines the product language for a trust-first Polish treasury-bond
 
 ## Language
 
+**Committed calculation**:
+The last successfully calculated scenario a user has explicitly accepted by submitting a calculation. It remains the decision reference while later input changes form a draft, until the user recalculates.
+_Avoid_: live result, automatically refreshed result
+
+**Shared scenario**:
+A fully specified scenario opened from a share link. Opening it is an explicit calculation request because its inputs are already fixed by the shared snapshot.
+_Avoid_: partially filled draft, implicit background recalculation
+
+**Previous-offer reference**:
+A committed calculation whose bond offer is no longer current. It remains visible as a decision reference, while the app marks it as previous-offer and requires explicit recalculation for a current-offer calculation.
+_Avoid_: silently refreshed result, current-offer calculation
+
 **Trusted-core release**:
 The first production-style Cloud Run release, limited to product surfaces whose calculation behaviour, data transparency, and user-facing claims meet the project's release gates. It is a release scope, not a claim that every visible route is production-certified.
 _Avoid_: full-platform launch, feature-complete release

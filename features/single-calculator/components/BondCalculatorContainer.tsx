@@ -11,7 +11,6 @@ import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShel
 import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { logClientError } from '@/shared/lib/client-logger';
-import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
 import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
@@ -37,6 +36,7 @@ import { parseBondType } from '../lib/single-calculator-state';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
+import { ScenarioDraftStatus } from './ScenarioDraftStatus';
 import { SharedScenarioNotice } from './SharedScenarioNotice';
 
 interface BondCalculatorContainerProps {
@@ -187,6 +187,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     }
 
     try {
+      const { generateSingleBondReportPdf } = await import('@/shared/lib/pdf-utils');
       await generateSingleBondReportPdf(
         results,
         inputs,
@@ -240,6 +241,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
             snapshotLabel={t('bonds.shared_scenario_snapshot')}
           />
         ) : null}
+
+        <ScenarioDraftStatus inputs={inputs} isDirty={isDirty} onRestore={replaceInputs} />
 
         <CalculatorWorkspace
           className="gap-8 xl:gap-10"

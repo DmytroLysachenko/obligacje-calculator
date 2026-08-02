@@ -1,14 +1,8 @@
 import { readFile } from 'node:fs/promises';
+
 import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
-
-
-
-
-
-
-
 
 async function source(path: string) {
   return readFile(`${root}/${path}`, 'utf8');
@@ -59,7 +53,19 @@ describe('bond chart empty-state contract', () => {
     const plot = await source('shared/components/charts/BondValueChartPlot.tsx');
     expect(plot).toContain('ariaLabel={ariaLabel}');
     expect(plot).toContain('summary={<p>{summary}</p>}');
-    expect(plot).toContain('<ResponsiveContainer width="100%" height="100%"');
+    expect(plot).toContain('<ResponsiveContainer');
+    expect(plot).toContain('width="100%"');
+    expect(plot).toContain('height="100%"');
+    expect(plot).toContain('minWidth={0}');
+    expect(plot).toContain('minHeight={1}');
+  });
+
+  it('waits for a concrete chart size before mounting a responsive plot', async () => {
+    const container = await source('shared/components/charts/ChartContainer.tsx');
+
+    expect(container).toContain('setSize(width > 0 && measuredHeight > 0');
+    expect(container).toContain('width: size.width');
+    expect(container).toContain('height: size.height');
   });
 
   it('does not introduce client-only state for a data-derived condition', async () => {

@@ -6,6 +6,7 @@ import { type KeyboardEvent, type ReactNode, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { WorkflowContinue } from '@/shared/components/chrome/WorkflowContinue';
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { pageLayout } from './layout-system';
@@ -92,26 +93,30 @@ export function CalculatorPageShell({
     return null;
   }, [hasResults, isCalculating, isDirty, isError, t]);
 
-  const headerAction =
-    extraHeaderActions || hasShareAction ? (
-      <>
-        {extraHeaderActions}
-        {hasShareAction ? (
-          <Button
-            variant="outline"
-            size="sm"
-            className={cn(
-              'h-8 gap-2 px-3 text-xs font-medium',
-              copied ? 'border-[var(--finance-success)] text-[var(--finance-success)]' : '',
-            )}
-            onClick={handleShare}
-          >
-            {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
-            {copied ? t('common.copied') : t('comparison.share_scenario')}
-          </Button>
-        ) : null}
-      </>
-    ) : null;
+  const headerAction = (
+    <>
+      <WorkflowContinue />
+      {extraHeaderActions || hasShareAction ? (
+        <>
+          {extraHeaderActions}
+          {hasShareAction ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                'h-8 gap-2 px-3 text-xs font-medium',
+                copied ? 'border-[var(--finance-success)] text-[var(--finance-success)]' : '',
+              )}
+              onClick={handleShare}
+            >
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
+              {copied ? t('common.copied') : t('comparison.share_scenario')}
+            </Button>
+          ) : null}
+        </>
+      ) : null}
+    </>
+  );
 
   return (
     <div className={`${pageLayout.pageFlow} ${pageLayout.mobileActionSpace}`} onKeyDown={onKeyDown}>

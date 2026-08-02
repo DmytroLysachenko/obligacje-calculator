@@ -1,9 +1,8 @@
 import { readFile } from 'node:fs/promises';
+
 import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
-
-
 
 const source = () => readFile(`${root}/shared/components/page/CalculatorPageShell.tsx`, 'utf8');
 
@@ -42,7 +41,9 @@ describe('calculator page status error contract', () => {
   });
   it('does not make header actions depend on status wording', async () => {
     const content = await source();
-    expect(content).toContain('const hasShareAction = onShare ? hasResults : showImplicitShare && hasResults;');
+    expect(content).toContain(
+      'const hasShareAction = onShare ? hasResults : showImplicitShare && hasResults;',
+    );
     expect(content).toContain('const headerAction =');
     expect(content).toContain("t('comparison.share_scenario')");
   });

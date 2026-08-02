@@ -12,6 +12,7 @@ interface RecalculateButtonProps {
   hasResults?: boolean;
   disabled?: boolean;
   onClick: () => void;
+  className?: string;
 }
 export const RecalculateButton = ({
   formId,
@@ -20,6 +21,7 @@ export const RecalculateButton = ({
   hasResults = true,
   disabled = false,
   onClick,
+  className,
 }: RecalculateButtonProps) => {
   const { t } = useAppI18n();
   const showButton = loading || isDirty || !hasResults;
@@ -35,20 +37,23 @@ export const RecalculateButton = ({
       : t('common.recalculation_hint');
   return (
     <div
-      className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[min(22rem,calc(100vw-1.5rem))]"
+      className={cn(
+        'fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[min(23rem,calc(100vw-2.5rem))]',
+        className,
+      )}
       role="status"
       aria-live="polite"
     >
-      <div className="border border-border bg-background/95 px-4 py-4 text-foreground shadow-sm backdrop-blur-sm">
+      <div className="ui-action-dock px-4 py-4 text-foreground">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-muted-foreground">
+            <p className="ui-kicker">
               {isInitialRun ? t('common.calculate') : t('common.recalculate')}
             </p>
             <p className="text-sm leading-6 text-muted-foreground">{helperText}</p>
           </div>
           {(isDirty || isInitialRun) && !loading ? (
-            <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-success animate-pulse" />
+            <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-success" />
           ) : null}
         </div>
 

@@ -32,7 +32,8 @@ describe('responsive accessibility contract', () => {
 
     expect(chartContainer).toContain('ariaLabel?: string');
     expect(chartContainer).toContain('summary?: React.ReactNode');
-    expect(chartContainer).toContain("role={ariaLabel ? 'img' : undefined}");
+    expect(chartContainer).toContain("role={ariaLabel ? 'region' : undefined}");
+    expect(chartContainer).toContain('aria-describedby={summary ? summaryId : undefined}');
     expect(chartContainer).toContain('tabIndex={ariaLabel ? 0 : undefined}');
     expect(chartContainer).toContain('className="sr-only"');
   });
@@ -44,7 +45,7 @@ describe('responsive accessibility contract', () => {
       'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
     );
 
-    expect(singleChart).toContain('ariaLabel={t("bonds.value_chart_label")}');
+    expect(singleChart).toContain("ariaLabel={t('bonds.value_chart_label')}");
     expect(singleChart).toContain('chart_accessible_summary');
     expect(regularChart).toContain("ariaLabel={t('regular_investment_page.value_chart_label')}");
     expect(regularChart).toContain('regular_investment_page.chart_accessible_summary');

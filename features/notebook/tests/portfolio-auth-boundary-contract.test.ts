@@ -57,11 +57,13 @@ describe('portfolio auth boundary contracts', () => {
     const en = read(files.en);
     const pl = read(files.pl);
 
-    expectContains(source, "await signIn(provider.id, { redirectTo: '/notebook' });");
-    expectContains(source, "id: 'google'");
-    expectContains(source, "id: 'facebook'");
+    expectContains(source, "await signIn(provider, { redirectTo: '/notebook' });");
+    expectContains(source, 'getConfiguredOAuthProviders');
+    expectContains(source, "google: 'login.providers.google'");
+    expectContains(source, "facebook: 'login.providers.facebook'");
     expectContains(source, "t('login.description')");
     expectContains(source, "t('login.oauth_only_note')");
+    expectContains(source, "t('login.unavailable_title')");
     expectContains(source, "getLocalizedPageMetadata('login')");
     expectContains(en, '"providers": {');
     expectContains(en, '"facebook": "Continue with Facebook"');

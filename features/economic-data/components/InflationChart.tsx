@@ -82,8 +82,12 @@ export const InflationChart = ({
       fallbackStatusLabel={t('economic.reference_state.fallback')}
       syncedStatusLabel={t('economic.reference_state.synced')}
     >
-      <ChartContainer height={420}>
-        <ResponsiveContainer width="100%" height="100%">
+      <ChartContainer
+        height={420}
+        ariaLabel={t('bonds.inflation.rate')}
+        summary={t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })}
+      >
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={1}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
             <XAxis dataKey="date" fontSize={12} tickLine={false} axisLine={false} minTickGap={24} />
@@ -103,7 +107,7 @@ export const InflationChart = ({
                 />
               }
             />
-            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
             <ReferenceLine
               y={2.5}
               label={{
@@ -118,11 +122,11 @@ export const InflationChart = ({
             <Line
               type="monotone"
               dataKey="rate"
-              stroke="#111111"
+              stroke="var(--chart-series-primary)"
               strokeWidth={2}
               dot={
                 chartData.length <= 24
-                  ? { r: 4, fill: '#111111', strokeWidth: 2, stroke: '#fff' }
+                  ? { r: 4, fill: 'var(--chart-series-primary)', strokeWidth: 2, stroke: '#fff' }
                   : false
               }
               activeDot={{ r: 6, strokeWidth: 0 }}

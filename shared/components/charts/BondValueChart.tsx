@@ -4,10 +4,7 @@ import React from 'react';
 
 import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import {
-  loadChartDisplayPreferences,
-  saveChartDisplayPreferences,
-} from '@/shared/lib/chart-display-preferences';
+import { useChartDisplayPreferences } from '@/shared/hooks/useChartDisplayPreferences';
 
 import { BondValueChartToolbar } from './BondValueChartParts';
 import { BondValueChartPlot } from './BondValueChartPlot';
@@ -69,6 +66,7 @@ interface BondValueChartProps {
   ariaLabel: string;
   heightClassName?: string;
   preferenceScope?: string;
+  leadingControls?: React.ReactNode;
 }
 
 export function BondValueChart({
@@ -87,37 +85,22 @@ export function BondValueChart({
   ariaLabel,
   heightClassName = 'h-[360px] md:h-[460px] xl:h-[520px]',
   preferenceScope,
+  leadingControls,
 }: BondValueChartProps) {
   const { t } = useAppI18n();
-  const [preferences, setPreferences] = React.useState(() =>
-    loadChartDisplayPreferences(defaultGranularity, preferenceScope),
-  );
-  const showInflationOverlay = preferences.showInflationOverlay;
-  const showNbpOverlay = preferences.showNbpOverlay;
-  const granularity = preferences.granularity;
+  const {
+    granularity,
+    showInflationOverlay,
+    showNbpOverlay,
+    setGranularity: handleGranularityChange,
+    setOverlay: updateOverlayPreference,
+  } = useChartDisplayPreferences({
+    defaultGranularity,
+    availableGranularities,
+    preferenceScope,
+    onGranularityChange,
+  });
   const showContextAxis = showInflationOverlay || showNbpOverlay;
-  const hasSyncedInitialPreference = React.useRef(false);
-
-  React.useEffect(() => {
-    if (!hasSyncedInitialPreference.current) {
-      hasSyncedInitialPreference.current = true;
-      onGranularityChange?.(granularity);
-      return;
-    }
-
-    setPreferences((current) => {
-      if (current.granularity === defaultGranularity) {
-        return current;
-      }
-
-      const next = {
-        ...current,
-        granularity: defaultGranularity,
-      };
-      saveChartDisplayPreferences(next, preferenceScope);
-      return next;
-    });
-  }, [defaultGranularity, granularity, onGranularityChange, preferenceScope]);
 
   const legendItems = React.useMemo(
     () => [
@@ -136,32 +119,6 @@ export function BondValueChart({
     [series, showContextControls, showInflationOverlay, showNbpOverlay, t],
   );
 
-  const handleGranularityChange = (nextStep: ChartStep) => {
-    setPreferences((current) => {
-      const next = {
-        ...current,
-        granularity: nextStep,
-      };
-      saveChartDisplayPreferences(next, preferenceScope);
-      return next;
-    });
-    onGranularityChange?.(nextStep);
-  };
-
-  const updateOverlayPreference = (
-    key: 'showInflationOverlay' | 'showNbpOverlay',
-    value: boolean,
-  ) => {
-    setPreferences((current) => {
-      const next = {
-        ...current,
-        [key]: value,
-      };
-      saveChartDisplayPreferences(next, preferenceScope);
-      return next;
-    });
-  };
-
   return (
     <div className="space-y-4">
       <BondValueChartToolbar
@@ -175,6 +132,7 @@ export function BondValueChart({
         showNbpControl={showNbpControl}
         onGranularityChange={handleGranularityChange}
         onOverlayChange={updateOverlayPreference}
+        leadingControls={leadingControls}
         t={t}
       />
 

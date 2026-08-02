@@ -54,6 +54,7 @@ export function RetirementInputsPanel({
           </Label>
           <Input
             type="number"
+            aria-label={labels.initialCapital}
             value={inputs.initialCapital}
             onChange={(event) => onUpdateInput('initialCapital', Number(event.target.value))}
             className="rounded-md font-semibold"
@@ -70,6 +71,7 @@ export function RetirementInputsPanel({
             </span>
           </div>
           <CommittedSliderInput
+            label={labels.monthlyWithdrawal}
             value={inputs.monthlyWithdrawal}
             min={500}
             max={20000}
@@ -89,6 +91,7 @@ export function RetirementInputsPanel({
             </span>
           </div>
           <CommittedSliderInput
+            label={labels.scenarioHorizon}
             value={inputs.horizonYears}
             min={1}
             max={50}
@@ -103,6 +106,7 @@ export function RetirementInputsPanel({
             {labels.bondFamily}
           </Label>
           <FormSelect
+            ariaLabel={labels.bondFamily}
             value={inputs.bondType}
             onValueChange={(value) => onUpdateInput('bondType', value as BondType)}
             triggerClassName="font-semibold"
@@ -135,6 +139,7 @@ export function RetirementInputsPanel({
               </span>
             </div>
             <CommittedSliderInput
+              label={labels.expectedInflation}
               value={inputs.expectedInflation}
               min={-2}
               max={15}
@@ -154,6 +159,7 @@ export function RetirementInputsPanel({
               </span>
             </div>
             <CommittedSliderInput
+              label={labels.expectedNbpRate}
               value={inputs.expectedNbpRate}
               min={0}
               max={15}
@@ -168,6 +174,7 @@ export function RetirementInputsPanel({
               {labels.taxWrapper}
             </Label>
             <FormSelect
+              ariaLabel={labels.taxWrapper}
               value={inputs.taxStrategy}
               onValueChange={(value) => onUpdateInput('taxStrategy', value as TaxStrategy)}
               triggerClassName="font-semibold"

@@ -35,8 +35,15 @@ export async function syncMacroData() {
   const gusCpiClient = new GusCpiApiClient();
 
   try {
-    const cpiIndicators = await retry(() => gusCpiClient.fetchHistoricalData());
-    const nbpIndicators = await retry(() => nbpClient.fetchReferenceRateHistory());
+    // These providers have independent freshness contracts. Do not let a
+    // temporary GUS outage prevent a usable NBP reference-rate refresh (and
+    // vice versa).
+    const [cpiFetch, nbpFetch] = await Promise.allSettled([
+      retry(() => gusCpiClient.fetchHistoricalData()),
+      retry(() => nbpClient.fetchReferenceRateHistory()),
+    ]);
+    const cpiIndicators = cpiFetch.status === 'fulfilled' ? cpiFetch.value : [];
+    const nbpIndicators = nbpFetch.status === 'fulfilled' ? nbpFetch.value : [];
     const latestCpiRate = cpiIndicators.at(-1);
     const latestNbpRate = nbpIndicators.at(-1);
     const nbpUsesFallback = nbpIndicators.some(
@@ -135,6 +142,26 @@ export async function syncMacroData() {
         startedAt,
         finishedAt: new Date(),
       });
+    } else if (nbpSeries && nbpFetch.status === 'rejected') {
+      await db
+        .update(dataSeries)
+        .set({
+          lastSyncStatus: 'failed',
+          lastSyncError: String(nbpFetch.reason),
+          updatedAt: new Date(),
+        })
+        .where(eq(dataSeries.id, nbpSeries.id));
+
+      await recordSyncRun({
+        scope: 'macro-sync',
+        provider: 'NBP official API',
+        seriesSlug: 'nbp-ref-rate',
+        mode: 'macro-sync',
+        status: 'failed',
+        error: String(nbpFetch.reason),
+        startedAt,
+        finishedAt: new Date(),
+      });
     }
 
     if (cpiIndicators.length > 0 && cpiSeries) {
@@ -179,6 +206,26 @@ export async function syncMacroData() {
         updated: cpiIndicators.length,
         latestDataPointDate: latestCpiRate?.date,
         message: 'GUS CPI monthly archive synchronized.',
+        startedAt,
+        finishedAt: new Date(),
+      });
+    } else if (cpiSeries && cpiFetch.status === 'rejected') {
+      await db
+        .update(dataSeries)
+        .set({
+          lastSyncStatus: 'failed',
+          lastSyncError: String(cpiFetch.reason),
+          updatedAt: new Date(),
+        })
+        .where(eq(dataSeries.id, cpiSeries.id));
+
+      await recordSyncRun({
+        scope: 'macro-sync',
+        provider: 'GUS CPI archive',
+        seriesSlug: 'pl-cpi',
+        mode: 'macro-sync',
+        status: 'failed',
+        error: String(cpiFetch.reason),
         startedAt,
         finishedAt: new Date(),
       });

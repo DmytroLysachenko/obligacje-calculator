@@ -1,5 +1,7 @@
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   date,
   index,
   integer,
@@ -197,6 +199,7 @@ export const userInvestmentLots = pgTable(
       table.portfolioId,
       table.purchaseDate,
     ),
+    positiveAmount: check('user_investment_lots_positive_amount', sql`${table.amount} > 0`),
   }),
 );
 
@@ -226,17 +229,74 @@ export const userTransactions = pgTable('user_transactions', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const sharedSingleScenarios = pgTable('shared_single_scenarios', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  shareId: uuid('share_id').defaultRandom().notNull().unique(),
-  title: text('title').notNull(),
-  description: text('description'),
-  scenarioKind: text('scenario_kind').notNull().default('single-bond'),
-  payloadJson: text('payload_json').notNull(),
-  calculationVersion: text('calculation_version'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+export const sharedSingleScenarios = pgTable(
+  'shared_single_scenarios',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    shareId: uuid('share_id').defaultRandom().notNull().unique(),
+    title: text('title').notNull(),
+    description: text('description'),
+    scenarioKind: text('scenario_kind').notNull().default('single-bond'),
+    payloadJson: text('payload_json').notNull(),
+    calculationVersion: text('calculation_version'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+  },
+  (table) => ({
+    expiresAtIdx: index('shared_single_scenarios_expires_at_idx').on(table.expiresAt),
+    nonemptyTitle: check(
+      'shared_single_scenarios_nonempty_title',
+      sql`length(trim(${table.title})) > 0`,
+    ),
+  }),
+);
+
+export const adminAuditEvents = pgTable(
+  'admin_audit_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    action: text('action').notNull(),
+    actorEmail: text('actor_email'),
+    requestId: text('request_id'),
+    detail: text('detail'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    createdAtIdx: index('admin_audit_events_created_at_idx').on(table.createdAt),
+    requestIdIdx: index('admin_audit_events_request_id_idx').on(table.requestId),
+  }),
+);
+
+export const rateLimitWindows = pgTable('rate_limit_windows', {
+  bucketKey: text('bucket_key').primaryKey(),
+  count: integer('count').notNull(),
+  resetAt: timestamp('reset_at').notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+/**
+ * Privacy-preserving field-vital aggregates. This schema intentionally has no
+ * primary identifier, account, URL query, payload, or user-agent column.
+ */
+export const webVitalAggregates = pgTable(
+  'web_vital_aggregates',
+  {
+    metric: text('metric').notNull(),
+    path: text('path').notNull(),
+    rating: text('rating').notNull(),
+    timeBucket: timestamp('time_bucket').notNull(),
+    sampleCount: integer('sample_count').notNull().default(0),
+    valueSum: numeric('value_sum', { precision: 20, scale: 4 }).notNull().default('0'),
+    valueMin: numeric('value_min', { precision: 20, scale: 4 }).notNull(),
+    valueMax: numeric('value_max', { precision: 20, scale: 4 }).notNull(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    primary: primaryKey({ columns: [table.metric, table.path, table.rating, table.timeBucket] }),
+    timeBucketIdx: index('web_vital_aggregates_time_bucket_idx').on(table.timeBucket),
+  }),
+);
 
 export const communityInsights = pgTable(
   'community_insights',

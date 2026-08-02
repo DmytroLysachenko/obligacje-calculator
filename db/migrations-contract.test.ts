@@ -16,6 +16,13 @@ function migrationNames() {
     .sort();
 }
 
+function journalTags() {
+  const journal = JSON.parse(readFileSync(join(drizzleDir, 'meta/_journal.json'), 'utf8')) as {
+    entries: Array<{ tag: string }>;
+  };
+  return journal.entries.map((entry) => entry.tag);
+}
+
 describe('database migration contracts', () => {
   it('keeps additive production migrations for sync history and Auth.js tables', () => {
     expect(migrationNames()).toEqual(
@@ -23,6 +30,27 @@ describe('database migration contracts', () => {
         '0001_sync_runs.sql',
         '0002_auth_tables.sql',
         '0003_portfolio_lot_indexes.sql',
+        '0004_portfolio_share_schema.sql',
+        '0005_share_retention_and_constraints.sql',
+        '0006_admin_audit_events.sql',
+        '0007_shared_rate_limit_windows.sql',
+        '0008_web_vital_aggregates.sql',
+      ]),
+    );
+  });
+
+  it('registers every reviewed migration in the Drizzle execution journal', () => {
+    expect(journalTags()).toEqual(
+      expect.arrayContaining([
+        '0000_unified_schema',
+        '0001_sync_runs',
+        '0002_auth_tables',
+        '0003_portfolio_lot_indexes',
+        '0004_portfolio_share_schema',
+        '0005_share_retention_and_constraints',
+        '0006_admin_audit_events',
+        '0007_shared_rate_limit_windows',
+        '0008_web_vital_aggregates',
       ]),
     );
   });
@@ -63,6 +91,15 @@ describe('database migration contracts', () => {
     expect(source).not.toContain('CREATE UNIQUE INDEX');
   });
 
+  it('moves portfolio sharing schema changes into an ordered migration', () => {
+    const source = readMigration('0004_portfolio_share_schema.sql');
+
+    expect(source).toContain('ADD COLUMN IF NOT EXISTS "share_id"');
+    expect(source).toContain('ADD COLUMN IF NOT EXISTS "is_public"');
+    expect(source).toContain('CREATE TABLE IF NOT EXISTS "shared_single_scenarios"');
+    expect(source).toContain('CREATE UNIQUE INDEX IF NOT EXISTS "user_portfolios_share_id_idx"');
+  });
+
   it('keeps portfolio lot schema aligned with non-unique purchase date indexes', () => {
     const source = readFileSync(join(root, 'db/schema.ts'), 'utf8');
 
@@ -82,5 +119,29 @@ describe('database migration contracts', () => {
       expect(source).not.toContain('TRUNCATE');
       expect(source).not.toContain('DELETE FROM');
     }
+  });
+
+  it('bounds public share retention and enforces persisted financial invariants', () => {
+    const source = readMigration('0005_share_retention_and_constraints.sql');
+
+    expect(source).toContain('ADD COLUMN IF NOT EXISTS "expires_at"');
+    expect(source).toContain('ALTER COLUMN "expires_at" SET NOT NULL');
+    expect(source).toContain('shared_single_scenarios_expires_at_idx');
+    expect(source).toContain('user_investment_lots_positive_amount');
+    expect(source).toContain('shared_single_scenarios_nonempty_title');
+  });
+
+  it('stores web vitals only as bounded, aggregate-only retention records', () => {
+    const source = readMigration('0008_web_vital_aggregates.sql');
+
+    expect(source).toContain('CREATE TABLE IF NOT EXISTS "web_vital_aggregates"');
+    expect(source).toContain('PRIMARY KEY ("metric", "path", "rating", "time_bucket")');
+    expect(source).toContain('"sample_count" integer NOT NULL');
+    expect(source).toContain('"value_sum" numeric(20, 4)');
+    expect(source).toContain('web_vital_aggregates_time_bucket_idx');
+    expect(source).not.toContain('user_agent');
+    expect(source).not.toContain('account_id');
+    expect(source).not.toContain('raw_url');
+    expect(source).not.toContain('payload');
   });
 });

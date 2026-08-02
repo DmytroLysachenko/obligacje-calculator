@@ -9,7 +9,7 @@ import {
 import { exportOwnerPortfolio } from '@/lib/server/portfolio/queries';
 
 export const GET = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(async (owner) => {
+  return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const { searchParams } = new URL(req.url);
     const portfolioId = searchParams.get('portfolioId');
     const formatMode = searchParams.get('format') ?? 'portfolio';

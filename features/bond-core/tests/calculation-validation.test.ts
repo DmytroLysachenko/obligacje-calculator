@@ -34,6 +34,7 @@ vi.mock('@/lib/data/market-data', async () => {
       lastCheck: '2026-05-30T00:00:00.000Z',
       usedFallback: false,
     }),
+    getTaxRulesRevision: vi.fn().mockResolvedValue('tax-rules-2026'),
     getHistoricalAverages: vi.fn().mockResolvedValue({
       inflation: { '1y': 3, '5y': 3, '10y': 3 },
       nbpRate: { '1y': 5, '5y': 5, '10y': 5 },
@@ -139,6 +140,15 @@ describe('calculation request validation hardening', () => {
       RegularInvestmentInputsSchema.parse(regularPayload({ investmentHorizonMonths: 601 })),
     );
   });
+
+  it.each(['2026-02-30', '2025-02-29', '2026-13-01', '2026-01-01T00:00:00Z'])(
+    'rejects non-calendar calculation date %s',
+    (purchaseDate) => {
+      expectInvalid(`invalid calculation date ${purchaseDate}`, () =>
+        BondInputsSchema.parse(singlePayload({ purchaseDate })),
+      );
+    },
+  );
 
   it('rejects custom CPI and NBP paths that do not match the scenario horizon', () => {
     expectInvalid('single CPI path too short', () =>

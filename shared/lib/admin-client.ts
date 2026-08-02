@@ -28,25 +28,11 @@ export interface AdminStatusData {
 
 export type AdminSyncMode = 'full-sync';
 
-function buildAdminHeaders(secret: string): HeadersInit {
-  return {
-    Authorization: `Bearer ${secret}`,
-  };
-}
-
 export const adminClient = {
-  getStatus(secret: string) {
-    return apiGet<AdminStatusData>('/api/admin/status', {
-      headers: buildAdminHeaders(secret),
-    });
+  getStatus() {
+    return apiGet<AdminStatusData>('/api/admin/status');
   },
-  runSync(secret: string, mode: AdminSyncMode) {
-    return apiPost<unknown>(
-      '/api/admin/sync',
-      { mode },
-      {
-        headers: buildAdminHeaders(secret),
-      },
-    );
+  runSync(mode: AdminSyncMode) {
+    return apiPost<unknown>('/api/admin/sync', { mode });
   },
 };

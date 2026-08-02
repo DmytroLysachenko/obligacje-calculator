@@ -1,11 +1,13 @@
 import { MetadataRoute } from 'next';
 
-import { getCanonicalBaseUrl } from '@/lib/site-url';
+import { getCanonicalBaseUrl, isIndexableDeployment } from '@/lib/site-url';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = getCanonicalBaseUrl();
-  const lastModified = new Date();
+  if (!isIndexableDeployment()) {
+    return [];
+  }
 
+  const baseUrl = getCanonicalBaseUrl();
   const routes = [
     '',
     '/single-calculator',
@@ -16,9 +18,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/education',
     '/multi-asset',
     '/notebook',
+    '/optimize',
+    '/retirement',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified,
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1 : 0.8,
   }));

@@ -8,6 +8,7 @@ export interface RuntimeEnv {
   AUTH_FACEBOOK_ID?: string;
   AUTH_FACEBOOK_SECRET?: string;
   SYNC_SECRET?: string;
+  ADMIN_EMAIL_ALLOWLIST?: string;
   NEXT_PUBLIC_APP_URL?: string;
 }
 
@@ -35,6 +36,15 @@ export function hasAuthSecret(env: RuntimeEnv = readRuntimeEnv()) {
 
 export function getSyncSecret(env: RuntimeEnv = readRuntimeEnv()) {
   return env.SYNC_SECRET;
+}
+
+export function getAdminEmailAllowlist(env: RuntimeEnv = readRuntimeEnv()) {
+  return new Set(
+    (env.ADMIN_EMAIL_ALLOWLIST ?? '')
+      .split(',')
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean),
+  );
 }
 
 export function getPublicAppUrl(env: RuntimeEnv = readRuntimeEnv()) {

@@ -20,6 +20,7 @@ type BondOfferFallback = Omit<ScrapedBondRate, 'source'>;
 
 const CURRENT_GOV_OFFER_URL = 'https://www.gov.pl/web/finanse/biezaca-oferta2';
 const OBLIGACJE_OFFER_URL = 'https://www.obligacjeskarbowe.pl/oferta-obligacji/';
+const FIXED_RATE_BOND_SYMBOLS = new Set(['OTS', 'TOS']);
 
 const OFFICIAL_FALLBACK_RATES: ScrapedBondRate[] = [
   { symbol: 'OTS', firstYearRate: 2.0, margin: 0, source: 'curated-fallback' },
@@ -65,30 +66,23 @@ function normalizeMarkup(section: string) {
 }
 
 function extractSection(html: string, symbol: string) {
-  const match = new RegExp(`(${symbol}\\d{4})`, 'i').exec(html);
-  if (!match || match.index < 0) {
-    return null;
+  const matches = html.matchAll(new RegExp(`${symbol}\\d{4}`, 'gi'));
+
+  for (const match of matches) {
+    const index = match.index;
+    if (index === undefined) continue;
+
+    // The page also lists expiring series in explanatory prose. Only a series
+    // inside its own offer heading is a current offer we can safely ingest.
+    const headingStart = html.lastIndexOf('<h4', index);
+    const headingEnd = headingStart >= 0 ? html.indexOf('</h4>', headingStart) : -1;
+    if (headingStart < 0 || headingEnd < index) continue;
+
+    const nextHeading = html.indexOf('<h4', headingEnd + 5);
+    return html.slice(headingStart, nextHeading >= 0 ? nextHeading : html.length);
   }
 
-  const index = match.index;
-  const blockStartCandidates = [
-    html.lastIndexOf('<h4', index),
-    html.lastIndexOf('<tr', index),
-    html.lastIndexOf('<li', index),
-  ].filter((value) => value >= 0);
-
-  const start = blockStartCandidates.length > 0 ? Math.max(...blockStartCandidates) : index;
-  const nextSectionStarts = [
-    html.indexOf('<h4', index + match[0].length),
-    html.indexOf('</tr>', index + match[0].length),
-    html.indexOf('</li>', index + match[0].length),
-  ].filter((value) => value >= 0);
-  const end =
-    nextSectionStarts.length > 0
-      ? Math.min(...nextSectionStarts)
-      : Math.min(html.length, index + 2200);
-
-  return html.slice(start, end);
+  return null;
 }
 
 function parseFirstYearRate(section: string) {
@@ -97,7 +91,9 @@ function parseFirstYearRate(section: string) {
     /pierwszym miesiecznym[\s\S]{0,120}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
     /pierwszym miesiacu oprocentowanie wynosi[\s\S]{0,120}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
     /pierwszym roku[\s\S]{0,120}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
+    /pierwszym,?\s*(?:miesiecznym|rocznym)[\s\S]{0,160}?(?:wynosi|jest rowne)[\s\S]{0,80}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
     /oprocentowaniu stalym wynoszacym[\s\S]{0,80}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
+    /wynosi[\s\S]{0,80}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
   ];
 
   for (const pattern of patterns) {
@@ -141,14 +137,19 @@ export function parseOfferFromGovPage(
   const firstYearRate = parseFirstYearRate(section);
   const margin = parseMargin(section);
 
-  if (firstYearRate === null || margin === null || !seriesMatch) {
+  if (
+    firstYearRate === null ||
+    !seriesMatch ||
+    (margin === null && !FIXED_RATE_BOND_SYMBOLS.has(fallback.symbol))
+  ) {
     return null;
   }
 
   return {
     symbol: fallback.symbol,
     firstYearRate,
-    margin,
+    // Fixed-rate series have no margin in the official copy.
+    margin: margin ?? 0,
     seriesCode: seriesMatch?.[1],
     source: 'gov.pl',
   };
@@ -168,14 +169,18 @@ function parseOfferFromObligacjePage(
   const firstYearRate = parseFirstYearRate(section);
   const margin = parseMargin(section);
 
-  if (firstYearRate === null || margin === null || !seriesMatch) {
+  if (
+    firstYearRate === null ||
+    !seriesMatch ||
+    (margin === null && !FIXED_RATE_BOND_SYMBOLS.has(fallback.symbol))
+  ) {
     return null;
   }
 
   return {
     symbol: fallback.symbol,
     firstYearRate,
-    margin,
+    margin: margin ?? 0,
     seriesCode: seriesMatch?.[1],
     source: 'obligacjeskarbowe.pl',
   };

@@ -11,6 +11,8 @@ import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPa
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 
+import type { ComparisonOfferStatus } from '../lib/comparison-offer-status';
+
 interface ComparisonFairnessPanelProps {
   durationMismatchTitle: string;
   durationMismatchText: string | null;
@@ -31,6 +33,8 @@ interface ComparisonAssumptionsMetaPanelProps {
   warningsB: string[];
   inputsA: BondInputs;
   inputsB: BondInputs;
+  offerStatusA?: ComparisonOfferStatus;
+  offerStatusB?: ComparisonOfferStatus;
 }
 
 export function ComparisonFairnessPanel({
@@ -138,6 +142,8 @@ export function ComparisonAssumptionsMetaPanel({
   warningsB,
   inputsA,
   inputsB,
+  offerStatusA,
+  offerStatusB,
 }: ComparisonAssumptionsMetaPanelProps) {
   const { t } = useAppI18n();
   const entries = [
@@ -145,11 +151,13 @@ export function ComparisonAssumptionsMetaPanel({
       label: `${t('comparison.scenario_a')} (${inputsA.bondType})`,
       envelope: envelopeA,
       warnings: warningsA,
+      offerStatus: offerStatusA,
     },
     {
       label: `${t('comparison.scenario_b')} (${inputsB.bondType})`,
       envelope: envelopeB,
       warnings: warningsB,
+      offerStatus: offerStatusB,
     },
   ];
 
@@ -165,6 +173,11 @@ export function ComparisonAssumptionsMetaPanel({
             <h3 className="ui-card-title">
               {entry.label} {t('comparison.notes_suffix')}
             </h3>
+            {entry.offerStatus?.message ? (
+              <p className="ui-meta text-muted-foreground" role="status">
+                {entry.offerStatus.message}
+              </p>
+            ) : null}
             <CalculationMetaPanel
               warnings={entry.warnings}
               assumptions={entry.envelope?.assumptions}

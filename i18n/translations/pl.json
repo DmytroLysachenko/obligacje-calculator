@@ -6,6 +6,10 @@
     "settings": "Ustawienia",
     "theme": "Motyw",
     "calculate": "Oblicz",
+    "plan": "Plan",
+    "summary": "Podsumowanie",
+    "details": "Szczegóły",
+    "section_navigation": "Sekcje kalkulatora",
     "save": "Zapisz",
     "cancel": "Anuluj",
     "delete": "Usun",
@@ -20,10 +24,12 @@
     "inflation": "Inflacja",
     "interest_rate": "Oprocentowanie",
     "loading": "Ładowanie...",
+    "not_available": "Niedostępne",
     "language": "Język",
     "period": "Okres",
     "recalculate": "Przelicz",
     "calculating": "Obliczanie...",
+    "error": "Obliczenie wymaga uwagi",
     "status_idle": "Aktualizacja statusu",
     "status_loading": "Trwa obliczanie",
     "status_complete": "Obliczenia zakończone",
@@ -100,6 +106,19 @@
     "description": "Kalkulatory pozostaja dostepne bez konta. Zapisywanie partii, import portfeli, udostepnianie linkow i eksport danych notatnika wymagaja zalogowanej przestrzeni.",
     "provider_title": "Wybierz zewnetrznego dostawce OAuth",
     "oauth_only_note": "Tylko logowanie OAuth. Konta z haslem nie sa obslugiwane.",
+    "use_calculator": "Korzystaj z kalkulatora bez logowania",
+    "unavailable_title": "Logowanie nie jest skonfigurowane",
+    "unavailable_description": "Dostawca OAuth musi zostac wlaczony, aby udostepnic przestrzen portfela.",
+    "benefits": {
+      "organize": {
+        "title": "Trzymaj partie obligacji razem",
+        "description": "Zapisuj zakupy, ilosci i daty wykupu w jednej prywatnej przestrzeni."
+      },
+      "control": {
+        "title": "Udostepniaj i eksportuj na swoich zasadach",
+        "description": "Tworz linki do portfela i eksporty dopiero po zalogowaniu."
+      }
+    },
     "providers": {
       "google": "Kontynuuj z Google",
       "facebook": "Kontynuuj z Facebook"
@@ -139,6 +158,7 @@
     "retirement": "Planer emerytalny"
   },
   "sidebar": {
+    "continue_label": "Kontynuuj od ostatniego miejsca",
     "workspace_title": "Przestrzen robocza",
     "workspace_desc": "Wybierz aktywny portfel przed zapisaniem nowych partii obligacji.",
     "portfolio_selector_label": "Biezacy portfel",
@@ -371,6 +391,8 @@
   },
   "bonds": {
     "single_calculator": "Symulacja Inwestycji",
+    "previous_offer_reference": "Ta zatwierdzona kalkulacja korzysta z poprzedniej oferty obligacji. Przelicz ją ponownie, aby użyć aktualnej oferty.",
+    "recalculate_current_offer": "Użyj aktualnej oferty",
     "glossary": {
       "savings_goal": "Kwota, ktora chcesz zgromadzic na koniec inwestycji. Kalkulator pomoze wyliczyc, ile musisz wplacic dzisiaj, aby osiagnac ten cel.",
       "capitalization": "Proces dopisywania wypracowanych odsetek do kapitalu, dzieki czemu w kolejnym okresie odsetki naliczane sa od wiekszej kwoty (procent skladany).",
@@ -570,6 +592,19 @@
       "action": "Dzialanie",
       "results_stable": "Wyniki pozostaja stabilne, dopoki swiadomie nie uruchomisz nowego przeliczenia.",
       "stale_results": "Dane zostaly zmienione. Wyniki ponizej nadal pokazuja poprzedni przebieg, dopoki nie uruchomisz obliczenia ponownie.",
+      "draft_saved": "Szkic zapisany na tym urzadzeniu",
+      "chart_key_insight": "Najwazniejszy wniosek z wykresu",
+      "chart_key_insight_copy": "Najpierw przeczytaj wartosci koncowe; ksztalt linii pokazuje przebieg, ale nie zastepuje dokladnych liczb.",
+      "decision_summary": "Podsumowanie decyzji",
+      "decision_bond": "Obligacja",
+      "decision_horizon": "Horyzont",
+      "decision_invested": "Wplata",
+      "decision_result_link": "Podsumowanie",
+      "decision_details_link": "Wykres i harmonogram",
+      "draft_ready": "Biezacy scenariusz jest gotowy",
+      "draft_description": "Zmienione dane sa zapisywane lokalnie, dopoki ich nie wyczyscisz.",
+      "restore_draft": "Przywroc szkic",
+      "clear_draft": "Wyczysc szkic",
       "fix_blocking": "Najpierw popraw blokujace dane, potem licz dalej.",
       "calculation_context": "Kontekst obliczenia",
       "how_to_read_title": "Jak czytac ten wynik",
@@ -1273,10 +1308,13 @@
       "mobile_amount": "Kwota",
       "table_summary": "Kazdy wiersz pokazuje jeden miesiac zapadalnosci, liczbe konczacych sie tam partii i zwracana wartosc netto.",
       "table_filters": {
-        "all": "Wszystkie miesiace",
-        "peak": "Tylko szczyt",
-        "clustered": "Skupione"
+        "all": "Wszystkie miesiace zapadalnosci",
+        "peak": "Szczytowy miesiac zapadalnosci",
+        "clustered": "Skupione zapadalnosci"
       },
+      "empty_filter": "Zaden miesiac zapadalnosci nie pasuje do tego widoku.",
+      "show_all_months": "Pokaz wszystkie miesiace zapadalnosci",
+      "cluster_threshold": "Co najmniej {count} partie zapadaja w tym samym miesiacu.",
       "table_count_suffix": "miesiecy",
       "table_month": "Miesiac",
       "table_lots": "Partie",
@@ -1478,6 +1516,8 @@
     "public_share_desc": "Portfel ma aktywny publiczny link.",
     "private_share_desc": "Portfel pozostaje prywatnym szkicem.",
     "delete_portfolio": "Usun portfel",
+    "back_to_portfolios": "Wroc do portfeli",
+    "open_lot_calculator": "Otworz partie {bondType} w kalkulatorze",
     "column_type": "Typ",
     "column_duration": "Okres",
     "column_amount": "Sztuki",

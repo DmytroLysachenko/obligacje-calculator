@@ -8,6 +8,7 @@ import { MathDeepDive } from '@/shared/components/insights/MathDeepDive';
 import { FinancialInsightStrip } from '@/shared/components/results/FinancialInsightStrip';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
+import { ScenarioDecisionRail } from '@/shared/components/results/ScenarioDecisionRail';
 import { ScenarioFactsBlock } from '@/shared/components/results/ScenarioFactsBlock';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
@@ -129,6 +130,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         actions={summaryActions}
       />
 
+      <ScenarioDecisionRail
+        bondType={inputs.bondType}
+        horizonLabel={`${horizonLabel} ${t('common.duration_months')}`}
+        investedLabel={formatCurrency(results.initialInvestment)}
+        outcomeLabel={formatCurrency(headlineValue)}
+      />
+
       {!canManageWorkspace ? (
         <Notice tone="locked" compact>
           {t('workspace.sign_in_needed_for_portfolio')}
@@ -185,18 +193,22 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     </div>
   );
 };
-const HelpButton = () => {
-  const { t } = useAppI18n();
-  return (
-    <button
-      className="ui-focus-ring group rounded-sm"
-      type="button"
-      aria-label={t('bonds.results.show_calculation_details')}
-    >
-      <Info
-        className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
-        aria-hidden="true"
-      />
-    </button>
-  );
-};
+const HelpButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<'button'>>(
+  function HelpButton(props, ref) {
+    const { t } = useAppI18n();
+    return (
+      <button
+        ref={ref}
+        className="ui-focus-ring group rounded-sm"
+        type="button"
+        aria-label={t('bonds.results.show_calculation_details')}
+        {...props}
+      >
+        <Info
+          className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
+          aria-hidden="true"
+        />
+      </button>
+    );
+  },
+);

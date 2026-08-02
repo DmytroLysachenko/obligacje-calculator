@@ -49,7 +49,7 @@ describe('ui primitive visual contracts', () => {
       'border-border',
       'hover:bg-muted/35',
       'text-xs font-semibold uppercase',
-      'px-3 py-2.5',
+      'px-3 py-3',
     ]);
 
     expect(content).not.toContain('shadow');
@@ -139,5 +139,20 @@ describe('ui primitive visual contracts', () => {
     expectNoSource('components/ui/select.tsx', ['rounded-2xl', 'shadow-[0_10px_24px']);
     expectNoSource('components/ui/switch.tsx', ['h-[24px]', 'w-[44px]', 'shadow-lg']);
     expectNoSource('components/ui/tooltip.tsx', ['rounded-none', 'shadow-md']);
+  });
+
+  it('keeps global readability, motion, and shell surfaces deliberate', () => {
+    const globals = source('app/globals.css');
+    const layout = source('app/layout.tsx');
+    const accordion = source('components/ui/accordion.tsx');
+
+    expect(globals).toContain('font-size: 16px');
+    expect(globals).toContain('touch-action: manipulation');
+    expect(globals).toContain('@media (prefers-reduced-motion: reduce)');
+    expect(layout).toContain("themeColor: '#f8f6f1'");
+    expect(layout).toContain("colorScheme: 'light dark'");
+    expect(layout).toContain('border-t border-border bg-background py-6');
+    expect(accordion).toContain('transition-colors duration-150');
+    expect(accordion).not.toContain('transition-all');
   });
 });

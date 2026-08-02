@@ -1,4 +1,5 @@
 import { BondInputsSchema } from '@/features/bond-core/types/schemas';
+import { getCanonicalUrl } from '@/lib/site-url';
 import {
   buildSharedSingleScenarioPayload,
   parseSharedSingleScenarioPayload,
@@ -7,11 +8,15 @@ import {
 
 import { createSharedSingleScenarioRecord, findSharedSingleScenarioRecord } from './repository';
 
-export async function createSharedSingleScenario(body: {
-  inputs: unknown;
-  description?: unknown;
-  origin: string;
-}) {
+export const SHARED_SCENARIO_RETENTION_MS = 30 * 24 * 60 * 60_000;
+
+export async function createSharedSingleScenario(
+  body: {
+    inputs: unknown;
+    description?: unknown;
+  },
+  now = new Date(),
+) {
   const validatedInputs = BondInputsSchema.parse(body.inputs);
   const normalizedPayload = buildSharedSingleScenarioPayload(
     validatedInputs,
@@ -22,11 +27,13 @@ export async function createSharedSingleScenario(body: {
     title: normalizedPayload.title,
     description: normalizedPayload.description,
     payloadJson: serializeSharedSingleScenario(normalizedPayload),
+    expiresAt: new Date(now.getTime() + SHARED_SCENARIO_RETENTION_MS),
   });
 
   return {
     shareId: created.shareId,
-    shareUrl: `${body.origin}/shared-scenarios/${created.shareId}`,
+    shareUrl: getCanonicalUrl(`/shared-scenarios/${created.shareId}`),
+    expiresAt: new Date(now.getTime() + SHARED_SCENARIO_RETENTION_MS).toISOString(),
   };
 }
 

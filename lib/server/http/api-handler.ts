@@ -1,45 +1,38 @@
-import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { isDatabaseConfigured } from '@/db';
 import { createServerLogger } from '@/lib/server/logging';
 
+import { getClientIdentity } from './client-identity';
+import { postgresRateLimitStore } from './postgres-rate-limit-store';
 import { mapApiErrorToProblemDetails } from './problem-details';
+import {
+  AllowAllRateLimiter,
+  BoundedMemoryRateLimiter,
+  defaultApiRateLimitPolicy,
+  type RateLimiter,
+  type RateLimitPolicy,
+  SharedStoreRateLimiter,
+} from './rate-limiter';
+import { addRequestIdToProblem, getRequestId, withRequestId } from './request-context';
 
-const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
-const RATE_LIMIT_MAX = 100;
-const RATE_LIMIT_WINDOW = 60 * 1000;
 const logger = createServerLogger('ApiHandler');
-
-function checkRateLimit(ip: string): {
-  success: boolean;
-  limit: number;
-  remaining: number;
-  reset: number;
-} {
-  const now = Date.now();
-  const limitData = rateLimitMap.get(ip) || { count: 0, lastReset: now };
-
-  if (now - limitData.lastReset > RATE_LIMIT_WINDOW) {
-    limitData.count = 1;
-    limitData.lastReset = now;
-  } else {
-    limitData.count++;
-  }
-
-  rateLimitMap.set(ip, limitData);
-
-  return {
-    success: limitData.count <= RATE_LIMIT_MAX,
-    limit: RATE_LIMIT_MAX,
-    remaining: Math.max(0, RATE_LIMIT_MAX - limitData.count),
-    reset: limitData.lastReset + RATE_LIMIT_WINDOW,
-  };
-}
+const rateLimiter =
+  process.env.PLAYWRIGHT_SMOKE === '1'
+    ? new AllowAllRateLimiter()
+    : isDatabaseConfigured && process.env.NODE_ENV === 'production'
+      ? new SharedStoreRateLimiter(postgresRateLimitStore)
+      : new BoundedMemoryRateLimiter();
 
 export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = (
   req: NextRequest,
   context: TContext,
 ) => Promise<NextResponse> | NextResponse;
+
+export interface ApiHandlerDependencies {
+  rateLimiter: RateLimiter;
+  getIdentity?: typeof getClientIdentity;
+}
 
 /**
  * Standardized API Route Handler wrapper.
@@ -50,42 +43,76 @@ export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = 
  */
 export function apiHandler<TContext = { params: Promise<Record<string, never>> }>(
   handler: ApiHandler<TContext>,
+  { rateLimitPolicy = defaultApiRateLimitPolicy }: { rateLimitPolicy?: RateLimitPolicy } = {},
 ) {
-  return async (req: NextRequest, context: TContext) => {
-    const headersList = await headers();
-    const forwardedFor = headersList.get('x-forwarded-for');
-    const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
+  return createApiHandler({ rateLimiter })(handler, { rateLimitPolicy });
+}
 
-    const rateLimit = checkRateLimit(ip);
+/**
+ * Builds the correlated HTTP boundary with an explicit limiter dependency.
+ * Production routes use `apiHandler`; tests can exercise a policy without
+ * mutating module-global counters or relying on deployment configuration.
+ */
+export function createApiHandler({
+  rateLimiter: configuredRateLimiter,
+  getIdentity = getClientIdentity,
+}: ApiHandlerDependencies) {
+  return function withApiHandler<TContext = { params: Promise<Record<string, never>> }>(
+    handler: ApiHandler<TContext>,
+    { rateLimitPolicy = defaultApiRateLimitPolicy }: { rateLimitPolicy?: RateLimitPolicy } = {},
+  ) {
+    return async (req: NextRequest, context: TContext) => {
+      const requestId = getRequestId(req);
+      const rateLimit = await configuredRateLimiter.consume(getIdentity(req), rateLimitPolicy);
 
-    if (!rateLimit.success) {
-      return NextResponse.json(
-        {
-          type: 'https://api.obligacje.pl/errors/rate-limit-exceeded',
-          title: 'Too Many Requests',
-          status: 429,
-          detail: 'Rate limit exceeded. Please try again in a minute.',
-        },
-        {
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': rateLimit.limit.toString(),
-            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-            'X-RateLimit-Reset': Math.ceil(rateLimit.reset / 1000).toString(),
-          },
-        },
-      );
-    }
+      if (!rateLimit.allowed) {
+        return withRequestId(
+          NextResponse.json(
+            {
+              type: 'https://api.obligacje.pl/errors/rate-limit-exceeded',
+              title: 'Too Many Requests',
+              status: 429,
+              detail: 'Rate limit exceeded. Please try again in a minute.',
+            },
+            {
+              status: 429,
+              headers: {
+                'RateLimit-Limit': rateLimit.limit.toString(),
+                'RateLimit-Remaining': rateLimit.remaining.toString(),
+                'RateLimit-Reset': Math.ceil(rateLimit.resetAt / 1000).toString(),
+                'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString(),
+              },
+            },
+          ),
+          requestId,
+        );
+      }
 
-    try {
-      return await handler(req, context);
-    } catch (error) {
-      const problem = mapApiErrorToProblemDetails(error, {
-        includeInternalMessage: process.env.NODE_ENV === 'development',
-      });
-      logger.error(`${req.method} ${req.nextUrl.pathname}`, error);
+      try {
+        return withRequestId(await handler(req, context), requestId);
+      } catch (error) {
+        const problem = addRequestIdToProblem(
+          mapApiErrorToProblemDetails(error, {
+            includeInternalMessage: process.env.NODE_ENV === 'development',
+          }),
+          requestId,
+        );
+        logger.error(`${req.method} ${req.nextUrl.pathname}`, error);
 
-      return NextResponse.json(problem, { status: problem.status });
-    }
+        return withRequestId(NextResponse.json(problem, { status: problem.status }), requestId);
+      }
+    };
   };
+}
+
+/** Wraps a route whose authorization failure has a deliberate public status. */
+export function protectedApiHandler<TContext = { params: Promise<Record<string, never>> }>(
+  authorize: (request: NextRequest) => Promise<void>,
+  handler: ApiHandler<TContext>,
+  options: { rateLimitPolicy?: RateLimitPolicy } = {},
+) {
+  return apiHandler<TContext>(async (request, context) => {
+    await authorize(request);
+    return handler(request, context);
+  }, options);
 }

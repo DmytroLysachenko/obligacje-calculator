@@ -58,7 +58,10 @@ export function BondValueChartPlot({
 
   if (!hasData) {
     return (
-      <div className="flex min-h-60 items-center justify-center border border-dashed border-border bg-muted/20 px-6 text-center text-sm leading-6 text-muted-foreground" role="status">
+      <div
+        className="flex min-h-60 items-center justify-center border border-dashed border-border bg-muted/20 px-6 text-center text-sm leading-6 text-muted-foreground"
+        role="status"
+      >
         {t('bonds.simulation.chart_empty')}
       </div>
     );
@@ -70,7 +73,13 @@ export function BondValueChartPlot({
       summary={<p>{summary}</p>}
       responsiveHeightClassName={heightClassName}
     >
-      <ResponsiveContainer width="100%" height="100%" key={`chart-${data.length}`}>
+      <ResponsiveContainer
+        width="100%"
+        height="100%"
+        minWidth={0}
+        minHeight={1}
+        key={`chart-${data.length}`}
+      >
         <ComposedChart data={data} margin={{ top: 12, right: 44, left: 24, bottom: 20 }}>
           <defs>
             {series.map((item) => (

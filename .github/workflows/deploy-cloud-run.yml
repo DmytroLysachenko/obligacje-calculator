@@ -116,6 +116,7 @@ jobs:
             echo 'AUTH_SECRET: "${{ secrets.AUTH_SECRET }}"'
             echo 'SYNC_SECRET: "${{ secrets.SYNC_SECRET }}"'
             echo 'NEXT_PUBLIC_APP_URL: "${{ env.APP_URL }}"'
+            echo 'NEXT_PUBLIC_DEPLOYMENT_TIER: "preview"'
             echo 'AUTH_TRUST_HOST: "true"'
             echo 'AUTH_GOOGLE_ID: "${{ secrets.AUTH_GOOGLE_ID }}"'
             echo 'AUTH_GOOGLE_SECRET: "${{ secrets.AUTH_GOOGLE_SECRET }}"'

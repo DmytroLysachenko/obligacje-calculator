@@ -38,7 +38,7 @@ export function RecoveryLabPageClient() {
   return (
     <div className="space-y-8">
       <SecondarySurfaceIntro
-        eyebrow={t('landing.recovery_lab_page.eyebrow')}
+        eyebrow={t('recovery_lab_page.eyebrow')}
         title={t('recovery_lab_page.title')}
         description={intro}
         actions={[

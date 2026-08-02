@@ -1,14 +1,18 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { createCalculationEnvelopeVersionValidator } from '@/shared/lib/calculation-envelope-version';
+import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-persistence';
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { type BondInputs, BondType } from '../../bond-core/types';
+import { MODEL_VERSION } from '../../bond-core/handlers';
+import { BondType } from '../../bond-core/types';
 import type { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { runComparisonCalculation } from '../lib/comparison-actions';
 import {
@@ -21,6 +25,9 @@ import {
   type SharedComparisonConfig,
   splitComparisonEnvelope,
 } from '../lib/comparison-calculator-state';
+import type { ComparisonUrlState } from '../lib/comparison-deep-link';
+import { getComparisonOfferStatus } from '../lib/comparison-offer-status';
+import { COMPARISON_CALCULATOR_STORAGE_KEY } from '../lib/comparison-persistence';
 import {
   applyScenarioBondTypeUpdate,
   applyScenarioCustomHorizonEnabled,
@@ -31,169 +38,194 @@ import {
   isSharedComparisonMacroUpdate,
 } from '../lib/comparison-update-actions';
 
-import type { ComparisonUrlState } from '../lib/comparison-deep-link';
+interface ComparisonDraft {
+  sharedConfig: SharedComparisonConfig;
+  scenarioA: ScenarioOverride;
+  scenarioB: ScenarioOverride;
+}
 
-import { useComparisonPersistenceEffects } from './useComparisonPersistenceEffects';
+const initialDraft = (): ComparisonDraft => ({
+  sharedConfig: buildDefaultSharedConfig(),
+  scenarioA: DEFAULT_SCENARIO_A,
+  scenarioB: DEFAULT_SCENARIO_B,
+});
 
 export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const [sharedConfig, setSharedConfig] =
-    useState<SharedComparisonConfig>(buildDefaultSharedConfig);
-  const [scenarioA, setScenarioA] = useState<ScenarioOverride>(DEFAULT_SCENARIO_A);
-  const [scenarioB, setScenarioB] = useState<ScenarioOverride>(DEFAULT_SCENARIO_B);
-  const [comparisonEnvelope, setComparisonEnvelope] =
-    useState<BondComparisonCalculationEnvelope | null>(null);
-  const [committedInputsA, setCommittedInputsA] = useState<BondInputs | null>(null);
-  const [committedInputsB, setCommittedInputsB] = useState<BondInputs | null>(null);
-  const [isDirty, setIsDirty] = useState(true);
-  const [isPersistenceReady, setIsPersistenceReady] = useState(false);
-  const hasRestoredState = useRef(false);
-  const restoredFromPersistence = useRef(false);
+  const fallbackDraft = useMemo(() => initialDraft(), []);
+  const isCommittedResultValid = useMemo(
+    () => createCalculationEnvelopeVersionValidator(MODEL_VERSION),
+    [],
+  );
   const hasTouchedMacroAssumptions = useRef(false);
+  const hasAppliedMacroDefaults = useRef(false);
   const hasAppliedInitialUrlState = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
+  const session = useCalculatorSession<ComparisonDraft, BondComparisonCalculationEnvelope>({
+    initialInputs: fallbackDraft,
+    storageKey: COMPARISON_CALCULATOR_STORAGE_KEY,
+    isCommittedResultValid,
+  });
+  const { sharedConfig, scenarioA, scenarioB } = session.draftInputs;
 
   const inputsA = useMemo(
     () => buildScenarioInputs(sharedConfig, scenarioA, definitions),
-    [definitions, sharedConfig, scenarioA],
+    [definitions, scenarioA, sharedConfig],
   );
   const inputsB = useMemo(
     () => buildScenarioInputs(sharedConfig, scenarioB, definitions),
-    [definitions, sharedConfig, scenarioB],
+    [definitions, scenarioB, sharedConfig],
+  );
+  const { resultsA, resultsB, envelopeA, envelopeB } = useMemo(
+    () => splitComparisonEnvelope(session.committedResult),
+    [session.committedResult],
+  );
+  const committedInputsA = useMemo(
+    () =>
+      session.committedInputs
+        ? buildScenarioInputs(
+            session.committedInputs.sharedConfig,
+            session.committedInputs.scenarioA,
+            definitions,
+          )
+        : null,
+    [definitions, session.committedInputs],
+  );
+  const committedInputsB = useMemo(
+    () =>
+      session.committedInputs
+        ? buildScenarioInputs(
+            session.committedInputs.sharedConfig,
+            session.committedInputs.scenarioB,
+            definitions,
+          )
+        : null,
+    [definitions, session.committedInputs],
+  );
+  const isDirty = getComparisonDirtyState({
+    inputsA,
+    inputsB,
+    committedInputsA,
+    committedInputsB,
+    isDirty: session.isDirty,
+    hasResults: Boolean(resultsA && resultsB),
+  });
+
+  const updateDraft = useCallback(
+    (update: (previous: ComparisonDraft) => ComparisonDraft) => {
+      session.setDraftInputs(update(session.draftInputs));
+    },
+    [session],
   );
 
-  const { resultsA, resultsB, envelopeA, envelopeB } = useMemo(
-    () => splitComparisonEnvelope(comparisonEnvelope),
-    [comparisonEnvelope],
-  );
-  const displayIsDirty = useMemo(() => {
-    return getComparisonDirtyState({
-      inputsA,
-      inputsB,
-      committedInputsA,
-      committedInputsB,
-      isDirty,
-      hasResults: Boolean(resultsA && resultsB),
+  useEffect(() => {
+    if (
+      !macroDefaults ||
+      !session.isPersistenceReady ||
+      hasTouchedMacroAssumptions.current ||
+      hasAppliedMacroDefaults.current
+    )
+      return;
+    hasAppliedMacroDefaults.current = true;
+    const nextSharedConfig = applyUntouchedMacroDefaults(
+      session.draftInputs.sharedConfig,
+      macroDefaults,
+      false,
+    );
+    if (nextSharedConfig !== session.draftInputs.sharedConfig) {
+      session.setDraftInputs({ ...session.draftInputs, sharedConfig: nextSharedConfig });
+    }
+  }, [macroDefaults, session]);
+
+  useEffect(() => {
+    if (!initialUrlState || !session.isPersistenceReady || hasAppliedInitialUrlState.current)
+      return;
+    hasAppliedInitialUrlState.current = true;
+    session.setDraftInputs({
+      sharedConfig: initialUrlState.sharedConfig,
+      scenarioA: initialUrlState.scenarioA,
+      scenarioB: initialUrlState.scenarioB,
     });
-  }, [committedInputsA, committedInputsB, inputsA, inputsB, isDirty, resultsA, resultsB]);
+  }, [initialUrlState, session]);
 
   const calculate = useCallback(async () => {
-    setIsDirty(false);
     try {
-      const envelope = await runComparisonCalculation({ sharedConfig, scenarioA, scenarioB, post });
-      setComparisonEnvelope(envelope);
-      setCommittedInputsA(inputsA);
-      setCommittedInputsB(inputsB);
+      await session.runCalculation(({ sharedConfig, scenarioA, scenarioB }) =>
+        runComparisonCalculation({ sharedConfig, scenarioA, scenarioB, post }),
+      );
     } catch (error) {
       logClientError('Comparison error:', error);
     }
-  }, [inputsA, inputsB, post, scenarioA, scenarioB, sharedConfig]);
+  }, [post, session]);
 
   const updateSharedConfig = (key: keyof SharedComparisonConfig, value: ComparisonUpdateValue) => {
-    setIsDirty(true);
-    if (isSharedComparisonMacroUpdate(key)) {
-      hasTouchedMacroAssumptions.current = true;
-    }
-    setSharedConfig((prev) => {
-      return applySharedComparisonConfigUpdate(prev, key, value);
-    });
+    if (isSharedComparisonMacroUpdate(key)) hasTouchedMacroAssumptions.current = true;
+    updateDraft((previous) => ({
+      ...previous,
+      sharedConfig: applySharedComparisonConfigUpdate(previous.sharedConfig, key, value),
+    }));
   };
+  const updateScenarioA = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioA: applyScenarioOverrideUpdate(previous.scenarioA, key, value),
+    }));
+  const updateScenarioB = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioB: applyScenarioOverrideUpdate(previous.scenarioB, key, value),
+    }));
+  const setBondTypeA = (type: BondType) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioA: applyScenarioBondTypeUpdate(previous.scenarioA, type),
+    }));
+  const setBondTypeB = (type: BondType) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioB: applyScenarioBondTypeUpdate(previous.scenarioB, type),
+    }));
 
-  const updateScenarioA = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) => {
-    setIsDirty(true);
-    setScenarioA((prev) => applyScenarioOverrideUpdate(prev, key, value));
-  };
+  const setScenarioACustomHorizonEnabled = (enabled: boolean) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioA: applyScenarioCustomHorizonEnabled(
+        previous.sharedConfig,
+        previous.scenarioA,
+        enabled,
+      ),
+    }));
+  const setScenarioBCustomHorizonEnabled = (enabled: boolean) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioB: applyScenarioCustomHorizonEnabled(
+        previous.sharedConfig,
+        previous.scenarioB,
+        enabled,
+      ),
+    }));
+  const setScenarioACustomHorizonMonths = (value: number | undefined) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioA: applyScenarioCustomHorizonMonths(previous.sharedConfig, previous.scenarioA, value),
+    }));
+  const setScenarioBCustomHorizonMonths = (value: number | undefined) =>
+    updateDraft((previous) => ({
+      ...previous,
+      scenarioB: applyScenarioCustomHorizonMonths(previous.sharedConfig, previous.scenarioB, value),
+    }));
 
-  const updateScenarioB = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) => {
-    setIsDirty(true);
-    setScenarioB((prev) => applyScenarioOverrideUpdate(prev, key, value));
-  };
-
-  const setBondTypeA = (type: BondType) => {
-    setIsDirty(true);
-    setScenarioA((prev) => applyScenarioBondTypeUpdate(prev, type));
-  };
-
-  const setBondTypeB = (type: BondType) => {
-    setIsDirty(true);
-    setScenarioB((prev) => applyScenarioBondTypeUpdate(prev, type));
-  };
-
-  useComparisonPersistenceEffects({
-    initialPair: initialUrlState
-      ? [initialUrlState.scenarioA.bondType, initialUrlState.scenarioB.bondType]
-      : null,
-    sharedConfig,
-    scenarioA,
-    scenarioB,
-    comparisonEnvelope,
-    committedInputsA,
-    committedInputsB,
-    displayIsDirty,
-    isPersistenceReady,
-    macroDefaults,
-    hasRestoredState,
-    restoredFromPersistence,
-    hasTouchedMacroAssumptions,
-    setSharedConfig,
-    setScenarioA,
-    setScenarioB,
-    setComparisonEnvelope,
-    setCommittedInputsA,
-    setCommittedInputsB,
-    setIsDirty,
-    setIsPersistenceReady,
+  const offerStatusA = getComparisonOfferStatus({
+    inputs: inputsA,
+    committedInputs: committedInputsA,
+    envelope: envelopeA,
   });
-
-  useEffect(() => {
-    if (!initialUrlState || !isPersistenceReady || hasAppliedInitialUrlState.current) return;
-    hasAppliedInitialUrlState.current = true;
-    setSharedConfig(initialUrlState.sharedConfig);
-    setScenarioA(initialUrlState.scenarioA);
-    setScenarioB(initialUrlState.scenarioB);
-    setComparisonEnvelope(null);
-    setCommittedInputsA(null);
-    setCommittedInputsB(null);
-    setIsDirty(true);
-  }, [initialUrlState, isPersistenceReady]);
-
-  const setScenarioACustomHorizonEnabled = useCallback(
-    (enabled: boolean) => {
-      setIsDirty(true);
-      setScenarioA((previous) =>
-        applyScenarioCustomHorizonEnabled(sharedConfig, previous, enabled),
-      );
-    },
-    [sharedConfig],
-  );
-
-  const setScenarioBCustomHorizonEnabled = useCallback(
-    (enabled: boolean) => {
-      setIsDirty(true);
-      setScenarioB((previous) =>
-        applyScenarioCustomHorizonEnabled(sharedConfig, previous, enabled),
-      );
-    },
-    [sharedConfig],
-  );
-
-  const setScenarioACustomHorizonMonths = useCallback(
-    (value: number | undefined) => {
-      setIsDirty(true);
-      setScenarioA((previous) => applyScenarioCustomHorizonMonths(sharedConfig, previous, value));
-    },
-    [sharedConfig],
-  );
-
-  const setScenarioBCustomHorizonMonths = useCallback(
-    (value: number | undefined) => {
-      setIsDirty(true);
-      setScenarioB((previous) => applyScenarioCustomHorizonMonths(sharedConfig, previous, value));
-    },
-    [sharedConfig],
-  );
-
+  const offerStatusB = getComparisonOfferStatus({
+    inputs: inputsB,
+    committedInputs: committedInputsB,
+    envelope: envelopeB,
+  });
   return {
     sharedConfig,
     scenarioA,
@@ -206,10 +238,12 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     resultsB,
     envelopeA,
     envelopeB,
-    warningsA: envelopeA?.warnings || [],
-    warningsB: envelopeB?.warnings || [],
+    offerStatusA,
+    offerStatusB,
+    warningsA: envelopeA?.warnings ?? [],
+    warningsB: envelopeB?.warnings ?? [],
     isCalculating,
-    isDirty: displayIsDirty,
+    isDirty,
     calculate,
     updateSharedConfig,
     updateScenarioA,
@@ -221,6 +255,6 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     setScenarioACustomHorizonMonths,
     setScenarioBCustomHorizonMonths,
     definitions: definitions ?? BOND_DEFINITIONS,
-    isPersistenceReady,
+    isPersistenceReady: session.isPersistenceReady,
   };
 }

@@ -22,10 +22,11 @@ interface RegularInvestmentInputsFormProps {
     bivarianceHack: (key: keyof RegularInvestmentInputs | string, value: unknown) => void;
   }['bivarianceHack'];
   onBondTypeChange: (type: BondType) => void;
+  action?: React.ReactNode;
 }
 
 export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormProps> = React.memo(
-  ({ inputs, onUpdate, onBondTypeChange }) => {
+  ({ inputs, onUpdate, onBondTypeChange, action }) => {
     const { t, locale: language } = useAppI18n();
     const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
     const [showCustomTax, setShowCustomTax] = useState(false);
@@ -142,6 +143,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               },
             ]}
           />
+          {action ? <div className="border-t border-border pt-5">{action}</div> : null}
         </div>
       </section>
     );

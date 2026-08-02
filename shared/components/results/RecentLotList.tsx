@@ -25,6 +25,9 @@ interface RecentLotListProps {
   items: RecentLotDisplayItem[];
   className?: string;
   compact?: boolean;
+  initialItemCount?: number;
+  showAllLabel?: string;
+  showLessLabel?: string;
 }
 
 const detailToneClass = {
@@ -40,9 +43,16 @@ export const RecentLotList = React.memo(function RecentLotList({
   items,
   className,
   compact = false,
+  initialItemCount,
+  showAllLabel,
+  showLessLabel,
 }: RecentLotListProps) {
+  const [showAll, setShowAll] = React.useState(false);
+  const visibleItems = initialItemCount && !showAll ? items.slice(0, initialItemCount) : items;
+  const canExpand = initialItemCount !== undefined && items.length > initialItemCount;
+
   return (
-    <section className={cn('space-y-5 border-y border-border py-6', className)}>
+    <section className={cn('space-y-5 border-t border-border pt-6', className)}>
       <div className={compact ? 'space-y-1.5' : 'space-y-2'}>
         <h2 className="flex items-center gap-2 ui-card-title">
           <Calendar className="h-5 w-5" />
@@ -67,7 +77,7 @@ export const RecentLotList = React.memo(function RecentLotList({
         ) : null}
       </div>
       <div className="divide-y divide-border">
-        {items.map((item) => (
+        {visibleItems.map((item) => (
           <article
             key={item.key}
             className={compact ? 'py-3 first:pt-0 last:pb-0' : 'py-4 first:pt-0 last:pb-0'}
@@ -100,6 +110,16 @@ export const RecentLotList = React.memo(function RecentLotList({
           </article>
         ))}
       </div>
+      {canExpand ? (
+        <button
+          type="button"
+          className="ui-focus-ring text-sm font-semibold text-primary hover:underline"
+          aria-expanded={showAll}
+          onClick={() => setShowAll((current) => !current)}
+        >
+          {showAll ? showLessLabel : showAllLabel}
+        </button>
+      ) : null}
     </section>
   );
 });

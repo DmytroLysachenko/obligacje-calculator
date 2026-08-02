@@ -4,13 +4,14 @@
   "description": "Simulation and comparison toolkit for Polish Ministry of Finance treasury bonds.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0ea5e9",
+  "background_color": "#f8f6f1",
+  "theme_color": "#181512",
   "icons": [
     {
       "src": "/app-icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

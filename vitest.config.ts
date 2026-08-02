@@ -9,6 +9,24 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     testTimeout: 15_000,
+    include: ['**/*.{test,spec}.ts', '**/*.{test,spec}.tsx'],
+    exclude: [
+      'node_modules/**',
+      'tests/browser/**',
+      '**/*.contract.test.{ts,tsx}',
+      '**/*contract.test.{ts,tsx}',
+      '**/*-style.test.{ts,tsx}',
+      '**/*-layout.test.{ts,tsx}',
+      '**/*-boundary.test.{ts,tsx}',
+      'playwright-report/**',
+      'test-results/**',
+    ],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary'],
+      include: ['features/bond-core/**', 'lib/server/**', 'shared/lib/**'],
+      exclude: ['**/*.test.{ts,tsx}', '**/*.contract.test.{ts,tsx}'],
+    },
   },
   resolve: {
     alias: {

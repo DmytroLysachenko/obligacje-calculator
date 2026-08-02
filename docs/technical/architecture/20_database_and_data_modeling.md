@@ -389,25 +389,22 @@ are interchangeable.
 
 They are not.
 
-## 6. Current Compatibility Layer
+## 6. Schema authority and database roles
 
-The project currently uses a schema-compat layer in:
+Ordered SQL migrations in `drizzle/` are the only schema-mutation interface.
+`db/schema.ts` is the canonical Drizzle declaration used to generate and review
+those migrations; it is not a request-time compatibility mechanism. Runtime
+routes, repositories, and readiness checks must never issue DDL.
 
-- `lib/db-schema-compat.ts`
+The checked-in journal currently contains `0000_unified_schema.sql` through
+`0008_web_vital_aggregates.sql`, covering core data, sync, Auth.js, portfolio
+indexes/sharing, retention constraints, audit events, shared rate limits, and
+aggregate vital storage.
 
-This exists because some deployed or local databases predate later schema additions.
-
-It currently patches runtime compatibility for:
-
-- portfolio sharing columns
-- shared single-scenario table creation
-
-This is pragmatic recovery behavior, not ideal long-term migration architecture.
-
-Long-term preference remains:
-
-- explicit migrations
-- less runtime patching
+A migration identity applies this journal during deployment. The Cloud Run
+runtime identity has only the data privileges necessary to serve requests and
+must be denied schema-altering privileges. The redacted deployed-role check is
+recorded through the external-evidence gate; it is not inferred from local code.
 
 ## 7. Indexing and Query Shape
 
@@ -450,7 +447,7 @@ Remaining important caveats:
 
 - some historical bond-series coverage is still not complete enough for every issued month ever sold
 - NBP historical coverage is stronger than before but still partly supported by curated history rather than one ideal official archive endpoint
-- runtime schema compatibility is still doing some migration-like work
+- deployed runtime-role DDL denial remains an external-evidence gate
 - some calculators still consume family definitions more broadly than ideal issued-series resolution in edge cases
 - NBP history is broader and more truthful than before, but retained reference coverage still includes curated support data rather than one perfect official historical feed
 
