@@ -114,6 +114,10 @@
   --sidebar-width: 15rem;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .dark {
   color-scheme: dark;
   --canvas: #111315;
