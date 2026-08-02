@@ -19,7 +19,7 @@ function completeEnv() {
   };
 }
 
-function createSqlClient(rows: Array<{ table_name: string }>, fail = false) {
+function createSqlClient(rows: Array<{ table_schema: string; table_name: string }>, fail = false) {
   const end = vi.fn().mockResolvedValue(undefined);
   const sql = vi.fn(async (strings: TemplateStringsArray | readonly string[]) => {
     if (fail) {
@@ -54,7 +54,10 @@ describe('readiness service', () => {
   });
 
   it('passes database checks when all required tables exist', async () => {
-    const sql = createSqlClient(REQUIRED_READINESS_TABLES.map((table_name) => ({ table_name })));
+    const sql = createSqlClient([
+      ...REQUIRED_READINESS_TABLES.map((table_name) => ({ table_schema: 'public', table_name })),
+      { table_schema: 'drizzle', table_name: '__drizzle_migrations' },
+    ]);
 
     await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
       status: 'ok',
@@ -63,17 +66,20 @@ describe('readiness service', () => {
   });
 
   it('reports missing required tables', async () => {
-    const sql = createSqlClient([{ table_name: 'data_series' }]);
+    const sql = createSqlClient([{ table_schema: 'public', table_name: 'data_series' }]);
 
     await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
       status: 'failed',
       detail:
-        'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verificationToken, shared_single_scenarios, admin_audit_events, rate_limit_windows, __drizzle_migrations',
+        'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verificationToken, shared_single_scenarios, admin_audit_events, rate_limit_windows, web_vital_aggregates, drizzle.__drizzle_migrations',
     });
   });
 
   it('returns a snapshot with service status and timestamp', async () => {
-    const sql = createSqlClient(REQUIRED_READINESS_TABLES.map((table_name) => ({ table_name })));
+    const sql = createSqlClient([
+      ...REQUIRED_READINESS_TABLES.map((table_name) => ({ table_schema: 'public', table_name })),
+      { table_schema: 'drizzle', table_name: '__drizzle_migrations' },
+    ]);
 
     await expect(
       getReadinessSnapshot({
