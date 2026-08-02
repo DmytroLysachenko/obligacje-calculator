@@ -43,6 +43,5 @@ export function runComparisonCalculation({
   return post<BondComparisonCalculationEnvelope>(
     getCalculationEndpoint(ScenarioKind.BOND_COMPARISON),
     buildIndependentComparisonPayload({ sharedConfig, scenarioA, scenarioB }),
-    { preferWorker: true },
   );
 }

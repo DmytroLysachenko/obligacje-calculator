@@ -88,7 +88,6 @@ export function useRegularInvestmentCalculator() {
         return post<RegularInvestmentCalculationEnvelope>(
           getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
           stripDisplayOnlyInputs(draftInputs) ?? draftInputs,
-          { preferWorker: true },
         );
       });
     } catch (error) {

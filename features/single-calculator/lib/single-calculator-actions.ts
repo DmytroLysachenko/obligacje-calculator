@@ -34,7 +34,6 @@ export async function runSingleBondCalculation({
     const simulatedEnvelope = await post<SingleBondCalculationEnvelope>(
       getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
       getReverseCalculationTestInputs(inputs),
-      { preferWorker: true },
     );
     finalInputs = applyReverseSavingsGoal(inputs, simulatedEnvelope.result.netPayoutValue);
   }
@@ -42,7 +41,6 @@ export async function runSingleBondCalculation({
   const envelope = await post<SingleBondCalculationEnvelope>(
     getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
     finalInputs,
-    { preferWorker: true },
   );
 
   return { envelope, finalInputs };

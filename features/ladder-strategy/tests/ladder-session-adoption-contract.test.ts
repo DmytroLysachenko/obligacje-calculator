@@ -22,7 +22,7 @@ describe('ladder calculator session adoption', () => {
     expect(hook).toContain('applyLadderBondDefinition(previous, definitions[previous.bondType])');
     expect(hook).toContain('resolveLadderBondTypeUpdate(previous, type, definitions)');
     expect(hook).toContain('await runCalculation((draftInputs) =>');
-    expect(hook).toContain('{ preferWorker: true }');
+    expect(hook).not.toContain('preferWorker');
     expect(hook).not.toContain('useEffect(() => {\n    void calculate');
   });
 

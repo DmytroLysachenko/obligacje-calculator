@@ -83,7 +83,6 @@ export function useLadder() {
         post<RegularInvestmentCalculationEnvelope>(
           getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
           draftInputs,
-          { preferWorker: true },
         ),
       );
     } catch (error) {
