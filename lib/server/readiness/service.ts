@@ -6,6 +6,7 @@ import {
   getSyncSecret,
   hasAuthSecret,
   hasOAuthProvider,
+  isOAuthOptionalPreview,
   readRuntimeEnv,
   type RuntimeEnv,
 } from '@/lib/server/runtime/env';
@@ -58,7 +59,7 @@ export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
     !hasAuthSecret(env) ? 'AUTH_SECRET' : null,
     !getSyncSecret(env) ? 'SYNC_SECRET' : null,
     !getPublicAppUrl(env) ? 'NEXT_PUBLIC_APP_URL' : null,
-    !hasOAuthProvider(env) ? 'OAUTH_PROVIDER' : null,
+    !hasOAuthProvider(env) && !isOAuthOptionalPreview(env) ? 'OAUTH_PROVIDER' : null,
   ].filter((value): value is string => Boolean(value));
 
   return missing.length === 0

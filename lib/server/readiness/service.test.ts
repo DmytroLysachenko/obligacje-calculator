@@ -46,6 +46,17 @@ describe('readiness service', () => {
     });
   });
 
+  it('allows OAuth to remain unconfigured in the public preview tier', () => {
+    expect(
+      checkReadinessEnv({
+        ...completeEnv(),
+        AUTH_GOOGLE_ID: undefined,
+        AUTH_GOOGLE_SECRET: undefined,
+        NEXT_PUBLIC_DEPLOYMENT_TIER: 'preview',
+      }),
+    ).toEqual({ status: 'ok' });
+  });
+
   it('fails database checks without a database url', async () => {
     await expect(checkReadinessDatabase(undefined)).resolves.toEqual({
       status: 'failed',
@@ -68,7 +79,7 @@ describe('readiness service', () => {
     await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
       status: 'failed',
       detail:
-        'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verificationToken, shared_single_scenarios, admin_audit_events, rate_limit_windows, __drizzle_migrations',
+        'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verificationToken, shared_single_scenarios, admin_audit_events, rate_limit_windows, web_vital_aggregates, __drizzle_migrations',
     });
   });
 
