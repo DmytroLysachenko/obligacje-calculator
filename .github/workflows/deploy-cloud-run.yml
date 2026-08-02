@@ -124,14 +124,14 @@ jobs:
             echo 'AUTH_GOOGLE_SECRET: "${{ secrets.AUTH_GOOGLE_SECRET }}"'
           } > .cloud-run-env.yaml
 
-      - name: Deploy private Cloud Run service
+      - name: Deploy public Cloud Run service
         run: |
           gcloud run deploy "${SERVICE}" \
             --image "${IMAGE}" \
             --project "${PROJECT_ID}" \
             --region "${REGION}" \
             --platform managed \
-            --no-allow-unauthenticated \
+            --allow-unauthenticated \
             --port 8080 \
             --min-instances 0 \
             --max-instances 1 \
