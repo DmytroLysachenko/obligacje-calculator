@@ -267,14 +267,26 @@ function verifyHtmlResponse(label: string, path: string, response: FetchResult) 
   console.log(`${label} ok`);
 }
 
-function verifyLoginResponse(response: FetchResult) {
+export function shouldRequireLoginProviderForm({
+  allowMissingOauth,
+}: Pick<VerifyOptions, 'allowMissingOauth'>) {
+  return !allowMissingOauth;
+}
+
+function verifyLoginResponse(response: FetchResult, options: VerifyOptions) {
   verifyHtmlResponse('login', '/login', response);
-  assertOk(response.body.includes('<form'), 'login did not render a provider sign-in form');
+  if (shouldRequireLoginProviderForm(options)) {
+    assertOk(response.body.includes('<form'), 'login did not render a provider sign-in form');
+  }
   assertOk(
     !/AUTH_GOOGLE_(?:ID|SECRET)|AUTH_FACEBOOK_(?:ID|SECRET)/.test(response.body),
     'login response exposed OAuth credential configuration',
   );
-  console.log('login OAuth readiness ok');
+  console.log(
+    options.allowMissingOauth
+      ? 'login accessible: OAuth provider intentionally missing for private preview'
+      : 'login OAuth readiness ok',
+  );
 }
 
 function verifyJsonResponse(label: string, path: string, response: FetchResult) {
@@ -328,7 +340,7 @@ export async function main() {
     assertOk(response.body.length > 0, `${check.label} returned an empty body`);
 
     if (check.path === '/login') {
-      verifyLoginResponse(response);
+      verifyLoginResponse(response, options);
     } else if (check.kind === 'html') {
       verifyHtmlResponse(check.label, check.path, response);
     } else {

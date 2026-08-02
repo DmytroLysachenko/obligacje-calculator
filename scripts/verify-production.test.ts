@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { ADMITTED_PREVIEW_SMOKE_CHECKS, parseArgs } from './verify-production';
+import {
+  ADMITTED_PREVIEW_SMOKE_CHECKS,
+  parseArgs,
+  shouldRequireLoginProviderForm,
+} from './verify-production';
 
 describe('production verification options', () => {
   it('limits admitted-preview smoke routes to education, single calculator, and economic data', () => {
@@ -31,5 +35,10 @@ describe('production verification options', () => {
       expectedImage: 'europe-central2-docker.pkg.dev/project/repo/app:sha',
       expectedRevision: 'obligacje-calculator-00042-abc',
     });
+  });
+
+  it('does not require an OAuth provider form in an explicitly allowed private preview', () => {
+    expect(shouldRequireLoginProviderForm({ allowMissingOauth: true })).toBe(false);
+    expect(shouldRequireLoginProviderForm({ allowMissingOauth: false })).toBe(true);
   });
 });
