@@ -39,6 +39,15 @@ export function deriveSeriesCode(
   return `${symbol}${format(maturityDate, 'MMyy')}`;
 }
 
+export function isValidSeriesCodeForEmission(
+  symbol: BondType,
+  emissionMonth: string,
+  seriesCode: string,
+  definition: BondDefinition,
+) {
+  return seriesCode.toUpperCase() === deriveSeriesCode(symbol, emissionMonth, definition);
+}
+
 export function deriveSeriesWindow(emissionMonth: string, definition: BondDefinition) {
   const emissionStart = startOfMonth(parseISO(emissionMonth));
   const sellStartDate = format(emissionStart, 'yyyy-MM-dd');
@@ -92,6 +101,22 @@ export async function resolveBondOfferTerms(
     const activeSeries = await findActiveBondSeriesForDate(bond.id, purchaseDate);
 
     if (!activeSeries) {
+      return fallback;
+    }
+
+    if (
+      !isValidSeriesCodeForEmission(
+        bondType,
+        activeSeries.emissionMonth,
+        activeSeries.seriesCode,
+        definition,
+      )
+    ) {
+      logger.warn('Ignoring stored bond series with mismatched emission metadata', {
+        bondType,
+        emissionMonth: activeSeries.emissionMonth,
+        seriesCode: activeSeries.seriesCode,
+      });
       return fallback;
     }
 

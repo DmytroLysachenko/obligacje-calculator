@@ -14,6 +14,23 @@ import type { SyncLogger } from '../sync-logger';
 
 import type { SyncRunRecorder } from './sync-run-recorder';
 
+export function isExpectedCurrentOfferSeriesCode(
+  offer: { symbol: string; seriesCode?: string; source: string },
+  currentEmissionMonth: string,
+) {
+  if (offer.source === 'curated-fallback') {
+    return true;
+  }
+
+  const bondType = offer.symbol as BondType;
+  const definition = BOND_DEFINITIONS[bondType];
+  return Boolean(
+    definition &&
+    offer.seriesCode &&
+    offer.seriesCode.toUpperCase() === deriveSeriesCode(bondType, currentEmissionMonth, definition),
+  );
+}
+
 export class BondOfferSyncService {
   constructor(
     private readonly logger: SyncLogger,
@@ -25,8 +42,25 @@ export class BondOfferSyncService {
     const bondOffers = await scrapeCurrentBondRates();
     this.logger.info('Bond offer scraping complete', { count: bondOffers.length });
     const currentEmissionMonth = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+    const currentOffers = bondOffers.filter((offer) =>
+      isExpectedCurrentOfferSeriesCode(offer, currentEmissionMonth),
+    );
+    const rejectedOffers = bondOffers.filter(
+      (offer) => !isExpectedCurrentOfferSeriesCode(offer, currentEmissionMonth),
+    );
 
-    for (const offer of bondOffers) {
+    if (rejectedOffers.length > 0) {
+      this.logger.warn('Rejected offer series outside the active emission month', {
+        expectedEmissionMonth: currentEmissionMonth,
+        rejected: rejectedOffers.map((offer) => ({
+          symbol: offer.symbol,
+          seriesCode: offer.seriesCode,
+          source: offer.source,
+        })),
+      });
+    }
+
+    for (const offer of currentOffers) {
       await this.upsertCurrentBondOffer(offer.symbol as BondType, {
         currentEmissionMonth,
         firstYearRate: offer.firstYearRate.toString(),
@@ -35,23 +69,25 @@ export class BondOfferSyncService {
       });
     }
 
-    const sources = [...new Set(bondOffers.map((offer) => offer.source))];
-    const isOfficial = sources.length === 1 && sources[0] === 'gov.pl';
+    const sources = [...new Set(currentOffers.map((offer) => offer.source))];
+    const isOfficial =
+      rejectedOffers.length === 0 && sources.length === 1 && sources[0] === 'gov.pl';
 
     await this.recorder.record({
       scope: 'bond-offers',
-      provider: sources.join(', '),
+      provider: sources.join(', ') || 'rejected-stale-offer',
       mode: 'bond-offer-sync',
       status: isOfficial ? 'success' : 'partial',
-      inserted: bondOffers.length,
-      updated: bondOffers.length,
-      message: `${bondOffers.length} current bond offers synchronized from ${sources.join(', ')}.`,
+      inserted: currentOffers.length,
+      updated: currentOffers.length,
+      skipped: rejectedOffers.length,
+      message: `${currentOffers.length} current bond offers synchronized from ${sources.join(', ') || 'no accepted source'}; ${rejectedOffers.length} stale offers rejected.`,
       startedAt,
       finishedAt: new Date(),
     });
 
     return {
-      offers: bondOffers,
+      offers: currentOffers,
       status: (isOfficial ? 'success' : 'partial') as 'success' | 'partial',
     };
   }
