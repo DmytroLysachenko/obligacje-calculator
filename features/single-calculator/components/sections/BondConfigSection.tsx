@@ -9,6 +9,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondInputs, BondType } from '@/features/bond-core/types';
+import {
+  bondQuantityFromInvestment,
+  investmentFromBondQuantity,
+  MAX_BOND_QUANTITY,
+} from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
@@ -42,8 +47,8 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
     );
     const formatDurationLabel = (type: BondType) =>
       `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.duration_months')}`;
-    const maxBondUnits = 1000;
-    const bondUnits = Math.max(1, Math.round(inputs.initialInvestment / 100));
+    const maxBondUnits = MAX_BOND_QUANTITY;
+    const bondUnits = bondQuantityFromInvestment(inputs.initialInvestment);
     const purchaseValueLabel = inputs.initialInvestment.toLocaleString(getIntlLocale(language));
     const formatSeriesMonth = (value: string) =>
       new Date(value).toLocaleDateString(getIntlLocale(language), {
@@ -54,8 +59,9 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
       if (!Number.isFinite(value)) {
         return;
       }
-      const safeUnits = Math.min(maxBondUnits, Math.max(1, Math.trunc(value)));
-      onUpdate('initialInvestment', safeUnits * 100);
+      const investment = investmentFromBondQuantity(value);
+      if (investment === null) return;
+      onUpdate('initialInvestment', investment);
     };
     return (
       <div className="space-y-6">

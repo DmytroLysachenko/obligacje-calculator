@@ -1,20 +1,23 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
 import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { InvestmentFrequency, TaxStrategy } from '@/features/bond-core/types';
+import {
+  bondQuantityFromInvestment,
+  investmentFromBondQuantity,
+  MAX_BOND_QUANTITY,
+} from '@/features/bond-core/utils/bond-quantity';
 import { FormField } from '@/shared/components/forms/FormField';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
-import { MoneyInput } from '@/shared/components/forms/MoneyInput';
 import { RangeField } from '@/shared/components/forms/RangeField';
 
 type ContributionPlanSectionProps = {
   contributionAmount: number;
   frequency: InvestmentFrequency;
   taxStrategy: TaxStrategy;
-  isDivisibleBy100: boolean;
   onUpdate: (key: string, value: unknown) => void;
   t: (key: string) => string;
 };
@@ -23,7 +26,6 @@ export function ContributionPlanSection({
   contributionAmount,
   frequency,
   taxStrategy,
-  isDivisibleBy100,
   onUpdate,
   t,
 }: ContributionPlanSectionProps) {
@@ -58,38 +60,45 @@ export function ContributionPlanSection({
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-[15px] font-semibold">{t('bonds.monthly_investment')}</p>
-            <span className="text-sm font-bold text-primary">{contributionAmount} PLN</span>
+            <p className="text-[15px] font-semibold">{t('bonds.bond_quantity')}</p>
+            <span className="text-sm font-bold text-primary">
+              {bondQuantityFromInvestment(contributionAmount)} {t('bonds.units')}
+            </span>
           </div>
+          <p className="ui-metadata text-muted-foreground">
+            {contributionAmount.toLocaleString()} PLN
+          </p>
           <div className="space-y-4">
             <FormField
-              label={t('bonds.monthly_investment')}
+              label={t('bonds.bond_quantity')}
               htmlFor="contributionAmount"
               tooltip={t('regular_form.contribution_help')}
-              error={
-                !isDivisibleBy100 && contributionAmount > 0 ? (
-                  <span className="inline-flex items-center gap-2">
-                    <AlertCircle className="h-3 w-3" />
-                    {t('bonds.error_100_pln')}
-                  </span>
-                ) : null
-              }
             >
-              <MoneyInput
+              <Input
                 id="contributionAmount"
-                value={contributionAmount}
-                invalid={!isDivisibleBy100}
-                onChange={(value) => onUpdate('contributionAmount', value)}
+                type="number"
+                min={1}
+                max={MAX_BOND_QUANTITY}
+                step={1}
+                inputMode="numeric"
+                value={bondQuantityFromInvestment(contributionAmount)}
+                onChange={(event) => {
+                  const investment = investmentFromBondQuantity(Number(event.target.value));
+                  if (investment !== null) onUpdate('contributionAmount', investment);
+                }}
               />
             </FormField>
             <RangeField
-              label={t('bonds.monthly_investment')}
-              value={contributionAmount}
-              min={100}
-              max={20000}
-              step={100}
-              unit="PLN"
-              onCommit={(value) => onUpdate('contributionAmount', value)}
+              label={t('bonds.bond_quantity')}
+              value={bondQuantityFromInvestment(contributionAmount)}
+              min={1}
+              max={MAX_BOND_QUANTITY}
+              step={1}
+              unit={t('bonds.units')}
+              onCommit={(value) => {
+                const investment = investmentFromBondQuantity(value);
+                if (investment !== null) onUpdate('contributionAmount', investment);
+              }}
             />
           </div>
         </div>

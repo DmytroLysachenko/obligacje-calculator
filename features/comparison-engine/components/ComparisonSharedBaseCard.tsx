@@ -11,6 +11,11 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
+import {
+  bondQuantityFromInvestment,
+  investmentFromBondQuantity,
+  MAX_BOND_QUANTITY,
+} from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
@@ -81,22 +86,30 @@ export function ComparisonSharedBaseCard({
             htmlFor="comparison-initial-investment"
             className="ui-metadata text-muted-foreground"
           >
-            {t('comparison.initial_sum')}
+            {t('bonds.bond_quantity')}
           </Label>
+          <p className="ui-metadata text-muted-foreground">
+            {sharedConfig.initialInvestment.toLocaleString(language === 'pl' ? 'pl-PL' : 'en-US')}{' '}
+            PLN
+          </p>
           <div className="relative">
             <Input
               type="number"
               id="comparison-initial-investment"
               name="comparison-initial-investment"
-              inputMode="decimal"
+              min={1}
+              max={MAX_BOND_QUANTITY}
+              step={1}
+              inputMode="numeric"
               className="h-11 rounded-lg pr-12 text-lg font-semibold"
-              value={sharedConfig.initialInvestment}
-              onChange={(event) =>
-                onUpdateSharedConfig('initialInvestment', Number(event.target.value))
-              }
+              value={bondQuantityFromInvestment(sharedConfig.initialInvestment)}
+              onChange={(event) => {
+                const investment = investmentFromBondQuantity(Number(event.target.value));
+                if (investment !== null) onUpdateSharedConfig('initialInvestment', investment);
+              }}
             />
             <div className="absolute right-4 top-1/2 -translate-y-1/2 ui-metadata text-muted-foreground">
-              PLN
+              {t('bonds.units')}
             </div>
           </div>
         </div>
