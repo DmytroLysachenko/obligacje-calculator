@@ -106,7 +106,7 @@ describe('calculator input layout contracts', () => {
 
     const workspace = readSource('shared/components/page/CalculatorWorkspace.tsx');
     expectContains(workspace, 'pageLayout.calculatorGrid');
-    expectContains(workspace, 'pageLayout.stickyScenario');
+    expectContains(workspace, 'pageLayout.scenarioPlan');
     expectContains(workspace, 'pageLayout.sectionFlow');
   });
 

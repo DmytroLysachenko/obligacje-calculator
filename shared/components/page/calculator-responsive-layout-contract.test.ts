@@ -9,23 +9,21 @@ function read(path: string) {
 describe('calculator responsive layout contract', () => {
   const layout = () => read('shared/components/page/layout-system.ts');
 
-  it('keeps the calculator single-column until there is room for both dense panels', () => {
+  it('keeps the calculator plan above the outcome so wide results use the full desk', () => {
     const source = layout();
     const grid = source.match(/calculatorGrid:\s*'([^']+)'/)?.[1] ?? '';
 
     expect(grid).toContain('grid-cols-1');
-    expect(grid).toContain('2xl:grid-cols-[420px_minmax(0,1fr)]');
-    expect(grid).not.toContain(' xl:grid-cols');
+    expect(grid).toContain('2xl:gap-12');
+    expect(grid).not.toContain('grid-cols-[');
   });
 
-  it('keeps the scenario controls sticky only in the wide two-panel layout', () => {
+  it('keeps the scenario plan readable without turning it into a sticky sidebar', () => {
     const source = layout();
-    const sticky = source.match(/stickyScenario:\s*'([^']+)'/)?.[1] ?? '';
+    const plan = source.match(/scenarioPlan:\s*'([^']+)'/)?.[1] ?? '';
 
-    expect(sticky).toContain('2xl:sticky');
-    expect(sticky).toContain('2xl:top-8');
-    expect(sticky).toContain('2xl:h-fit');
-    expect(sticky).not.toContain(' xl:sticky');
+    expect(plan).toContain('max-w-[var(--layout-content-max)]');
+    expect(plan).not.toContain('sticky');
   });
 
   it('reserves enough page space for the mobile calculation action', () => {

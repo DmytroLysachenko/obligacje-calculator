@@ -114,6 +114,12 @@
   --sidebar-width: 15rem;
 }
 
+@media (min-width: 1800px) {
+  :root {
+    --layout-app-max: 1800px;
+  }
+}
+
 html {
   scroll-behavior: smooth;
 }

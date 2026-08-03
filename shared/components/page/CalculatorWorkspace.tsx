@@ -45,12 +45,13 @@ export function CalculatorWorkspace({
         ) : null}
       </nav>
       <div className={pageLayout.calculatorGrid}>
-        <aside
+        <section
           id="calculator-inputs"
-          className={cn('ui-section-anchor', pageLayout.stickyScenario, controlsClassName)}
+          aria-label={t('common.plan')}
+          className={cn('ui-section-anchor', pageLayout.scenarioPlan, controlsClassName)}
         >
           {controls}
-        </aside>
+        </section>
         <section
           id="calculator-results"
           aria-live="polite"

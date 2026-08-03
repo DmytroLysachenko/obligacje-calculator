@@ -38,6 +38,7 @@ describe('layout system contracts', () => {
     expectContains(globals, '--layout-content-max: 1180px;');
     expectContains(globals, '--layout-wide-max: 1440px;');
     expectContains(globals, '--layout-app-max: 1500px;');
+    expectContains(globals, '--layout-app-max: 1800px;');
     expectContains(globals, '--sidebar-width: 15rem;');
     expectContains(globals, '.ui-page-flow');
     expectContains(globals, '.ui-section-flow');
@@ -45,11 +46,11 @@ describe('layout system contracts', () => {
 
     expectContains(tokens, "pageFlow: 'space-y-10 pb-16 md:space-y-14'");
     expectContains(tokens, 'calculatorGrid:');
+    expectContains(tokens, "calculatorGrid: 'grid grid-cols-1 gap-8 2xl:gap-12'");
     expectContains(
       tokens,
-      "'grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10'",
+      "scenarioPlan: 'mx-auto w-full max-w-[var(--layout-content-max)] space-y-5'",
     );
-    expectContains(tokens, "stickyScenario: 'space-y-5 2xl:sticky 2xl:top-8 2xl:h-fit'");
   });
 
   it('keeps root content and footer aligned to the same app width', () => {

@@ -120,7 +120,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
       <form
         id={formId}
         onSubmit={onSubmit}
-        className="ui-form-panel w-full space-y-7 xl:sticky xl:top-8"
+        className="ui-form-panel w-full space-y-7"
         aria-label={t('bonds.single_calculator')}
       >
         {guardrails.length > 0 ? (
