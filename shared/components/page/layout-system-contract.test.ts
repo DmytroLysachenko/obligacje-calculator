@@ -101,6 +101,8 @@ describe('layout system contracts', () => {
     expectContains(workspace, 'controls: React.ReactNode;');
     expectContains(workspace, 'results: React.ReactNode;');
     expectContains(workspace, 'details?: React.ReactNode;');
+    expectContains(workspace, 'scenarioSummary?: ReadonlyArray');
+    expectContains(workspace, "t('common.edit_plan')");
     expectContains(workspace, 'pageLayout.calculatorGrid');
   });
 

@@ -7,6 +7,8 @@
     "theme": "Theme",
     "calculate": "Calculate",
     "plan": "Plan",
+    "scenario_plan": "Scenario plan",
+    "edit_plan": "Edit plan",
     "summary": "Summary",
     "details": "Details",
     "section_navigation": "Calculator sections",

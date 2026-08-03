@@ -249,6 +249,19 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           controlsClassName="xl:self-start"
           resultsClassName="min-w-0"
           detailsClassName="min-w-0"
+          hasResults={isPersistenceReady && !!results}
+          isDirty={isDirty}
+          scenarioSummary={[
+            { label: t('bonds.bond.type'), value: inputs.bondType },
+            {
+              label: t('bonds.bond_quantity'),
+              value: `${Math.floor(inputs.initialInvestment / 100)} ${t('bonds.units')}`,
+            },
+            {
+              label: t('bonds.investment_horizon'),
+              value: `${inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)} ${t('common.month_compact')}`,
+            },
+          ]}
           controls={
             <BondInputsForm
               formId={SINGLE_CALCULATOR_FORM_ID}

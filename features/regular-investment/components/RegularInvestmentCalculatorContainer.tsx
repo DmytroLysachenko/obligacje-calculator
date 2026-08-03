@@ -72,6 +72,19 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         className="ui-page-flow"
         resultsClassName="min-w-0"
         detailsClassName="min-w-0"
+        hasResults={isPersistenceReady && !!results}
+        isDirty={isDirty}
+        scenarioSummary={[
+          { label: t('bonds.bond.type'), value: inputs.bondType },
+          {
+            label: t('bonds.bond_quantity'),
+            value: `${inputs.contributionAmount} ${t('bonds.units')}`,
+          },
+          {
+            label: t('bonds.investment_horizon'),
+            value: `${inputs.investmentHorizonMonths} ${t('common.month_compact')}`,
+          },
+        ]}
         controls={
           <RegularInvestmentInputsForm
             inputs={inputs}
