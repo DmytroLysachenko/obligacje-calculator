@@ -34,7 +34,10 @@ import {
   ComparisonFairnessPanel,
   ComparisonSetupStatePanel,
 } from './ComparisonContainerPanels';
-import { ComparisonSharedBaseCard } from './ComparisonSharedBaseCard';
+import {
+  ComparisonSharedAssumptionsPanel,
+  ComparisonSharedBaseCard,
+} from './ComparisonSharedBaseCard';
 import { ComparisonVerdict } from './ComparisonVerdict';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
 
@@ -323,7 +326,6 @@ export const ComparisonContainer: React.FC = () => {
               >
                 <ComparisonSharedBaseCard
                   sharedConfig={sharedConfig}
-                  assumptionsBondType={assumptionsBondType}
                   onUpdateSharedConfig={
                     updateSharedConfigWithHistory as (
                       key: keyof typeof sharedConfig | string,
@@ -396,6 +398,17 @@ export const ComparisonContainer: React.FC = () => {
                 <ComparisonSetupStatePanel hasResults={!!resultsA} isCalculating={isCalculating} />
               </div>
             </div>
+
+            <ComparisonSharedAssumptionsPanel
+              sharedConfig={sharedConfig}
+              assumptionsBondType={assumptionsBondType}
+              onUpdateSharedConfig={
+                updateSharedConfigWithHistory as (
+                  key: keyof typeof sharedConfig | string,
+                  value: unknown,
+                ) => void
+              }
+            />
           </>
         )}
 

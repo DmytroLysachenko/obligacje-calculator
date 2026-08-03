@@ -27,9 +27,8 @@ import { toDateString } from '@/shared/lib/date-timing';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
 
-interface ComparisonSharedBaseCardProps {
+export interface ComparisonSharedBaseCardProps {
   sharedConfig: SharedConfig;
-  assumptionsBondType: BondType;
   onUpdateSharedConfig: {
     bivarianceHack: (key: keyof SharedConfig | string, value: unknown) => void;
   }['bivarianceHack'];
@@ -37,7 +36,6 @@ interface ComparisonSharedBaseCardProps {
 
 export function ComparisonSharedBaseCard({
   sharedConfig,
-  assumptionsBondType,
   onUpdateSharedConfig,
 }: ComparisonSharedBaseCardProps) {
   const { t, locale: language } = useAppI18n();
@@ -216,46 +214,63 @@ export function ComparisonSharedBaseCard({
             {t('comparison.shared_horizon_desc')}
           </p>
         </div>
-
-        <SecondaryInsightAccordion
-          title={t('comparison.shared_assumptions_title')}
-          description={t('comparison.shared_assumptions_desc')}
-          badge={t('comparison.helper_secondary')}
-          className="border-t border-dashed pt-4"
-        >
-          <div className="ui-control-stack">
-            <MarketAssumptionsForm
-              expectedInflation={sharedConfig.expectedInflation}
-              expectedNbpRate={sharedConfig.expectedNbpRate}
-              customInflation={sharedConfig.customInflation}
-              customNbpRate={sharedConfig.customNbpRate}
-              bondType={assumptionsBondType}
-              inflationHorizonYears={Math.max(
-                1,
-                Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12),
-              )}
-              onUpdate={onUpdateSharedConfig}
-              compact
-            />
-
-            <div className="ui-control-group">
-              <Label className="ui-metadata text-muted-foreground">{t('bonds.tax_strategy')}</Label>
-              <FormSelect
-                value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
-                onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
-                options={[
-                  { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
-                  { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
-                  { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
-                ]}
-              />
-              <p className="text-xs leading-5 text-muted-foreground">
-                {t('comparison.shared_tax_desc')}
-              </p>
-            </div>
-          </div>
-        </SecondaryInsightAccordion>
       </div>
+    </section>
+  );
+}
+
+interface ComparisonSharedAssumptionsPanelProps extends ComparisonSharedBaseCardProps {
+  assumptionsBondType: BondType;
+}
+
+export function ComparisonSharedAssumptionsPanel({
+  sharedConfig,
+  assumptionsBondType,
+  onUpdateSharedConfig,
+}: ComparisonSharedAssumptionsPanelProps) {
+  const { t } = useAppI18n();
+
+  return (
+    <section className="ui-surface-flush p-5 md:p-6">
+      <SecondaryInsightAccordion
+        title={t('comparison.shared_assumptions_title')}
+        description={t('comparison.shared_assumptions_desc')}
+        badge={t('comparison.helper_secondary')}
+        defaultOpen
+        contentClassName="pt-5"
+      >
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] xl:items-start">
+          <MarketAssumptionsForm
+            expectedInflation={sharedConfig.expectedInflation}
+            expectedNbpRate={sharedConfig.expectedNbpRate}
+            customInflation={sharedConfig.customInflation}
+            customNbpRate={sharedConfig.customNbpRate}
+            bondType={assumptionsBondType}
+            inflationHorizonYears={Math.max(
+              1,
+              Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12),
+            )}
+            onUpdate={onUpdateSharedConfig}
+            compact
+          />
+
+          <div className="ui-control-group xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
+            <Label className="ui-metadata text-muted-foreground">{t('bonds.tax_strategy')}</Label>
+            <FormSelect
+              value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
+              onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
+              options={[
+                { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
+                { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
+                { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
+              ]}
+            />
+            <p className="text-xs leading-5 text-muted-foreground">
+              {t('comparison.shared_tax_desc')}
+            </p>
+          </div>
+        </div>
+      </SecondaryInsightAccordion>
     </section>
   );
 }

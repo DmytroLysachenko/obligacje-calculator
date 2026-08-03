@@ -66,12 +66,15 @@ describe('comparison layout contract', () => {
 
   it('keeps shared assumptions secondary while preserving connected amount input metadata', () => {
     const sharedBase = read('features/comparison-engine/components/ComparisonSharedBaseCard.tsx');
+    const container = read(files.container);
 
     expect(sharedBase).toContain('<SecondaryInsightAccordion');
     expect(sharedBase).toContain("title={t('comparison.shared_assumptions_title')}");
     expect(sharedBase).toContain('id="comparison-initial-investment"');
     expect(sharedBase).toContain('htmlFor="comparison-initial-investment"');
     expect(sharedBase).toContain('inputMode="decimal"');
+    expect(container).toContain('<ComparisonSharedAssumptionsPanel');
+    expect(sharedBase).toContain('xl:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)]');
   });
 
   it('invalidates old persisted comparison envelopes after rollover and chart fixes', () => {
