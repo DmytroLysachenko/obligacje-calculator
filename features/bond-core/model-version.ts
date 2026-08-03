@@ -1,1 +1,1 @@
-export const MODEL_VERSION = '2.8.0-rollover-cash-cadence';
+export const MODEL_VERSION = '2.9.0-issuer-terms-authoritative';
