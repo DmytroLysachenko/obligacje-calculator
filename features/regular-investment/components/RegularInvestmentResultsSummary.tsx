@@ -6,7 +6,6 @@ import {
   buildRegularInvestmentFinancialInsights,
   buildRegularInvestmentPrimaryStats,
   buildRegularInvestmentRecentLotItems,
-  buildRegularInvestmentSupportingStats,
 } from '@/features/regular-investment/lib/regular-investment-results-model';
 import { RegularInvestmentResultsSummaryProps } from '@/features/regular-investment/types/results';
 import { useAppI18n } from '@/i18n/client';
@@ -44,10 +43,6 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
   );
   const primaryStats = useMemo(
     () => buildRegularInvestmentPrimaryStats({ results, formatCurrency, t }),
-    [formatCurrency, results, t],
-  );
-  const supportingStats = useMemo(
-    () => buildRegularInvestmentSupportingStats({ results, formatCurrency, t }),
     [formatCurrency, results, t],
   );
   const financialInsightItems = useMemo(
@@ -113,12 +108,6 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
       <MetricStrip
         items={primaryStats}
         columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
-        className="ui-result-panel"
-      />
-
-      <MetricStrip
-        items={supportingStats}
-        columns="grid-cols-1 lg:grid-cols-2"
         className="ui-result-panel"
       />
 

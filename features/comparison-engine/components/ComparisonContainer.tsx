@@ -1,10 +1,12 @@
 'use client';
-import { Scale } from 'lucide-react';
+import { ChevronUp, Pencil, Scale } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { ChartStep } from '@/features/bond-core/types';
+import { bondQuantityFromInvestment } from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { Notice } from '@/shared/components/feedback/Notice';
@@ -12,6 +14,7 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 
 import { useComparison } from '../hooks/useComparison';
 import { buildDefaultSharedConfig } from '../lib/comparison-calculator-state';
@@ -83,6 +86,10 @@ export const ComparisonContainer: React.FC = () => {
   } = useComparison(initialUrlState);
   const { t, locale: language } = useAppI18n();
   const [chartStep, setChartStep] = useState<ChartStep>('yearly');
+  const hasComparisonResults = isPersistenceReady && !!resultsA && !!resultsB;
+  const [isPlanOpen, setIsPlanOpen] = useState(!hasComparisonResults);
+  const previousHasResults = useRef(hasComparisonResults);
+  const previousIsDirty = useRef(isDirty);
   const comparisonUrlState = useMemo(
     () => ({ sharedConfig, scenarioA, scenarioB }),
     [scenarioA, scenarioB, sharedConfig],
@@ -220,6 +227,35 @@ export const ComparisonContainer: React.FC = () => {
     ],
   );
   const durationMismatchText = durationMismatch ? t('comparison.auto_rollover_notice') : null;
+
+  useEffect(() => {
+    const receivedFirstResult = !previousHasResults.current && hasComparisonResults;
+    const committedEditedPlan = previousIsDirty.current && !isDirty && hasComparisonResults;
+
+    if (!hasComparisonResults) {
+      setIsPlanOpen(true);
+    } else if (receivedFirstResult || committedEditedPlan) {
+      setIsPlanOpen(false);
+    }
+
+    previousHasResults.current = hasComparisonResults;
+    previousIsDirty.current = isDirty;
+  }, [hasComparisonResults, isDirty]);
+
+  const planSummary = [
+    {
+      label: t('bonds.bond_quantity'),
+      value: `${bondQuantityFromInvestment(sharedConfig.initialInvestment)} ${t('bonds.units')}`,
+    },
+    {
+      label: t('bonds.investment_horizon'),
+      value: formatHorizonMonths(sharedConfig.investmentHorizonMonths ?? 120, language),
+    },
+    { label: t('comparison.scenario_a'), value: scenarioA.bondType },
+    { label: t('comparison.scenario_b'), value: scenarioB.bondType },
+  ];
+  const showPlanReceipt = hasComparisonResults && !isPlanOpen;
+
   return (
     <CalculatorPageShell
       title={t('nav.comparison')}
@@ -227,87 +263,141 @@ export const ComparisonContainer: React.FC = () => {
       icon={<Scale className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
-      hasResults={isPersistenceReady && !!resultsA}
+      hasResults={hasComparisonResults}
       onKeyDown={handleKeyDown}
     >
       <div className="ui-page-flow">
-        <div className={comparisonLayout.workspace}>
-          <aside className={comparisonLayout.sharedBase} aria-label={t('comparison.shared_base')}>
-            <ComparisonSharedBaseCard
-              sharedConfig={sharedConfig}
-              assumptionsBondType={assumptionsBondType}
-              onUpdateSharedConfig={
-                updateSharedConfigWithHistory as (
-                  key: keyof typeof sharedConfig | string,
-                  value: unknown,
-                ) => void
-              }
-            />
-          </aside>
-
-          <div className="min-w-0 ui-compact-flow">
-            <div className={comparisonLayout.scenarioGrid}>
-              <ScenarioOverrideCard
-                title={t('comparison.scenario_a')}
-                colorClass="scenario-a"
-                bondType={scenarioA.bondType}
-                onBondTypeChange={(bondType) => {
-                  setBondTypeA(bondType);
-                  syncComparisonUrl({
-                    ...comparisonUrlState,
-                    scenarioA: applyScenarioBondTypeUpdate(scenarioA, bondType),
-                  });
-                }}
-                taxStrategy={scenarioA.taxStrategy}
-                onTaxStrategyChange={(value) =>
-                  updateScenarioWithHistory('A', 'taxStrategy', value)
-                }
-                customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined}
-                onCustomHorizonEnabledChange={(enabled) =>
-                  updateScenarioHorizonWithHistory('A', undefined, enabled)
-                }
-                customHorizonMonths={scenarioA.investmentHorizonMonths}
-                onCustomHorizonMonthsChange={(value) =>
-                  updateScenarioHorizonWithHistory('A', value)
-                }
-              />
-              <ScenarioOverrideCard
-                title={t('comparison.scenario_b')}
-                colorClass="scenario-b"
-                bondType={scenarioB.bondType}
-                onBondTypeChange={(bondType) => {
-                  setBondTypeB(bondType);
-                  syncComparisonUrl({
-                    ...comparisonUrlState,
-                    scenarioB: applyScenarioBondTypeUpdate(scenarioB, bondType),
-                  });
-                }}
-                taxStrategy={scenarioB.taxStrategy}
-                onTaxStrategyChange={(value) =>
-                  updateScenarioWithHistory('B', 'taxStrategy', value)
-                }
-                customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined}
-                onCustomHorizonEnabledChange={(enabled) =>
-                  updateScenarioHorizonWithHistory('B', undefined, enabled)
-                }
-                customHorizonMonths={scenarioB.investmentHorizonMonths}
-                onCustomHorizonMonthsChange={(value) =>
-                  updateScenarioHorizonWithHistory('B', value)
-                }
-              />
+        {showPlanReceipt ? (
+          <section className={comparisonLayout.planReceipt} aria-label={t('common.scenario_plan')}>
+            <div className="border-y border-border bg-card/60 px-4 py-4 md:px-6">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="min-w-0 space-y-3">
+                  <p className="ui-kicker">{t('common.scenario_plan')}</p>
+                  <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:items-start">
+                    {planSummary.map((item) => (
+                      <div
+                        key={item.label}
+                        className="min-w-0 border-l border-border pl-3 first:border-l-0 first:pl-0"
+                      >
+                        <dt className="ui-kicker">{item.label}</dt>
+                        <dd className="mt-1 truncate text-sm font-semibold text-foreground">
+                          {item.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-9 shrink-0 gap-2 self-start"
+                  onClick={() => setIsPlanOpen(true)}
+                >
+                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                  {t('common.edit_plan')}
+                </Button>
+              </div>
             </div>
+          </section>
+        ) : (
+          <>
+            {hasComparisonResults ? (
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 gap-2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setIsPlanOpen(false)}
+                >
+                  <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+                  {t('common.close_plan')}
+                </Button>
+              </div>
+            ) : null}
+            <div className={comparisonLayout.workspace}>
+              <aside
+                className={comparisonLayout.sharedBase}
+                aria-label={t('comparison.shared_base')}
+              >
+                <ComparisonSharedBaseCard
+                  sharedConfig={sharedConfig}
+                  assumptionsBondType={assumptionsBondType}
+                  onUpdateSharedConfig={
+                    updateSharedConfigWithHistory as (
+                      key: keyof typeof sharedConfig | string,
+                      value: unknown,
+                    ) => void
+                  }
+                />
+              </aside>
 
-            <ComparisonFairnessPanel
-              durationMismatchTitle={t('comparison.auto_rollover_notice_title')}
-              durationMismatchText={durationMismatchText}
-              hasResults={!!resultsA && !!resultsB}
-              isCalculating={isCalculating}
-              onCalculate={() => calculate()}
-            />
+              <div className="min-w-0 ui-compact-flow">
+                <div className={comparisonLayout.scenarioGrid}>
+                  <ScenarioOverrideCard
+                    title={t('comparison.scenario_a')}
+                    colorClass="scenario-a"
+                    bondType={scenarioA.bondType}
+                    onBondTypeChange={(bondType) => {
+                      setBondTypeA(bondType);
+                      syncComparisonUrl({
+                        ...comparisonUrlState,
+                        scenarioA: applyScenarioBondTypeUpdate(scenarioA, bondType),
+                      });
+                    }}
+                    taxStrategy={scenarioA.taxStrategy}
+                    onTaxStrategyChange={(value) =>
+                      updateScenarioWithHistory('A', 'taxStrategy', value)
+                    }
+                    customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined}
+                    onCustomHorizonEnabledChange={(enabled) =>
+                      updateScenarioHorizonWithHistory('A', undefined, enabled)
+                    }
+                    customHorizonMonths={scenarioA.investmentHorizonMonths}
+                    onCustomHorizonMonthsChange={(value) =>
+                      updateScenarioHorizonWithHistory('A', value)
+                    }
+                  />
+                  <ScenarioOverrideCard
+                    title={t('comparison.scenario_b')}
+                    colorClass="scenario-b"
+                    bondType={scenarioB.bondType}
+                    onBondTypeChange={(bondType) => {
+                      setBondTypeB(bondType);
+                      syncComparisonUrl({
+                        ...comparisonUrlState,
+                        scenarioB: applyScenarioBondTypeUpdate(scenarioB, bondType),
+                      });
+                    }}
+                    taxStrategy={scenarioB.taxStrategy}
+                    onTaxStrategyChange={(value) =>
+                      updateScenarioWithHistory('B', 'taxStrategy', value)
+                    }
+                    customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined}
+                    onCustomHorizonEnabledChange={(enabled) =>
+                      updateScenarioHorizonWithHistory('B', undefined, enabled)
+                    }
+                    customHorizonMonths={scenarioB.investmentHorizonMonths}
+                    onCustomHorizonMonthsChange={(value) =>
+                      updateScenarioHorizonWithHistory('B', value)
+                    }
+                  />
+                </div>
 
-            <ComparisonSetupStatePanel hasResults={!!resultsA} isCalculating={isCalculating} />
-          </div>
-        </div>
+                <ComparisonFairnessPanel
+                  durationMismatchTitle={t('comparison.auto_rollover_notice_title')}
+                  durationMismatchText={durationMismatchText}
+                  hasResults={!!resultsA && !!resultsB}
+                  isCalculating={isCalculating}
+                  onCalculate={() => calculate()}
+                />
+
+                <ComparisonSetupStatePanel hasResults={!!resultsA} isCalculating={isCalculating} />
+              </div>
+            </div>
+          </>
+        )}
 
         {resultsA && resultsB ? (
           <div

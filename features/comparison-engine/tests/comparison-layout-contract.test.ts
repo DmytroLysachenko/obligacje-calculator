@@ -51,8 +51,12 @@ describe('comparison layout contract', () => {
     expect(container).toContain('comparisonLayout.workspace');
     expect(container).toContain('comparisonLayout.sharedBase');
     expect(container).toContain('comparisonLayout.scenarioGrid');
+    expect(container).toContain('comparisonLayout.planReceipt');
+    expect(container).toContain("t('common.edit_plan')");
+    expect(container).toContain("t('common.close_plan')");
     expect(layout).toContain('2xl:grid-cols-[minmax(20rem,420px)_minmax(0,1fr)]');
     expect(layout).toContain("scenarioGrid: 'grid grid-cols-1 gap-5 xl:grid-cols-2 xl:gap-6'");
+    expect(layout).toContain("planReceipt: 'mx-auto w-full max-w-[var(--layout-wide-max)]'");
     expect(layout).toContain("desktopSchedule: 'hidden 2xl:block'");
     expect(container).toContain('scenarioAColor={scenarioAColor}');
     expect(container).toContain('scenarioBColor={scenarioBColor}');
