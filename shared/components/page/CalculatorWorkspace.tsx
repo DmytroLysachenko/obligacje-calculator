@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide-react';
+import { ChevronUp, Pencil } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -94,7 +94,23 @@ export function CalculatorWorkspace({
               </div>
             </div>
           ) : (
-            controls
+            <>
+              {hasResults && hasScenarioReceipt ? (
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 gap-2 text-muted-foreground hover:text-foreground"
+                    onClick={() => setIsPlanOpen(false)}
+                  >
+                    <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
+                    {t('common.close_plan')}
+                  </Button>
+                </div>
+              ) : null}
+              {controls}
+            </>
           )}
         </section>
         <section
