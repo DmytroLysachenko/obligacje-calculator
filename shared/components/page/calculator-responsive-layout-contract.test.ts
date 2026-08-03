@@ -22,7 +22,7 @@ describe('calculator responsive layout contract', () => {
     const source = layout();
     const plan = source.match(/scenarioPlan:\s*'([^']+)'/)?.[1] ?? '';
 
-    expect(plan).toContain('max-w-[var(--layout-content-max)]');
+    expect(plan).toContain('max-w-[var(--layout-wide-max)]');
     expect(plan).not.toContain('sticky');
   });
 

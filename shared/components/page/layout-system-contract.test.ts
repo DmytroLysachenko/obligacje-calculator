@@ -49,7 +49,7 @@ describe('layout system contracts', () => {
     expectContains(tokens, "calculatorGrid: 'grid grid-cols-1 gap-8 2xl:gap-12'");
     expectContains(
       tokens,
-      "scenarioPlan: 'mx-auto w-full max-w-[var(--layout-content-max)] space-y-5'",
+      "scenarioPlan: 'mx-auto w-full max-w-[var(--layout-wide-max)] space-y-5'",
     );
   });
 

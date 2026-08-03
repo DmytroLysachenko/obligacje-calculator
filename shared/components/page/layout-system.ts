@@ -18,7 +18,7 @@ export const pageLayout = {
   // A calculation plan is primary content, not secondary navigation. Keep it above
   // the outcome on large displays so result tables and charts use the whole desk.
   calculatorGrid: 'grid grid-cols-1 gap-8 2xl:gap-12',
-  scenarioPlan: 'mx-auto w-full max-w-[var(--layout-content-max)] space-y-5',
+  scenarioPlan: 'mx-auto w-full max-w-[var(--layout-wide-max)] space-y-5',
   stickySidebar: 'space-y-5 lg:sticky lg:top-8 lg:h-fit',
   compactCalculatorGrid:
     'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:items-start lg:gap-8',
