@@ -159,12 +159,12 @@ export const MarketAssumptionsForm = ({
         </div>
       ) : null}
 
-      <div className="space-y-4">
-        {section === 'all' ? (
-          <AssumptionSemanticsNote bondType={bondType} showNbpNote={isNbpRelevant} />
-        ) : null}
+      {showInflationSection ? (
+        <div className="space-y-4">
+          {section === 'all' ? (
+            <AssumptionSemanticsNote bondType={bondType} showNbpNote={isNbpRelevant} />
+          ) : null}
 
-        {showInflationSection ? (
           <InflationAssumptionSection
             compact={compact}
             expectedInflation={expectedInflation}
@@ -175,8 +175,8 @@ export const MarketAssumptionsForm = ({
             onUpdate={onUpdate}
             onModeChange={updateInflationMode}
           />
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       {showNbpSection ? (
         <NbpAssumptionSection

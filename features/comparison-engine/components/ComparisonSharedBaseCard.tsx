@@ -21,6 +21,8 @@ import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
+import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { toDateString } from '@/shared/lib/date-timing';
@@ -231,16 +233,14 @@ export function ComparisonSharedAssumptionsPanel({
   const { t } = useAppI18n();
 
   return (
-    <section className="ui-plan-region px-5 py-5 md:px-6 md:py-6">
-      <SecondaryInsightAccordion
-        title={t('comparison.shared_assumptions_title')}
-        description={t('comparison.shared_assumptions_desc')}
-        badge={t('comparison.helper_secondary')}
-        defaultOpen
-        className="ui-plan-assumptions"
-        contentClassName="pt-5"
-      >
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] xl:items-start">
+    <section className="ui-plan-region space-y-6 px-5 py-6 md:px-6 md:py-7">
+      <div className="max-w-3xl space-y-2">
+        <p className="ui-kicker">{t('comparison.shared_assumptions_title')}</p>
+        <p className="ui-body text-muted-foreground">{t('comparison.shared_assumptions_desc')}</p>
+      </div>
+
+      <div className="grid grid-cols-1 divide-y divide-border xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(16rem,20rem)] xl:divide-x xl:divide-y-0">
+        <section className="min-w-0 py-3 xl:pr-6">
           <MarketAssumptionsForm
             expectedInflation={sharedConfig.expectedInflation}
             expectedNbpRate={sharedConfig.expectedNbpRate}
@@ -253,24 +253,55 @@ export function ComparisonSharedAssumptionsPanel({
             )}
             onUpdate={onUpdateSharedConfig}
             compact
+            section="inflation"
+            showIntro={false}
           />
+        </section>
 
-          <div className="ui-control-group xl:border-l xl:border-t-0 xl:pl-6 xl:pt-0">
-            <Label className="ui-metadata text-muted-foreground">{t('bonds.tax_strategy')}</Label>
-            <FormSelect
-              value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
-              onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
-              options={[
-                { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
-                { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
-                { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
-              ]}
-            />
-            <p className="text-xs leading-5 text-muted-foreground">
-              {t('comparison.shared_tax_desc')}
-            </p>
-          </div>
-        </div>
+        <section className="min-w-0 py-3 xl:px-6">
+          <MarketAssumptionsForm
+            expectedInflation={sharedConfig.expectedInflation}
+            expectedNbpRate={sharedConfig.expectedNbpRate}
+            customInflation={sharedConfig.customInflation}
+            customNbpRate={sharedConfig.customNbpRate}
+            bondType={assumptionsBondType}
+            inflationHorizonYears={Math.max(
+              1,
+              Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12),
+            )}
+            onUpdate={onUpdateSharedConfig}
+            compact
+            section="nbp"
+            showIntro={false}
+          />
+        </section>
+
+        <section className="space-y-3 py-3 xl:pl-6">
+          <Label className="ui-metadata text-muted-foreground">{t('bonds.tax_strategy')}</Label>
+          <FormSelect
+            value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
+            onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
+            options={[
+              { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
+              { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
+              { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
+            ]}
+          />
+          <p className="text-xs leading-5 text-muted-foreground">
+            {t('comparison.shared_tax_desc')}
+          </p>
+        </section>
+      </div>
+
+      <AssumptionSemanticsNote bondType={assumptionsBondType} className="border-solid pt-5" />
+
+      <SecondaryInsightAccordion
+        title={t('bonds.market_assumptions.source_title')}
+        description={t('bonds.market_assumptions.source_description')}
+        badge={t('comparison.helper_secondary')}
+        className="ui-plan-assumptions"
+      >
+        <MacroDefaultsSummary showNbp compact />
       </SecondaryInsightAccordion>
     </section>
   );

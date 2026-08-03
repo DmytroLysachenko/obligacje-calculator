@@ -348,7 +348,7 @@ html {
   }
   .ui-plan-region .surface-panel,
   .ui-plan-assumptions .surface-panel {
-    @apply border-y border-border bg-transparent shadow-none;
+    @apply border-0 border-t border-border bg-transparent shadow-none;
     border-radius: 0;
   }
   .ui-result-panel {
