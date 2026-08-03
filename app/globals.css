@@ -341,8 +341,15 @@ html {
     @apply text-xs font-medium leading-5 text-destructive;
   }
   .ui-form-panel {
-    @apply border border-border bg-card p-5 md:p-6;
-    border-radius: var(--finance-radius-md);
+    @apply border-y border-border bg-transparent p-5 md:p-6;
+  }
+  .ui-plan-region {
+    @apply border-y border-border bg-muted/15;
+  }
+  .ui-plan-region .surface-panel,
+  .ui-plan-assumptions .surface-panel {
+    @apply border-y border-border bg-transparent shadow-none;
+    border-radius: 0;
   }
   .ui-result-panel {
     @apply border-t-2 border-border pt-6 md:pt-8;

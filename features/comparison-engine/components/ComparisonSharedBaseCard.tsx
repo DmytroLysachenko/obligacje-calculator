@@ -42,7 +42,7 @@ export function ComparisonSharedBaseCard({
   const dateLocale = getDateFnsLocale(language);
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 border-l-2 border-t border-border px-4 py-4 sm:px-5">
       <div className="space-y-2 border-b border-border pb-4">
         <h2 className="ui-section-title">{t('comparison.shared_base_title')}</h2>
         <p className="ui-body text-muted-foreground">{t('comparison.shared_base_desc')}</p>
@@ -231,12 +231,13 @@ export function ComparisonSharedAssumptionsPanel({
   const { t } = useAppI18n();
 
   return (
-    <section className="ui-surface-flush p-5 md:p-6">
+    <section className="ui-plan-region px-5 py-5 md:px-6 md:py-6">
       <SecondaryInsightAccordion
         title={t('comparison.shared_assumptions_title')}
         description={t('comparison.shared_assumptions_desc')}
         badge={t('comparison.helper_secondary')}
         defaultOpen
+        className="ui-plan-assumptions"
         contentClassName="pt-5"
       >
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] xl:items-start">

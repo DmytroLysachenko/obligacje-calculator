@@ -272,7 +272,7 @@ export const ComparisonContainer: React.FC = () => {
       <div className="ui-page-flow">
         {showPlanReceipt ? (
           <section className={comparisonLayout.planReceipt} aria-label={t('common.scenario_plan')}>
-            <div className="border-y border-border bg-card/60 px-4 py-4 md:px-6">
+            <div className="border-y border-border bg-muted/15 px-4 py-4 md:px-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="min-w-0 space-y-3">
                   <p className="ui-kicker">{t('common.scenario_plan')}</p>
