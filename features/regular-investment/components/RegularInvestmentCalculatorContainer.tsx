@@ -3,7 +3,6 @@ import { PiggyBank } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -78,16 +77,6 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             inputs={inputs}
             onUpdate={updateInput as (key: string, value: unknown) => void}
             onBondTypeChange={setBondType}
-            action={
-              <Button
-                type="button"
-                className="hidden h-11 w-full gap-2 lg:inline-flex"
-                onClick={() => calculate()}
-                disabled={isCalculating}
-              >
-                {!results ? t('common.calculate') : t('common.recalculate')}
-              </Button>
-            }
           />
         }
         results={
@@ -199,7 +188,6 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         hasResults={!!results}
         loading={isCalculating}
         onClick={() => calculate()}
-        className="lg:hidden"
       />
     </CalculatorPageShell>
   );
