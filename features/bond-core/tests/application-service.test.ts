@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { calculationService } from '../application-service';
+import { MODEL_VERSION } from '../model-version';
 import { BondType, InterestPayout, TaxStrategy } from '../types';
 import { ScenarioKind } from '../types/scenarios';
 
@@ -51,7 +52,7 @@ describe('CalculationApplicationService - Integration', () => {
       payload,
     });
 
-    expect(envelope.calculationVersion).toContain('2.8.0');
+    expect(envelope.calculationVersion).toBe(MODEL_VERSION);
     expect(envelope.result).toBeDefined();
 
     // Verify calculation notes reflect the simulation state
