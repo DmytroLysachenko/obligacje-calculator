@@ -1,11 +1,9 @@
 'use client';
-import { HelpCircle } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondInputs, BondType } from '@/features/bond-core/types';
@@ -18,6 +16,7 @@ import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 interface BondSeries {
   id: string;
@@ -90,12 +89,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
               <Label className="flex items-center gap-2 text-sm font-semibold">
                 {t('bonds.target_goal_req')}
               </Label>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>{t('bonds.glossary.savings_goal')}</TooltipContent>
-              </Tooltip>
+              <InfoTooltip content={t('bonds.glossary.savings_goal')} />
             </div>
             <div className="relative">
               <Input
@@ -124,12 +118,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
               {t('bonds.bond.type')}
             </Label>
             {currentDef.isInflationIndexed && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>{t('bonds.glossary.inflation_indexed')}</TooltipContent>
-              </Tooltip>
+              <InfoTooltip content={t('bonds.glossary.inflation_indexed')} />
             )}
           </div>
           <FormSelect

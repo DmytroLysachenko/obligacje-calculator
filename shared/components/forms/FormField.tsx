@@ -1,12 +1,10 @@
 'use client';
 
-import { Info } from 'lucide-react';
 import React from 'react';
 
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { getFieldAriaDescribedBy } from '@/shared/lib/field-validation';
 
 interface FormFieldProps {
@@ -34,7 +32,6 @@ export function FormField({
   required = false,
   optionalLabel,
 }: FormFieldProps) {
-  const { t } = useAppI18n();
   const descriptionId = React.useId();
   const errorId = React.useId();
   const describedBy = getFieldAriaDescribedBy(descriptionId, errorId, Boolean(error));
@@ -64,24 +61,7 @@ export function FormField({
             </Label>
           ) : null}
           {!required && optionalLabel ? <span className="ui-caption">{optionalLabel}</span> : null}
-          {tooltip ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className="ui-focus-ring rounded-sm text-muted-foreground"
-                    aria-label={t('common.more_information')}
-                  >
-                    <Info className="h-3.5 w-3.5" aria-hidden="true" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="max-w-xs text-xs leading-5">{tooltip}</div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : null}
+          {tooltip ? <InfoTooltip content={tooltip} /> : null}
         </div>
       ) : null}
       {control}

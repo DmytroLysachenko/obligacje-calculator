@@ -1,16 +1,15 @@
 'use client';
 
-import { Info } from 'lucide-react';
 import React from 'react';
 
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondType } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 type BondSelectionSectionProps = {
   bondType: BondType;
@@ -37,16 +36,7 @@ export function BondSelectionSection({
           <Label htmlFor="bondType" className="text-[15px] font-semibold">
             {t('bonds.bond.type')}
           </Label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">{t('bonds.bond.type_selection')}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <InfoTooltip content={t('bonds.bond.type_selection')} />
         </div>
         <FormSelect
           id="bondType"

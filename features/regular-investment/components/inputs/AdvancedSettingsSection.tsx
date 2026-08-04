@@ -1,16 +1,15 @@
 'use client';
 
-import { Info } from 'lucide-react';
 import React from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { RegularInvestmentInputs } from '@/features/bond-core/types';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 
 type AdvancedSettingsSectionProps = {
@@ -54,16 +53,7 @@ export function AdvancedSettingsSection({
               title={
                 <span className="inline-flex items-center gap-2">
                   {t('bonds.is_rebought')}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">{t('regular_form.rebuy_help')}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <InfoTooltip content={t('regular_form.rebuy_help')} />
                 </span>
               }
               description={`${t('bonds.is_rebought_desc')} (-${currentDef.rebuyDiscount.toFixed(2)} PLN/szt)`}
@@ -93,16 +83,7 @@ export function AdvancedSettingsSection({
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
                 <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{t('regular_form.tax_help')}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <InfoTooltip content={t('regular_form.tax_help')} />
               </div>
               <p className="text-xs text-muted-foreground">{t('bonds.belka_tax_desc')}</p>
             </div>

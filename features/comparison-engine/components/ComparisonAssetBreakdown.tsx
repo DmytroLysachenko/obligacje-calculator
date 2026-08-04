@@ -1,11 +1,11 @@
 'use client';
 
-import { Activity, Info, TrendingUp } from 'lucide-react';
+import { Activity, TrendingUp } from 'lucide-react';
 import React from 'react';
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 import { ComparisonAssetBreakdownProps } from '../types/multi-asset';
 
@@ -43,16 +43,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                     {asset.metadata.name}
                   </p>
                 </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{asset.metadata.description[language]}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <InfoTooltip content={asset.metadata.description[language]} />
               </div>
 
               <div className="space-y-2">
