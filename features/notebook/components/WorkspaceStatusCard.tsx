@@ -5,6 +5,7 @@ import React from 'react';
 
 import { useAppI18n } from '@/i18n/client';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { UserPortfolio } from '@/shared/types/portfolio';
 
 interface WorkspaceStatusCardProps {
@@ -51,16 +52,20 @@ export function WorkspaceStatusCard({
               <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
                 {t('workspace.active_selection_title')}
               </p>
-              <p className="text-base font-semibold tracking-tight text-foreground">
-                {selectedPortfolio?.name ?? t('workspace.no_active_portfolio')}
-              </p>
-              <p className="text-sm leading-6 text-muted-foreground">
-                {canManageWorkspace
-                  ? selectedPortfolio
-                    ? t('workspace.active_selection_desc')
-                    : t('workspace.create_first_portfolio_desc')
-                  : t('workspace.preview_only_desc')}
-              </p>
+              <div className="flex items-center gap-1">
+                <p className="text-base font-semibold tracking-tight text-foreground">
+                  {selectedPortfolio?.name ?? t('workspace.no_active_portfolio')}
+                </p>
+                <InfoTooltip
+                  content={
+                    canManageWorkspace
+                      ? selectedPortfolio
+                        ? t('workspace.active_selection_desc')
+                        : t('workspace.create_first_portfolio_desc')
+                      : t('workspace.preview_only_desc')
+                  }
+                />
+              </div>
 
               {canManageWorkspace && portfolios.length > 0 ? (
                 <div className="border-t border-border pt-3">

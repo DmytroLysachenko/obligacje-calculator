@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { homeDecisionRoutes } from '@/features/home/constants/decision-slip';
 import { useAppI18n } from '@/i18n/client';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 export function HomeDecisionSlip() {
   const { t } = useAppI18n();
@@ -23,12 +24,12 @@ export function HomeDecisionSlip() {
       </p>
       <ol className="mt-5 space-y-1" aria-label={t('landing.decision_slip.title')}>
         {homeDecisionRoutes.map((item, index) => (
-          <li key={item.id}>
+          <li key={item.id} className="flex items-center gap-1">
             <button
               type="button"
               aria-pressed={selectedId === item.id}
               onClick={() => setSelectedId(item.id)}
-              className="ui-interactive-surface group flex w-full items-center gap-3 rounded-md px-2 py-3 text-left hover:bg-background aria-pressed:bg-background"
+              className="ui-interactive-surface group flex min-w-0 flex-1 items-center gap-3 rounded-md px-2 py-3 text-left hover:bg-background aria-pressed:bg-background"
             >
               <span
                 className="font-mono text-[11px] font-semibold text-muted-foreground"
@@ -43,15 +44,13 @@ export function HomeDecisionSlip() {
                 <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
                   {t(`landing.decision_slip.options.${item.id}.description`)}
                 </span>
-                <span className="mt-2 block font-mono text-[10px] font-semibold tracking-[0.08em] text-muted-foreground">
-                  {t(`landing.decision_slip.options.${item.id}.detail`)}
-                </span>
               </span>
               <ArrowUpRight
                 className="size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 aria-hidden="true"
               />
             </button>
+            <InfoTooltip content={t(`landing.decision_slip.options.${item.id}.detail`)} />
           </li>
         ))}
       </ol>
