@@ -4,6 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import React from 'react';
 
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 interface FormSectionProps {
   title: React.ReactNode;
@@ -37,23 +38,28 @@ export function FormSection({
       <div className="ui-section-header gap-3">
         <div className="ui-section-intro">
           {collapsible ? (
-            <button
-              type="button"
-              className="ui-disclosure-summary ui-interactive-surface w-full rounded-md text-left motion-reduce:transition-none"
-              aria-expanded={open}
-              aria-controls={contentId}
-              onClick={() => setOpen((current) => !current)}
-            >
-              <span>{title}</span>
-              <ChevronDown
-                className={cn('h-4 w-4 transition-transform duration-150', open && 'rotate-180')}
-                aria-hidden="true"
-              />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                className="ui-disclosure-summary ui-interactive-surface min-w-0 flex-1 rounded-md text-left motion-reduce:transition-none"
+                aria-expanded={open}
+                aria-controls={contentId}
+                onClick={() => setOpen((current) => !current)}
+              >
+                <span>{title}</span>
+                <ChevronDown
+                  className={cn('h-4 w-4 transition-transform duration-150', open && 'rotate-180')}
+                  aria-hidden="true"
+                />
+              </button>
+              {description ? <InfoTooltip content={description} /> : null}
+            </div>
           ) : (
-            <Heading className="ui-card-title">{title}</Heading>
+            <div className="flex items-center gap-1">
+              <Heading className="ui-card-title">{title}</Heading>
+              {description ? <InfoTooltip content={description} /> : null}
+            </div>
           )}
-          {description ? <div className="ui-field-description ui-pretty">{description}</div> : null}
         </div>
         {aside ? <div className="shrink-0">{aside}</div> : null}
       </div>

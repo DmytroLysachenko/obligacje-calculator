@@ -5,6 +5,7 @@ import React from 'react';
 
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 
 interface MacroDefaultsSummaryProps {
@@ -17,13 +18,15 @@ function MacroDefaultRow({ label, value, asOf }: { label: string; value: number;
 
   return (
     <div className="flex items-start justify-between gap-3 border-b border-dashed border-border py-2.5 last:border-b-0">
-      <div className="space-y-1">
+      <div className="flex items-center gap-1">
         <p className="ui-metadata text-muted-foreground">{label}</p>
-        <p className="text-[11px] leading-5 text-muted-foreground">
-          {asOf
-            ? t('bonds.market_assumptions.source_up_to_date')
-            : t('bonds.market_assumptions.source_missing_date')}
-        </p>
+        <InfoTooltip
+          content={
+            asOf
+              ? t('bonds.market_assumptions.source_up_to_date')
+              : t('bonds.market_assumptions.source_missing_date')
+          }
+        />
       </div>
       <span className="text-sm font-semibold text-foreground">{value.toFixed(2)}%</span>
     </div>
@@ -54,10 +57,17 @@ export function MacroDefaultsSummary({
           >
             {t('bonds.market_assumptions.source_title')}
           </p>
+          <InfoTooltip
+            content={
+              <>
+                <p>{t('bonds.market_assumptions.source_description')}</p>
+                {!defaults.usedFallback ? (
+                  <p className="mt-2">{t('bonds.market_assumptions.source_live_note')}</p>
+                ) : null}
+              </>
+            }
+          />
         </div>
-        <p className="text-[11px] leading-5 text-muted-foreground">
-          {t('bonds.market_assumptions.source_description')}
-        </p>
       </div>
 
       <div className="grid gap-0">
@@ -75,11 +85,11 @@ export function MacroDefaultsSummary({
         ) : null}
       </div>
 
-      <p className="text-[11px] leading-5 text-muted-foreground">
-        {defaults.usedFallback
-          ? t('bonds.market_assumptions.source_fallback_note')
-          : t('bonds.market_assumptions.source_live_note')}
-      </p>
+      {defaults.usedFallback ? (
+        <p className="text-[11px] leading-5 text-warning">
+          {t('bonds.market_assumptions.source_fallback_note')}
+        </p>
+      ) : null}
     </div>
   );
 }

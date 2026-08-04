@@ -6,6 +6,7 @@ import React from 'react';
 import { BondType } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import {
   getInflationEffectMessageKey,
   getNbpEffectMessageKey,
@@ -33,15 +34,17 @@ export function AssumptionSemanticsNote({
         <p className="ui-metadata font-semibold text-foreground">
           {t('bonds.market_assumptions.effect_title')}
         </p>
+        <InfoTooltip
+          content={
+            <>
+              <p>{t(getInflationEffectMessageKey(bondType))}</p>
+              {shouldShowNbpNote ? (
+                <p className="mt-2">{t(getNbpEffectMessageKey(bondType))}</p>
+              ) : null}
+            </>
+          }
+        />
       </div>
-      <p className="text-[11px] leading-5 text-muted-foreground">
-        {t(getInflationEffectMessageKey(bondType))}
-      </p>
-      {shouldShowNbpNote ? (
-        <p className="text-[11px] leading-5 text-muted-foreground">
-          {t(getNbpEffectMessageKey(bondType))}
-        </p>
-      ) : null}
     </div>
   );
 }
