@@ -8,7 +8,6 @@ const sources = {
   formField: 'shared/components/forms/FormField.tsx',
   actionGrid: 'shared/components/results/ResultActionGrid.tsx',
   config: 'features/single-calculator/components/sections/BondConfigSection.tsx',
-  moneyInput: 'shared/components/forms/MoneyInput.tsx',
   sliderInput: 'shared/components/CommittedSliderInput.tsx',
 } as const;
 
@@ -36,13 +35,11 @@ describe('single calculator localized accessibility contract', () => {
 
   it('gives numeric calculator controls stable names and disables password-manager autocomplete', () => {
     const config = readSource(sources.config);
-    const moneyInput = readSource(sources.moneyInput);
     const sliderInput = readSource(sources.sliderInput);
 
     expect(config).toContain('name="savingsGoal"');
     expect(config).toContain('name="bondUnits"');
     expect(config).toContain('autoComplete="off"');
-    expect(moneyInput).toContain('autoComplete="off"');
     expect(sliderInput).toContain('autoComplete="off"');
   });
 

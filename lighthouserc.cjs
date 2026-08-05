@@ -1,7 +1,9 @@
+const isIndexableEnvironment = process.env.NEXT_PUBLIC_DEPLOYMENT_TIER === 'production';
+
 module.exports = {
   ci: {
     collect: {
-      numberOfRuns: 1,
+      numberOfRuns: 3,
       startServerCommand: 'node scripts/start-playwright-server.mjs',
       startServerReadyPattern: 'Ready',
       startServerReadyTimeout: 60_000,
@@ -22,7 +24,9 @@ module.exports = {
         'categories:accessibility': ['error', { minScore: 0.95 }],
         'categories:best-practices': ['error', { minScore: 0.9 }],
         'categories:performance': ['warn', { minScore: 0.7 }],
-        'categories:seo': ['error', { minScore: 0.9 }],
+        ...(isIndexableEnvironment
+          ? { 'categories:seo': ['error', { minScore: 0.9 }] }
+          : { 'is-crawlable': 'off' }),
         'largest-contentful-paint': ['warn', { maxNumericValue: 2500 }],
         'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
       },
