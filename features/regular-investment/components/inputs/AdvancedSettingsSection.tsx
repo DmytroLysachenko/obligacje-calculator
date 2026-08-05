@@ -7,9 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { RegularInvestmentInputs } from '@/features/bond-core/types';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
-import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 
 type AdvancedSettingsSectionProps = {
@@ -85,7 +85,7 @@ export function AdvancedSettingsSection({
                 <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
                 <InfoTooltip content={t('regular_form.tax_help')} />
               </div>
-              <p className="text-xs text-muted-foreground">{t('bonds.belka_tax_desc')}</p>
+              <p className="text-base leading-6 text-muted-foreground">{t('bonds.belka_tax_desc')}</p>
             </div>
             <Switch checked={showCustomTax} onCheckedChange={onShowCustomTaxChange} />
           </div>

@@ -1,6 +1,7 @@
 import { ArrowUpRight, Equal, TrendingDown } from 'lucide-react';
 
 import { useAppI18n } from '@/i18n/client';
+import { getIntlLocale } from '@/i18n/locale-utils';
 
 export function ChartKeyInsight({
   start,
@@ -11,7 +12,7 @@ export function ChartKeyInsight({
   end: number;
   realEnd?: number;
 }) {
-  const { t } = useAppI18n();
+  const { locale, t } = useAppI18n();
   const delta = end - start;
   const Icon = delta > 0 ? ArrowUpRight : delta < 0 ? TrendingDown : Equal;
   const tone =
@@ -33,14 +34,14 @@ export function ChartKeyInsight({
         <div>
           <dt className="ui-kicker">{t('common.nominal_value')}</dt>
           <dd className="mt-1 font-semibold text-foreground">
-            {end.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            {end.toLocaleString(getIntlLocale(locale), { maximumFractionDigits: 0 })}
           </dd>
         </div>
         {typeof realEnd === 'number' ? (
           <div>
             <dt className="ui-kicker">{t('common.real_value')}</dt>
             <dd className="mt-1 font-semibold text-foreground">
-              {realEnd.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              {realEnd.toLocaleString(getIntlLocale(locale), { maximumFractionDigits: 0 })}
             </dd>
           </div>
         ) : null}

@@ -76,6 +76,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           <ScenarioFieldset title={t('comparison.configuration')} divided>
             <ContributionPlanSection
               contributionAmount={inputs.contributionAmount}
+              language={language}
               frequency={inputs.frequency}
               taxStrategy={inputs.taxStrategy}
               onUpdate={onUpdate}

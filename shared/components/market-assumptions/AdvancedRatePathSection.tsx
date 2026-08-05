@@ -24,13 +24,13 @@ export function AdvancedRatePathSection({
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="space-y-1">
           <p className="ui-card-title">{title}</p>
-          <p className="text-xs leading-5 text-muted-foreground">{description}</p>
+          <p className="text-base leading-6 text-muted-foreground">{description}</p>
         </div>
       </div>
       {values ? (
         <ProjectedRatePathEditor values={values} prefix="Y" step={step} onChange={onChange} />
       ) : (
-        <p className="text-[11px] leading-5 text-muted-foreground">{emptyNote}</p>
+        <p className="text-base leading-6 text-muted-foreground">{emptyNote}</p>
       )}
     </div>
   );

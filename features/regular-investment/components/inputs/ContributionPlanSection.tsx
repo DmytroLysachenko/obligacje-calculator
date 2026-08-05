@@ -10,12 +10,15 @@ import {
   investmentFromBondQuantity,
   MAX_BOND_QUANTITY,
 } from '@/features/bond-core/utils/bond-quantity';
+import type { Language } from '@/i18n/config';
+import { getIntlLocale } from '@/i18n/locale-utils';
 import { FormField } from '@/shared/components/forms/FormField';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RangeField } from '@/shared/components/forms/RangeField';
 
 type ContributionPlanSectionProps = {
   contributionAmount: number;
+  language: Language;
   frequency: InvestmentFrequency;
   taxStrategy: TaxStrategy;
   onUpdate: (key: string, value: unknown) => void;
@@ -24,6 +27,7 @@ type ContributionPlanSectionProps = {
 
 export function ContributionPlanSection({
   contributionAmount,
+  language,
   frequency,
   taxStrategy,
   onUpdate,
@@ -66,7 +70,7 @@ export function ContributionPlanSection({
             </span>
           </div>
           <p className="ui-metadata text-muted-foreground">
-            {contributionAmount.toLocaleString()} PLN
+            {contributionAmount.toLocaleString(getIntlLocale(language))} PLN
           </p>
           <div className="space-y-4">
             <FormField
