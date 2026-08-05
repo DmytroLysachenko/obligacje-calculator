@@ -104,15 +104,3 @@ export function createApiHandler({
     };
   };
 }
-
-/** Wraps a route whose authorization failure has a deliberate public status. */
-export function protectedApiHandler<TContext = { params: Promise<Record<string, never>> }>(
-  authorize: (request: NextRequest) => Promise<void>,
-  handler: ApiHandler<TContext>,
-  options: { rateLimitPolicy?: RateLimitPolicy } = {},
-) {
-  return apiHandler<TContext>(async (request, context) => {
-    await authorize(request);
-    return handler(request, context);
-  }, options);
-}

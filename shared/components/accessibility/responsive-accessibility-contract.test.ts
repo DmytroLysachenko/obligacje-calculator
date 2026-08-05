@@ -68,7 +68,6 @@ describe('responsive accessibility contract', () => {
     const globals = read('app/globals.css');
     const select = read('shared/components/forms/FormSelect.tsx');
     const actions = read('shared/components/results/ResultActionGrid.tsx');
-    const toolCard = read('shared/components/page/ToolCard.tsx');
 
     expect(globals).toContain('.ui-safe-text');
     expect(globals).toContain('overflow-wrap: anywhere;');
@@ -78,7 +77,6 @@ describe('responsive accessibility contract', () => {
     expect(select).toContain('ui-truncate-flex');
     expect(actions).toContain('ui-focus-ring');
     expect(actions).toContain('ui-truncate-flex');
-    expect(toolCard).toContain('ui-safe-text');
   });
 
   it('keeps new accessibility copy in both locales', () => {

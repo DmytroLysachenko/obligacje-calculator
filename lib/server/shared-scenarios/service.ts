@@ -8,7 +8,7 @@ import {
 
 import { createSharedSingleScenarioRecord, findSharedSingleScenarioRecord } from './repository';
 
-export const SHARED_SCENARIO_RETENTION_MS = 30 * 24 * 60 * 60_000;
+const SHARED_SCENARIO_RETENTION_MS = 30 * 24 * 60 * 60_000;
 
 export async function createSharedSingleScenario(
   body: {

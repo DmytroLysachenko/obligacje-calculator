@@ -60,7 +60,3 @@ export const educationDecisionRoutes: readonly EducationDecisionRoute[] = [
     groupKey: 'inflation',
   },
 ];
-
-export function getEducationOfferGroup(key: string) {
-  return educationOfferGroups.find((group) => group.key === key);
-}

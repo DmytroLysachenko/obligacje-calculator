@@ -32,25 +32,3 @@ export const pageLayout = {
   mobileActionBarInner: 'ui-mobile-action-bar-inner',
   resultFlow: 'space-y-8 md:space-y-10',
 } as const;
-
-export const pageSurface = {
-  plain: 'bg-transparent',
-  panel: 'ui-surface',
-  inset: 'ui-surface-inset',
-  flush: 'ui-surface-flush',
-  raised: 'ui-surface-raised',
-} as const;
-
-export const pageCopy = {
-  title: 'ui-page-title',
-  sectionTitle: 'ui-section-title',
-  cardTitle: 'ui-card-title',
-  body: 'ui-body',
-  meta: 'ui-meta',
-  eyebrow: 'ui-eyebrow',
-  caption: 'ui-caption',
-  label: 'ui-label',
-  description: 'ui-field-description',
-  metric: 'ui-primary-metric financial-number',
-  largeMetric: 'ui-large-metric financial-number',
-} as const;

@@ -3,7 +3,7 @@ const DEFAULT_DEVELOPMENT_URL = 'http://localhost:3000';
 
 export type DeploymentTier = 'preview' | 'production';
 
-export function getDeploymentTier(env: NodeJS.ProcessEnv = process.env): DeploymentTier {
+function getDeploymentTier(env: NodeJS.ProcessEnv = process.env): DeploymentTier {
   return env.NEXT_PUBLIC_DEPLOYMENT_TIER === 'production' ? 'production' : 'preview';
 }
 

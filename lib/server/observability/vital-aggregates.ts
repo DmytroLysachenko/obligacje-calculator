@@ -4,11 +4,11 @@ import { db, isDatabaseConfigured } from '@/db';
 import { webVitalAggregates } from '@/db/schema';
 
 export const VITAL_RETENTION_DAYS = 30;
-export const VITAL_SAMPLE_RATE = 0.1;
+const VITAL_SAMPLE_RATE = 0.1;
 const BUCKET_MS = 60 * 60_000;
 
-export type VitalMetric = 'CLS' | 'INP' | 'LCP';
-export type VitalRating = 'good' | 'needs-improvement' | 'poor';
+type VitalMetric = 'CLS' | 'INP' | 'LCP';
+type VitalRating = 'good' | 'needs-improvement' | 'poor';
 
 export interface ValidatedVital {
   name: VitalMetric;
@@ -17,7 +17,7 @@ export interface ValidatedVital {
   path: string;
 }
 
-export function hourBucket(at = new Date()) {
+function hourBucket(at = new Date()) {
   return new Date(Math.floor(at.getTime() / BUCKET_MS) * BUCKET_MS);
 }
 
@@ -69,7 +69,7 @@ export async function recordVitalAggregate(vital: ValidatedVital, at = new Date(
   return { persisted: true as const };
 }
 
-export async function deleteExpiredVitalAggregates(now = new Date()) {
+async function deleteExpiredVitalAggregates(now = new Date()) {
   if (!isDatabaseConfigured) return { rowCount: 0 };
 
   return db

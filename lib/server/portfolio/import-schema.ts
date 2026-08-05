@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { BondType } from '@/features/bond-core/types';
 import { IsoCalendarDateSchema } from '@/features/bond-core/types/iso-calendar-date';
 
-export const ImportedLotSchema = z
+const ImportedLotSchema = z
   .object({
     bondType: z.enum(BondType),
     purchaseDate: IsoCalendarDateSchema,

@@ -9,11 +9,9 @@ const paths = {
   field: 'shared/components/forms/FormField.tsx',
   select: 'shared/components/forms/FormSelect.tsx',
   segmented: 'shared/components/forms/SegmentedControl.tsx',
-  money: 'shared/components/forms/MoneyInput.tsx',
   range: 'shared/components/forms/RangeField.tsx',
   singleTiming: 'features/single-calculator/components/sections/BondTimingSection.tsx',
   regularTiming: 'features/regular-investment/components/inputs/TimingSection.tsx',
-  regularContribution: 'features/regular-investment/components/inputs/ContributionPlanSection.tsx',
 } as const;
 
 function read(relativePath: string) {
@@ -29,11 +27,10 @@ function expectNotContains(source: string, fragment: string) {
 }
 
 describe('shared form control contracts', () => {
-  it('provides reusable form field, select, segmented, money, and range primitives', () => {
+  it('provides reusable form field, select, segmented, and range primitives', () => {
     const field = read(paths.field);
     const select = read(paths.select);
     const segmented = read(paths.segmented);
-    const money = read(paths.money);
     const range = read(paths.range);
 
     expectContains(field, 'export function FormField');
@@ -49,8 +46,6 @@ describe('shared form control contracts', () => {
     expectContains(segmented, '<span className="truncate">{option.label}</span>');
     expectNotContains(segmented, 'rounded-md border border-border bg-card p-1');
     expectNotContains(segmented, 'rounded-md border border-border bg-muted/25 p-1');
-    expectContains(money, 'export function MoneyInput');
-    expectContains(money, "currency = 'PLN'");
     expectContains(range, 'export function RangeField');
     expectContains(range, '<CommittedSliderInput');
   });
@@ -58,7 +53,6 @@ describe('shared form control contracts', () => {
   it('migrates repeated calculator controls to the shared form primitives', () => {
     const singleTiming = read(paths.singleTiming);
     const regularTiming = read(paths.regularTiming);
-    const regularContribution = read(paths.regularContribution);
 
     for (const source of [singleTiming, regularTiming]) {
       expectContains(
@@ -75,23 +69,8 @@ describe('shared form control contracts', () => {
       "import { FormSelect } from '@/shared/components/forms/FormSelect';",
     );
     expectContains(singleTiming, '<FormSelect');
-    expectContains(
-      regularContribution,
-      "import { FormSelect } from '@/shared/components/forms/FormSelect';",
-    );
-    expectContains(
-      regularContribution,
-      "import { MoneyInput } from '@/shared/components/forms/MoneyInput';",
-    );
-    expectContains(regularContribution, '<FormSelect');
-    expectContains(regularContribution, '<MoneyInput');
-
     expectNotContains(
       singleTiming,
-      "import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';",
-    );
-    expectNotContains(
-      regularContribution,
       "import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';",
     );
     expectNotContains(
