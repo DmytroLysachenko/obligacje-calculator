@@ -10,6 +10,7 @@ import {
 } from '@/lib/server/shared-scenarios/service';
 import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
 import { PageTransition } from '@/shared/components/page/PageTransition';
+import { BondDefinitionsBoundary } from '@/shared/components/providers/BondDefinitionsBoundary';
 
 interface Props {
   params: Promise<{ shareId: string }>;
@@ -49,10 +50,12 @@ export default async function SharedScenarioPage({ params }: Props) {
   return (
     <PageTransition>
       <Suspense fallback={<PageSuspenseFallback />}>
-        <BondCalculatorContainer
-          initialInputs={scenario.inputs}
-          sharedScenarioTitle={scenario.title}
-        />
+        <BondDefinitionsBoundary>
+          <BondCalculatorContainer
+            initialInputs={scenario.inputs}
+            sharedScenarioTitle={scenario.title}
+          />
+        </BondDefinitionsBoundary>
       </Suspense>
     </PageTransition>
   );

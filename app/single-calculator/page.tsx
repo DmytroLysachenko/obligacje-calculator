@@ -4,6 +4,7 @@ import { BondCalculatorContainer } from '@/features/single-calculator/components
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
 import { PageTransition } from '@/shared/components/page/PageTransition';
+import { BondDefinitionsBoundary } from '@/shared/components/providers/BondDefinitionsBoundary';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('single_calculator');
@@ -13,7 +14,9 @@ export default function SingleCalculatorPage() {
   return (
     <PageTransition>
       <Suspense fallback={<PageSuspenseFallback />}>
-        <BondCalculatorContainer />
+        <BondDefinitionsBoundary>
+          <BondCalculatorContainer />
+        </BondDefinitionsBoundary>
       </Suspense>
     </PageTransition>
   );

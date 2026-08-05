@@ -5,8 +5,8 @@ import React from 'react';
 
 import { ComparisonResultsPanelProps } from '@/features/comparison-engine/types/comparison-results-panel';
 import { useAppI18n } from '@/i18n/client';
-import { BondValueChart } from '@/shared/components/charts/BondValueChart';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { LazyBondValueChart } from '@/shared/components/charts/LazyBondValueChart';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
 import { buildComparisonExportHeaders } from '@/shared/lib/export-headers';
@@ -140,7 +140,7 @@ export function ComparisonResultsPanel({
           description={t('comparison.chart_help_desc')}
         />
 
-        <BondValueChart
+        <LazyBondValueChart
           data={valueChartData}
           series={chartSeries}
           formatCurrency={formatCurrency}

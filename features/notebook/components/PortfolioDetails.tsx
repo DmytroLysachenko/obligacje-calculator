@@ -1,4 +1,5 @@
 'use client';
+import dynamic from 'next/dynamic';
 import React, { useCallback, useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,9 +10,20 @@ import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCurrencyFormatter, useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { UserPortfolio } from '@/shared/types/portfolio';
 
-import { PortfolioAnalyticsTab } from './portfolio-details/PortfolioAnalyticsTab';
 import { PortfolioLotsTab } from './portfolio-details/PortfolioLotsTab';
 import { PortfolioOverviewHeader } from './portfolio-details/PortfolioOverviewHeader';
+
+const PortfolioAnalyticsTab = dynamic(
+  () =>
+    import('./portfolio-details/PortfolioAnalyticsTab').then(
+      (module) => module.PortfolioAnalyticsTab,
+    ),
+  {
+    loading: () => (
+      <div className="h-[360px] w-full animate-pulse rounded-lg bg-muted" role="status" />
+    ),
+  },
+);
 
 const detailTabTriggerClassName =
   'h-9 rounded-none border-b-2 border-transparent px-3.5 py-2 text-sm font-semibold data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none';

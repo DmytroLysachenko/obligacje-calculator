@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { NotebookContainer } from '@/features/notebook/components/NotebookContainer';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 import { PageTransition } from '@/shared/components/page/PageTransition';
+import { BondDefinitionsBoundary } from '@/shared/components/providers/BondDefinitionsBoundary';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('notebook');
@@ -19,7 +20,9 @@ export default async function PortfolioNotebookPage() {
   return (
     <PageTransition>
       <div className="container mx-auto ui-page-flow">
-        <NotebookContainer />
+        <BondDefinitionsBoundary>
+          <NotebookContainer />
+        </BondDefinitionsBoundary>
       </div>
     </PageTransition>
   );

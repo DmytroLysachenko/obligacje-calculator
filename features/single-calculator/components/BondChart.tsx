@@ -4,8 +4,9 @@ import React from 'react';
 
 import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
-import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import type { BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
 import { ChartKeyInsight } from '@/shared/components/charts/ChartKeyInsight';
+import { LazyBondValueChart } from '@/shared/components/charts/LazyBondValueChart';
 import {
   AppLanguage,
   buildBondChartDisplayPoints,
@@ -171,7 +172,7 @@ export const BondChart: React.FC<BondChartProps> = ({
           realEnd={Number(showRealValue ? lastPoint.primary : lastPoint.secondary)}
         />
       ) : null}
-      <BondValueChart
+      <LazyBondValueChart
         data={chartData}
         series={series}
         formatCurrency={formatCurrency}

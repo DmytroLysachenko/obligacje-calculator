@@ -1,5 +1,6 @@
 'use client';
 import { LineChart } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import React, { useMemo, useState } from 'react';
 
 import { useAppI18n } from '@/i18n/client';
@@ -18,12 +19,20 @@ import {
   createMultiAssetChartData,
   createMultiAssetEndingSnapshot,
 } from './multi-asset-chart-model';
-import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';
 import {
   MultiAssetHistoryStatePanel,
   MultiAssetMetricsSnapshot,
   MultiAssetReadyStatePanel,
 } from './MultiAssetComparisonPanels';
+
+const MultiAssetComparisonChart = dynamic(
+  () => import('./MultiAssetComparisonChart').then((module) => module.MultiAssetComparisonChart),
+  {
+    loading: () => (
+      <div className="h-[420px] w-full animate-pulse rounded-lg bg-muted" role="status" />
+    ),
+  },
+);
 
 export const MultiAssetComparisonContainer = () => {
   const {
