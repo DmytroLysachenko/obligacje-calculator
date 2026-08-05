@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -106,15 +106,7 @@ describe('operational endpoint contracts', () => {
     expect(payload).toContain("owner.authMode === 'authenticated'");
   });
 
-  it('keeps opportunistic sync fire-and-forget logic in the sync service boundary', () => {
-    const route = read('app/api/sync/opportunistic/route.ts');
-    const service = read('lib/server/sync/opportunistic-service.ts');
-
-    expect(route).toContain("from '@/lib/server/sync/opportunistic-service'");
-    expect(route).toContain('getOpportunisticSyncStatus');
-    expect(route).toContain('triggerOpportunisticSync');
-    expect(route).toContain("cookies.set('last_sync_check'");
-    expect(service).toContain('OPPORTUNISTIC_SYNC_COOLDOWN_HOURS');
-    expect(service).toContain('createDefaultSyncEngine');
+  it('does not expose a public fire-and-forget synchronization endpoint', () => {
+    expect(existsSync(join(root, 'app/api/sync/opportunistic/route.ts'))).toBe(false);
   });
 });

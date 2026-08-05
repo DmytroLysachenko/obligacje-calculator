@@ -88,3 +88,12 @@ export const permissionsPolicy = [
   'payment=()',
   'usb=()',
 ].join(', ');
+
+/**
+ * Keep browsing contexts and same-origin assets isolated without enabling
+ * COEP, which would block the official data sources used by the application.
+ */
+export const crossOriginSecurityHeaders = {
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+} as const;

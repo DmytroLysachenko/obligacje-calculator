@@ -25,6 +25,7 @@ describe('admin sync route', () => {
         method: 'POST',
         body: JSON.stringify({ mode: 'market-history-sync' }),
       }) as never,
+      {} as never,
     );
 
     expect(response.status).toBe(202);

@@ -7,14 +7,13 @@ import {
   assertAdminSessionAuthorization,
   createAdminSyncCommand,
 } from '@/lib/server/admin/service';
+import { apiHandler } from '@/lib/server/http/api-handler';
+import { adminRateLimitPolicy } from '@/lib/server/http/rate-limiter';
 import { readOptionalJsonBody } from '@/lib/server/http/read-json-body';
 import { getRequestId } from '@/lib/server/http/request-context';
-import { createUnauthorizedResponse, errorJson, okJson } from '@/lib/server/http/responses';
-import { createServerLogger } from '@/lib/server/logging';
+import { createUnauthorizedResponse, okJson } from '@/lib/server/http/responses';
 
-const logger = createServerLogger('AdminSyncApi');
-
-export async function POST(req: NextRequest) {
+export const POST = apiHandler(async (req: NextRequest) => {
   try {
     await assertAdminSessionAuthorization();
     const body = await readOptionalJsonBody(req, AdminSyncPayloadSchema, {});
@@ -41,8 +40,7 @@ export async function POST(req: NextRequest) {
       return createUnauthorizedResponse();
     }
 
-    logger.error('Sync failed', error);
     await recordAdminAuditEvent({ action: 'sync-failed' });
-    return errorJson('Sync failed', 'SYNC_FAILED', undefined, { status: 500 });
+    throw error;
   }
-}
+}, { rateLimitPolicy: adminRateLimitPolicy });

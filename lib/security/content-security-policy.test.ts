@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   createContentSecurityPolicy,
+  crossOriginSecurityHeaders,
   hasCspSource,
   parseContentSecurityPolicy,
   permissionsPolicy,
@@ -70,5 +71,12 @@ describe('content security policy', () => {
     expect(permissionsPolicy).toContain('geolocation=()');
     expect(permissionsPolicy).toContain('microphone=()');
     expect(permissionsPolicy).toContain('payment=()');
+  });
+
+  it('isolates browsing contexts and same-origin resources without requiring COEP', () => {
+    expect(crossOriginSecurityHeaders).toEqual({
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-origin',
+    });
   });
 });
