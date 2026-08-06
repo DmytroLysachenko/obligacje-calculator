@@ -4,9 +4,11 @@ import { Activity, AlertCircle, Clock, Database, Loader2, Play, RefreshCcw } fro
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import type { Language } from '@/i18n/config';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import type { AdminBondOfferSyncSummary } from '@/shared/lib/admin-client';
+import { createNumberFormatter } from '@/shared/lib/formatters';
 
 import type { AdminStatusMetrics } from '../lib/admin-status-model';
 import type { AdminDashboardCopy } from '../types/admin-status-types';
@@ -99,9 +101,11 @@ export function AdminStatusNotices({
 
 export function AdminMetricsStrip({
   metrics,
+  language,
   copy,
 }: {
   metrics: AdminStatusMetrics;
+  language: Language;
   copy: AdminDashboardCopy['metrics'];
 }) {
   return (
@@ -122,7 +126,7 @@ export function AdminMetricsStrip({
           {copy.dataPoints}
         </p>
         <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">
-          {metrics.totalDataPoints.toLocaleString()}
+          {createNumberFormatter(language).format(metrics.totalDataPoints)}
         </p>
         <p className="mt-2 ui-metadata text-muted-foreground">{copy.pointsDesc}</p>
       </section>

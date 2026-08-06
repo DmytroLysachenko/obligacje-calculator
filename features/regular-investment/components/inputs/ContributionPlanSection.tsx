@@ -11,10 +11,10 @@ import {
   MAX_BOND_QUANTITY,
 } from '@/features/bond-core/utils/bond-quantity';
 import type { Language } from '@/i18n/config';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { FormField } from '@/shared/components/forms/FormField';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RangeField } from '@/shared/components/forms/RangeField';
+import { useNumberFormatter } from '@/shared/hooks/useLocalizedFormatters';
 
 type ContributionPlanSectionProps = {
   contributionAmount: number;
@@ -33,6 +33,7 @@ export function ContributionPlanSection({
   onUpdate,
   t,
 }: ContributionPlanSectionProps) {
+  const numberFormatter = useNumberFormatter(language);
   const taxOptions = [
     { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
     { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
@@ -70,7 +71,7 @@ export function ContributionPlanSection({
             </span>
           </div>
           <p className="ui-metadata text-muted-foreground">
-            {contributionAmount.toLocaleString(getIntlLocale(language))} PLN
+            {numberFormatter.format(contributionAmount)} PLN
           </p>
           <div className="space-y-4">
             <FormField

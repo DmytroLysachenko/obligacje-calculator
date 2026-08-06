@@ -25,6 +25,7 @@ import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { useNumberFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { toDateString } from '@/shared/lib/date-timing';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
@@ -42,6 +43,7 @@ export function ComparisonSharedBaseCard({
 }: ComparisonSharedBaseCardProps) {
   const { t, locale: language } = useAppI18n();
   const dateLocale = getDateFnsLocale(language);
+  const numberFormatter = useNumberFormatter(language);
 
   return (
     <section className="space-y-6 border-l-2 border-t border-border px-4 py-4 sm:px-5">
@@ -89,7 +91,7 @@ export function ComparisonSharedBaseCard({
             {t('bonds.bond_quantity')}
           </Label>
           <p className="ui-metadata text-muted-foreground">
-            {sharedConfig.initialInvestment.toLocaleString(language === 'pl' ? 'pl-PL' : 'en-US')}{' '}
+            {numberFormatter.format(sharedConfig.initialInvestment)}{' '}
             PLN
           </p>
           <div className="relative">

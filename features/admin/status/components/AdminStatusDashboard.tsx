@@ -43,7 +43,7 @@ export function AdminStatusDashboard({
   onCancelSync,
   onConfirmSync,
 }: AdminStatusDashboardProps) {
-  const { t } = useAppI18n();
+  const { locale: language, t } = useAppI18n();
   const viewModel = createAdminStatusViewModel(data);
   const copy = {
     title: t('admin.title'),
@@ -103,12 +103,13 @@ export function AdminStatusDashboard({
           onRequestSync={() => onRequestSync('full-sync')}
         />
         <AdminStatusNotices error={error} syncing={syncing} syncProgressLabel={copy.syncProgress} />
-        <AdminMetricsStrip metrics={viewModel.metrics} copy={copy.metrics} />
+        <AdminMetricsStrip metrics={viewModel.metrics} language={language} copy={copy.metrics} />
         <AdminBondOfferSyncCard sync={viewModel.latestBondOfferSync} copy={copy.bondOfferSync} />
         <AdminInventoryTable
           rows={viewModel.rows}
           loading={loading}
           isEmpty={viewModel.isEmpty}
+          language={language}
           copy={copy.inventory}
         />
       </div>

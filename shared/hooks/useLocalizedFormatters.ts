@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import {
   createCurrencyFormatter,
   createDateFormatter,
+  createNumberFormatter,
   createPercentageFormatter,
 } from '@/shared/lib/formatters';
 
@@ -20,4 +21,8 @@ export function useDateFormatter(language: Language, options?: Intl.DateTimeForm
 
 export function usePercentFormatter(language: Language, options?: Intl.NumberFormatOptions) {
   return useMemo(() => createPercentageFormatter(language, options), [language, options]);
+}
+
+export function useNumberFormatter(language: Language, options?: Intl.NumberFormatOptions) {
+  return useMemo(() => createNumberFormatter(language, options), [language, options]);
 }
