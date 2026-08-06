@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   createContentSecurityPolicy,
   crossOriginSecurityHeaders,
+  cspReportingHeaders,
   permissionsPolicy,
 } from '@/lib/security/content-security-policy';
 
@@ -26,6 +27,9 @@ export function proxy(request: NextRequest) {
   );
   response.headers.set('Permissions-Policy', permissionsPolicy);
   for (const [header, value] of Object.entries(crossOriginSecurityHeaders)) {
+    response.headers.set(header, value);
+  }
+  for (const [header, value] of Object.entries(cspReportingHeaders)) {
     response.headers.set(header, value);
   }
 

@@ -60,6 +60,7 @@ export function createContentSecurityPolicy(nonce: string, isDevelopment = false
     styleElementSource,
     styleElementDirective,
     "style-src-attr 'unsafe-inline'",
+    'report-to csp',
   ].join('; ');
 }
 
@@ -96,4 +97,13 @@ export const permissionsPolicy = [
 export const crossOriginSecurityHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Resource-Policy': 'same-origin',
+} as const;
+
+export const cspReportingHeaders = {
+  'Reporting-Endpoints': 'csp="/api/security/csp-report"',
+  'Report-To': JSON.stringify({
+    group: 'csp',
+    max_age: 86_400,
+    endpoints: [{ url: '/api/security/csp-report' }],
+  }),
 } as const;

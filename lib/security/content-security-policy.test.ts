@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createContentSecurityPolicy,
   crossOriginSecurityHeaders,
+  cspReportingHeaders,
   hasCspSource,
   parseContentSecurityPolicy,
   permissionsPolicy,
@@ -23,6 +24,7 @@ describe('content security policy', () => {
     expect(policy).toContain("object-src 'none'");
     expect(policy).toContain("frame-ancestors 'self'");
     expect(policy).toContain("worker-src 'self'");
+    expect(policy).toContain('report-to csp');
   });
 
   it('permits development tooling without weakening the production policy', () => {
@@ -77,6 +79,15 @@ describe('content security policy', () => {
     expect(crossOriginSecurityHeaders).toEqual({
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Resource-Policy': 'same-origin',
+    });
+  });
+
+  it('uses a same-origin CSP reporting endpoint', () => {
+    expect(cspReportingHeaders['Reporting-Endpoints']).toBe('csp="/api/security/csp-report"');
+    expect(JSON.parse(cspReportingHeaders['Report-To'])).toEqual({
+      group: 'csp',
+      max_age: 86_400,
+      endpoints: [{ url: '/api/security/csp-report' }],
     });
   });
 });
