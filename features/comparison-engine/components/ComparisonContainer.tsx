@@ -1,15 +1,11 @@
 'use client';
-import { ChevronUp, Pencil, Scale } from 'lucide-react';
-import dynamic from 'next/dynamic';
+import { Scale } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { ChartStep } from '@/features/bond-core/types';
 import { bondQuantityFromInvestment } from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
-import { cn } from '@/lib/utils';
-import { Notice } from '@/shared/components/feedback/Notice';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
@@ -28,29 +24,10 @@ import {
   applySharedComparisonConfigUpdate,
 } from '../lib/comparison-update-actions';
 
-import { comparisonLayout } from './comparison-layout';
-import {
-  ComparisonAssumptionsMetaPanel,
-  ComparisonFairnessPanel,
-  ComparisonSetupStatePanel,
-} from './ComparisonContainerPanels';
-import {
-  ComparisonSharedAssumptionsPanel,
-  ComparisonSharedBaseCard,
-} from './ComparisonSharedBaseCard';
-import { ComparisonVerdict } from './ComparisonVerdict';
-import { ScenarioOverrideCard } from './ScenarioOverrideCard';
+import { ComparisonCommittedResults } from './ComparisonCommittedResults';
+import { ComparisonPlanReceipt } from './ComparisonPlanReceipt';
+import { ComparisonPlanWorkspace } from './ComparisonPlanWorkspace';
 
-const ComparisonResultsPanel = dynamic(
-  () => import('./ComparisonResultsPanel').then((module) => module.ComparisonResultsPanel),
-  { loading: () => <div className="h-[360px] animate-pulse rounded-md bg-muted md:h-[460px]" /> },
-);
-const ComparisonTable = dynamic(
-  () => import('./ComparisonTable').then((module) => module.ComparisonTable),
-  {
-    loading: () => <div className="h-72 animate-pulse rounded-md bg-muted" />,
-  },
-);
 export const ComparisonContainer: React.FC = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -271,206 +248,102 @@ export const ComparisonContainer: React.FC = () => {
     >
       <div className="ui-page-flow">
         {showPlanReceipt ? (
-          <section className={comparisonLayout.planReceipt} aria-label={t('common.scenario_plan')}>
-            <div className="border-y border-border bg-muted/15 px-4 py-4 md:px-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="min-w-0 space-y-3">
-                  <p className="ui-kicker">{t('common.scenario_plan')}</p>
-                  <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:items-start">
-                    {planSummary.map((item) => (
-                      <div
-                        key={item.label}
-                        className="min-w-0 border-l border-border pl-3 first:border-l-0 first:pl-0"
-                      >
-                        <dt className="ui-kicker">{item.label}</dt>
-                        <dd className="mt-1 truncate text-sm font-semibold text-foreground">
-                          {item.value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-9 shrink-0 gap-2 self-start"
-                  onClick={() => setIsPlanOpen(true)}
-                >
-                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
-                  {t('common.edit_plan')}
-                </Button>
-              </div>
-            </div>
-          </section>
+          <ComparisonPlanReceipt
+            isOpen={false}
+            planLabel={t('common.scenario_plan')}
+            editLabel={t('common.edit_plan')}
+            closeLabel={t('common.close_plan')}
+            summary={planSummary}
+            onOpenChange={setIsPlanOpen}
+          />
         ) : (
           <>
             {hasComparisonResults ? (
-              <div className="flex justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-9 gap-2 text-muted-foreground hover:text-foreground"
-                  onClick={() => setIsPlanOpen(false)}
-                >
-                  <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
-                  {t('common.close_plan')}
-                </Button>
-              </div>
+              <ComparisonPlanReceipt
+                isOpen
+                planLabel={t('common.scenario_plan')}
+                editLabel={t('common.edit_plan')}
+                closeLabel={t('common.close_plan')}
+                summary={planSummary}
+                onOpenChange={setIsPlanOpen}
+              />
             ) : null}
-            <div className={comparisonLayout.workspace}>
-              <aside
-                className={comparisonLayout.sharedBase}
-                aria-label={t('comparison.shared_base')}
-              >
-                <ComparisonSharedBaseCard
-                  sharedConfig={sharedConfig}
-                  onUpdateSharedConfig={
-                    updateSharedConfigWithHistory as (
-                      key: keyof typeof sharedConfig | string,
-                      value: unknown,
-                    ) => void
-                  }
-                />
-              </aside>
-
-              <div className="min-w-0 ui-compact-flow">
-                <div className={comparisonLayout.scenarioGrid}>
-                  <ScenarioOverrideCard
-                    title={t('comparison.scenario_a')}
-                    colorClass="scenario-a"
-                    bondType={scenarioA.bondType}
-                    onBondTypeChange={(bondType) => {
-                      setBondTypeA(bondType);
-                      syncComparisonUrl({
-                        ...comparisonUrlState,
-                        scenarioA: applyScenarioBondTypeUpdate(scenarioA, bondType),
-                      });
-                    }}
-                    taxStrategy={scenarioA.taxStrategy}
-                    onTaxStrategyChange={(value) =>
-                      updateScenarioWithHistory('A', 'taxStrategy', value)
-                    }
-                    customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined}
-                    onCustomHorizonEnabledChange={(enabled) =>
-                      updateScenarioHorizonWithHistory('A', undefined, enabled)
-                    }
-                    customHorizonMonths={scenarioA.investmentHorizonMonths}
-                    onCustomHorizonMonthsChange={(value) =>
-                      updateScenarioHorizonWithHistory('A', value)
-                    }
-                  />
-                  <ScenarioOverrideCard
-                    title={t('comparison.scenario_b')}
-                    colorClass="scenario-b"
-                    bondType={scenarioB.bondType}
-                    onBondTypeChange={(bondType) => {
-                      setBondTypeB(bondType);
-                      syncComparisonUrl({
-                        ...comparisonUrlState,
-                        scenarioB: applyScenarioBondTypeUpdate(scenarioB, bondType),
-                      });
-                    }}
-                    taxStrategy={scenarioB.taxStrategy}
-                    onTaxStrategyChange={(value) =>
-                      updateScenarioWithHistory('B', 'taxStrategy', value)
-                    }
-                    customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined}
-                    onCustomHorizonEnabledChange={(enabled) =>
-                      updateScenarioHorizonWithHistory('B', undefined, enabled)
-                    }
-                    customHorizonMonths={scenarioB.investmentHorizonMonths}
-                    onCustomHorizonMonthsChange={(value) =>
-                      updateScenarioHorizonWithHistory('B', value)
-                    }
-                  />
-                </div>
-
-                <ComparisonFairnessPanel
-                  durationMismatchTitle={t('comparison.auto_rollover_notice_title')}
-                  durationMismatchText={durationMismatchText}
-                  hasResults={!!resultsA && !!resultsB}
-                  isCalculating={isCalculating}
-                  onCalculate={() => calculate()}
-                />
-
-                <ComparisonSetupStatePanel hasResults={!!resultsA} isCalculating={isCalculating} />
-              </div>
-            </div>
-
-            <ComparisonSharedAssumptionsPanel
+            <ComparisonPlanWorkspace
               sharedConfig={sharedConfig}
               assumptionsBondType={assumptionsBondType}
+              durationMismatchTitle={t('comparison.auto_rollover_notice_title')}
+              durationMismatchText={durationMismatchText}
+              hasResults={!!resultsA && !!resultsB}
+              isCalculating={isCalculating}
+              onCalculate={calculate}
               onUpdateSharedConfig={
                 updateSharedConfigWithHistory as (
                   key: keyof typeof sharedConfig | string,
                   value: unknown,
                 ) => void
               }
+              scenarioA={{
+                title: t('comparison.scenario_a'),
+                colorClass: 'scenario-a',
+                scenario: scenarioA,
+                onBondTypeChange: (bondType) => {
+                  setBondTypeA(bondType);
+                  syncComparisonUrl({
+                    ...comparisonUrlState,
+                    scenarioA: applyScenarioBondTypeUpdate(scenarioA, bondType),
+                  });
+                },
+                onTaxStrategyChange: (value) =>
+                  updateScenarioWithHistory('A', 'taxStrategy', value),
+                onCustomHorizonEnabledChange: (enabled) =>
+                  updateScenarioHorizonWithHistory('A', undefined, enabled),
+                onCustomHorizonMonthsChange: (value) => updateScenarioHorizonWithHistory('A', value),
+              }}
+              scenarioB={{
+                title: t('comparison.scenario_b'),
+                colorClass: 'scenario-b',
+                scenario: scenarioB,
+                onBondTypeChange: (bondType) => {
+                  setBondTypeB(bondType);
+                  syncComparisonUrl({
+                    ...comparisonUrlState,
+                    scenarioB: applyScenarioBondTypeUpdate(scenarioB, bondType),
+                  });
+                },
+                onTaxStrategyChange: (value) =>
+                  updateScenarioWithHistory('B', 'taxStrategy', value),
+                onCustomHorizonEnabledChange: (enabled) =>
+                  updateScenarioHorizonWithHistory('B', undefined, enabled),
+                onCustomHorizonMonthsChange: (value) => updateScenarioHorizonWithHistory('B', value),
+              }}
+              sharedBaseLabel={t('comparison.shared_base')}
             />
           </>
         )}
 
         {resultsA && resultsB ? (
-          <div
-            className={cn(
-              comparisonLayout.results,
-              isCalculating && 'pointer-events-none opacity-60',
-            )}
-          >
-            {isDirty ? (
-              <Notice tone="warning" compact>
-                {t('comparison.stale_results')}
-              </Notice>
-            ) : null}
-
-            <ComparisonVerdict
-              resultsA={resultsA}
-              resultsB={resultsB}
-              inputsA={resultInputsA}
-              inputsB={resultInputsB}
-              expectedInflation={resultInputsA.expectedInflation}
-              taxStrategy={resultInputsA.taxStrategy}
-              formatCurrency={formatCurrency}
-            />
-
-            {hasMounted ? (
-              <ComparisonResultsPanel
-                chartData={chartData}
-                usesMixedTimelineCadence={hasMixedTimelineCadence}
-                resultsA={resultsA}
-                resultsB={resultsB}
-                inputsA={resultInputsA}
-                inputsB={resultInputsB}
-                formatCurrency={formatCurrency}
-                language={language}
-                chartStep={chartStep}
-                onChartStepChange={setChartStep}
-                scenarioAColor={scenarioAColor}
-                scenarioBColor={scenarioBColor}
-              />
-            ) : null}
-
-            <ComparisonTable
-              resultsA={resultsA}
-              resultsB={resultsB}
-              purchaseDate={resultInputsA.purchaseDate}
-              bondTypeA={resultInputsA.bondType}
-              bondTypeB={resultInputsB.bondType}
-              formatCurrency={formatCurrency}
-              chartStep={chartStep}
-            />
-
-            <ComparisonAssumptionsMetaPanel
-              envelopeA={envelopeA}
-              envelopeB={envelopeB}
-              warningsA={warningsA}
-              warningsB={warningsB}
-              inputsA={resultInputsA}
-              inputsB={resultInputsB}
-            />
-          </div>
+          <ComparisonCommittedResults
+            chartData={chartData}
+            chartStep={chartStep}
+            envelopeA={envelopeA}
+            envelopeB={envelopeB}
+            formatCurrency={formatCurrency}
+            hasMounted={hasMounted}
+            inputsA={resultInputsA}
+            inputsB={resultInputsB}
+            isCalculating={isCalculating}
+            isDirty={isDirty}
+            language={language}
+            onChartStepChange={setChartStep}
+            resultsA={resultsA}
+            resultsB={resultsB}
+            scenarioAColor={scenarioAColor}
+            scenarioBColor={scenarioBColor}
+            staleResultsLabel={t('comparison.stale_results')}
+            usesMixedTimelineCadence={hasMixedTimelineCadence}
+            warningsA={warningsA}
+            warningsB={warningsB}
+          />
         ) : null}
       </div>
       <RecalculateButton
