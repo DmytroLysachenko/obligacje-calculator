@@ -10,15 +10,6 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
-import { logClientError } from '@/shared/lib/client-logger';
-import { portfolioClient } from '@/shared/lib/portfolio-client';
-import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
-import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
-import {
-  getStoredCurrentPortfolioId,
-  setStoredCurrentPortfolioId,
-} from '@/shared/lib/workspace/current-portfolio';
-import { getWorkspaceSaveTarget } from '@/shared/lib/workspace/portfolio-selection';
 
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import {
@@ -26,12 +17,10 @@ import {
   getInputGuardrails,
   InputGuardrailIssue,
 } from '../lib/input-guardrails';
-import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
 import {
-  buildSavedSingleScenarioMeta,
   buildSingleCalculatorReadingGuide,
-  buildSingleReportFilename,
 } from '../lib/single-calculator-container-model';
+import { createSingleCalculatorActions } from '../lib/single-calculator-actions';
 import { parseBondType } from '../lib/single-calculator-state';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
@@ -114,108 +103,23 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     }
   };
 
-  const handleAddToNotebook = async () => {
-    if (!results) return;
-    if (!canManageWorkspace) {
-      return;
-    }
-
-    try {
-      const portfolioList = await portfolioClient.listPortfolios();
-      const storedPortfolioId = getStoredCurrentPortfolioId();
-      const saveTarget = getWorkspaceSaveTarget(storedPortfolioId, portfolioList);
-      let portfolioId: string | undefined = saveTarget.portfolioId ?? undefined;
-      let portfolioName: string | null = saveTarget.portfolioName;
-
-      if (saveTarget.needsPortfolioCreation) {
-        const createdPortfolio = await portfolioClient.createPortfolio({
-          name: t('notebook.my_first_portfolio'),
-          description: '',
-        });
-        portfolioId = createdPortfolio?.id;
-        portfolioName = createdPortfolio?.name ?? t('notebook.my_first_portfolio');
-      }
-
-      if (!portfolioId) {
-        throw new Error('Could not resolve a portfolio id for notebook save.');
-      }
-      setStoredCurrentPortfolioId(portfolioId);
-
-      await portfolioClient.createLot({
-        portfolioId,
-        bondType: inputs.bondType,
-        selectedSeriesId:
-          selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
-        purchaseDate: inputs.purchaseDate,
-        amount: Math.floor(inputs.initialInvestment / 100),
-        isRebought: inputs.isRebought,
-      });
-      setStatusTone('success');
-      setStatusMessage(
-        portfolioName
-          ? t('notebook.current_lot_added_to_active', { name: portfolioName })
-          : t('notebook.current_lot_added'),
-      );
-    } catch (error) {
-      logClientError('Notebook lot save failed:', error);
-      setStatusTone('error');
-      setStatusMessage(t('notebook.create_error'));
-    }
-  };
-
-  const handleSaveScenario = async () => {
-    try {
-      const scenarioMeta = buildSavedSingleScenarioMeta(inputs, results);
-      saveScenarioRecord(
-        createSavedScenario(inputs, {
-          name: scenarioMeta.name,
-          description: scenarioMeta.description,
-        }),
-      );
-      setStatusTone('success');
-      setStatusMessage(t('bonds.results.scenario_save_success'));
-    } catch (error) {
-      logClientError('Scenario save failed:', error);
-      setStatusTone('error');
-      setStatusMessage(t('bonds.results.scenario_save_error'));
-    }
-  };
-
-  const handleExportPDF = async () => {
-    if (!results) {
-      return;
-    }
-
-    try {
-      const { generateSingleBondReportPdf } = await import('@/shared/lib/pdf-utils');
-      await generateSingleBondReportPdf(
-        results,
+  const actions = useMemo(
+    () =>
+      createSingleCalculatorActions({
         inputs,
+        results,
+        lastCommittedInputs,
+        selectedSeriesId,
         language,
-        buildSingleReportFilename(inputs, language),
-      );
-      setStatusTone('success');
-      setStatusMessage(t('bonds.results.pdf_export_success'));
-    } catch (error) {
-      logClientError('PDF export failed:', error);
-      setStatusTone('error');
-      setStatusMessage(t('bonds.results.pdf_export_error'));
-    }
-  };
-
-  const handleShareScenario = async () => {
-    if (!results || !lastCommittedInputs) {
-      return;
-    }
-
-    const payload = buildSharedSingleScenarioPayload(
-      lastCommittedInputs,
-      `Committed single-bond scenario for ${lastCommittedInputs.bondType}.`,
-    );
-
-    const shareSnapshot = await scenarioShareClient.createSingleScenario(payload);
-    return shareSnapshot.shareUrl;
-  };
+        canManageWorkspace,
+        t,
+        setStatus: (tone, message) => {
+          setStatusTone(tone);
+          setStatusMessage(message);
+        },
+      }),
+    [canManageWorkspace, inputs, language, lastCommittedInputs, results, selectedSeriesId, t],
+  );
 
   const handleApplyGuardrailFix = (issue: InputGuardrailIssue) => {
     replaceInputs(applyGuardrailFix(issue, inputs));
@@ -230,7 +134,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       isDirty={isDirty}
       isError={isError}
       hasResults={isPersistenceReady && !!results}
-      onShare={handleShareScenario}
+      onShare={actions.shareScenario}
       showImplicitShare={false}
     >
       <div className="ui-page-flow">
@@ -284,9 +188,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               isDirty={isDirty}
               blockingGuardrails={blockingGuardrails}
               canManageWorkspace={canManageWorkspace}
-              onSaveScenario={handleSaveScenario}
-              onAddToNotebook={handleAddToNotebook}
-              onExportPDF={handleExportPDF}
+              onSaveScenario={actions.saveScenario}
+              onAddToNotebook={actions.addToNotebook}
+              onExportPDF={actions.exportPdf}
             />
           }
           details={
