@@ -10,10 +10,12 @@ import {
 } from '@/lib/server/portfolio/http';
 import { simulateOwnerPortfolio } from '@/lib/server/portfolio/queries';
 
-const PortfolioSimulationPayloadSchema = z.object({
-  portfolioId: z.string().uuid(),
-  expectedInflation: z.number().optional(),
-});
+const PortfolioSimulationPayloadSchema = z
+  .object({
+    portfolioId: z.string().uuid(),
+    expectedInflation: z.number().finite().min(-20).max(100).optional(),
+  })
+  .strict();
 
 export const POST = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(req, async (owner) => {

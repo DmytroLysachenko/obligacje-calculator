@@ -10,10 +10,12 @@ import {
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
 
-const PortfolioSharePayloadSchema = z.object({
-  portfolioId: z.string().uuid(),
-  isPublic: z.boolean().optional(),
-});
+const PortfolioSharePayloadSchema = z
+  .object({
+    portfolioId: z.string().uuid(),
+    isPublic: z.boolean().optional(),
+  })
+  .strict();
 
 export const POST = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(req, async (owner) => {

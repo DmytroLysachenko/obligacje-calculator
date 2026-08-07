@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 
-import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
+import { InvestmentLotUpdateSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { errorJson, okJson } from '@/lib/server/http/responses';
@@ -17,7 +17,7 @@ export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(
   async (req: NextRequest, { params }) => {
     return withAuthenticatedPortfolioOwner(req, async (owner) => {
       const { id } = await params;
-      const validated = await readJsonBody(req, InvestmentLotSchema.partial());
+      const validated = await readJsonBody(req, InvestmentLotUpdateSchema);
 
       try {
         const updatedLot = await updateOwnerLot(owner.ownerId, id, validated);

@@ -100,8 +100,8 @@ describe('portfolio import endpoint', () => {
       {} as never,
     );
 
-    expect(response.status).toBe(400);
-    await expect(response.json()).resolves.toMatchObject({ error: { code: 'PAYLOAD_TOO_LARGE' } });
+    expect(response.status).toBe(413);
+    await expect(response.json()).resolves.toMatchObject({ code: 'PAYLOAD_TOO_LARGE' });
     expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
   });
 
@@ -118,9 +118,9 @@ describe('portfolio import endpoint', () => {
         {} as never,
       );
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(415);
       await expect(response.json()).resolves.toMatchObject({
-        error: { code: 'UNSUPPORTED_MEDIA_TYPE' },
+        code: 'UNSUPPORTED_MEDIA_TYPE',
       });
       expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
     },
