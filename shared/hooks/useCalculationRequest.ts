@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
+import { CalculationCancelled } from '@/shared/lib/calculation-cancelled';
 import {
   type CalculationClientErrorPayload,
   postCalculation,
@@ -18,12 +19,7 @@ interface CalculationRequestOptions {
   preferWorker?: boolean;
 }
 
-export class CalculationCancelled extends Error {
-  constructor() {
-    super('Calculation cancelled');
-    this.name = 'CalculationCancelled';
-  }
-}
+export { CalculationCancelled };
 
 export function useCalculationRequest() {
   const [state, dispatch] = useReducer(

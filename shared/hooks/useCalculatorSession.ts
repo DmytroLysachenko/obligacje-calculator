@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useReducer, useRef } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import {
   loadPersistedCalculatorState,
@@ -16,9 +16,7 @@ import {
   type PersistedCalculatorSession,
   restoreCalculatorSession,
 } from '@/shared/lib/calculator-session-persistence';
-import { CalculationSessionExecution } from '@/shared/lib/calculation-session-execution';
-
-import { CalculationCancelled } from './useCalculationRequest';
+import { CalculatorSessionWorkflow } from '@/shared/lib/calculator-session-workflow';
 
 interface UseCalculatorSessionOptions<TInputs, TResult> {
   initialInputs: TInputs;
@@ -38,9 +36,20 @@ export function useCalculatorSession<TInputs, TResult>({
     initialInputs,
     createCalculatorSessionState<TInputs, TResult>,
   );
-  const calculationExecutionRef = useRef(new CalculationSessionExecution());
+  const [calculationWorkflow] = useState(
+    () =>
+      new CalculatorSessionWorkflow<TInputs, TResult>({
+        transitions: {
+          start: () => dispatch({ type: 'start' }),
+          succeed: (committedInputs, committedResult) =>
+            dispatch({ type: 'succeed', committedInputs, committedResult }),
+          fail: (error) => dispatch({ type: 'fail', error }),
+          cancel: () => dispatch({ type: 'cancel' }),
+        },
+      }),
+  );
 
-  useEffect(() => () => calculationExecutionRef.current.invalidate(), []);
+  useEffect(() => () => calculationWorkflow.invalidate(), [calculationWorkflow]);
 
   useEffect(() => {
     if (!storageKey) {
@@ -55,7 +64,7 @@ export function useCalculatorSession<TInputs, TResult>({
     );
     dispatch({ type: 'restore', ...restored });
     dispatch({ type: 'ready' });
-  }, [initialInputs, isCommittedResultValid, storageKey]);
+  }, [initialInputs, isCommittedResultValid, modelVersion, storageKey]);
 
   useEffect(() => {
     if (!storageKey || !state.isPersistenceReady) return;
@@ -83,33 +92,14 @@ export function useCalculatorSession<TInputs, TResult>({
   );
   const clearError = useCallback(() => dispatch({ type: 'clear-error' }), []);
   const cancelCalculation = useCallback(() => {
-    calculationExecutionRef.current.invalidate();
-    dispatch({ type: 'cancel' });
-  }, []);
+    calculationWorkflow.cancel();
+  }, [calculationWorkflow]);
   const runCalculation = useCallback(
     async (calculate: (inputs: TInputs) => Promise<TResult>) => {
-      const epoch = calculationExecutionRef.current.start();
       const inputsAtStart = state.draftInputs;
-      dispatch({ type: 'start' });
-      try {
-        const result = await calculate(inputsAtStart);
-        if (!calculationExecutionRef.current.isCurrent(epoch)) return result;
-        dispatch({ type: 'succeed', committedInputs: inputsAtStart, committedResult: result });
-        return result;
-      } catch (error) {
-        if (error instanceof CalculationCancelled) {
-          if (calculationExecutionRef.current.isCurrent(epoch)) dispatch({ type: 'cancel' });
-          return undefined;
-        }
-        if (!calculationExecutionRef.current.isCurrent(epoch)) throw error;
-        dispatch({
-          type: 'fail',
-          error: error instanceof Error ? error : new Error(String(error)),
-        });
-        throw error;
-      }
+      return calculationWorkflow.run(inputsAtStart, calculate);
     },
-    [state.draftInputs],
+    [calculationWorkflow, state.draftInputs],
   );
 
   return {
