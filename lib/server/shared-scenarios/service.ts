@@ -6,22 +6,15 @@ import {
   serializeSharedSingleScenario,
 } from '@/shared/lib/single-scenario-share';
 
+import { SharedScenarioPayloadSchema } from './input-schema';
 import { createSharedSingleScenarioRecord, findSharedSingleScenarioRecord } from './repository';
 
 const SHARED_SCENARIO_RETENTION_MS = 30 * 24 * 60 * 60_000;
 
-export async function createSharedSingleScenario(
-  body: {
-    inputs: unknown;
-    description?: unknown;
-  },
-  now = new Date(),
-) {
-  const validatedInputs = BondInputsSchema.parse(body.inputs);
-  const normalizedPayload = buildSharedSingleScenarioPayload(
-    validatedInputs,
-    typeof body.description === 'string' ? body.description : undefined,
-  );
+export async function createSharedSingleScenario(body: unknown, now = new Date()) {
+  const { inputs, description } = SharedScenarioPayloadSchema.parse(body);
+  const validatedInputs = BondInputsSchema.parse(inputs);
+  const normalizedPayload = buildSharedSingleScenarioPayload(validatedInputs, description);
 
   const created = await createSharedSingleScenarioRecord({
     title: normalizedPayload.title,
