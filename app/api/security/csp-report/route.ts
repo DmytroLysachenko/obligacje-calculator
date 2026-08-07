@@ -29,7 +29,9 @@ export const POST = apiHandler(
       );
     }
 
-    const report = parseCspReport(await readBoundedJsonBody(request, z.unknown(), 8_192));
+    const report = parseCspReport(
+      await readBoundedJsonBody(request, z.unknown(), 8_192, { requireJsonContentType: false }),
+    );
     if (report && shouldSampleCspReport(report)) {
       logger.warn('Sampled CSP violation', report);
     }
