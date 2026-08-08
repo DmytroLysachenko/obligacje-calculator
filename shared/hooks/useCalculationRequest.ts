@@ -36,6 +36,13 @@ export function useCalculationRequest() {
     }
   }, []);
 
+  const cancel = useCallback(() => {
+    if (!abortControllerRef.current) return;
+    abortControllerRef.current.abort();
+    abortControllerRef.current = null;
+    dispatch({ type: 'cancel', requestId: requestIdRef.current });
+  }, []);
+
   useEffect(() => {
     return () => clearCurrentRequest();
   }, [clearCurrentRequest]);
@@ -85,6 +92,7 @@ export function useCalculationRequest() {
     requestState: state,
     requestMessage: getCalculationRequestMessage(state),
     run,
+    cancel,
     clearError,
     post: useCallback(
       async <T>(
