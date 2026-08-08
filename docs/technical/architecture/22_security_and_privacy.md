@@ -13,10 +13,13 @@ MIME-sniffing protection, HSTS, or the strict referrer policy.
 ## Mutation boundary
 
 Cookie-authenticated portfolio mutations are same-origin only. The server rejects
-cross-site `Sec-Fetch-Site` requests and foreign or malformed `Origin` headers.
-The API does not expose permissive CORS. A future trusted cross-origin client
-requires a dedicated CSRF-token design and a documented allowlist rather than a
-relaxation of the default policy.
+cross-site or opaque `Sec-Fetch-Site` requests and foreign or malformed `Origin`
+headers. A sibling subdomain is not accepted merely because it is same-site. An
+absent `Origin` is permitted only for a non-browser request or an explicitly
+same-origin fetch; service callers remain behind their own server-side
+authentication boundary. The API does not expose permissive CORS. A future
+trusted cross-origin client requires a dedicated CSRF-token design and a
+documented allowlist rather than a relaxation of the default policy.
 
 ## Data classification and operator handling
 
@@ -42,8 +45,12 @@ claims are made.
 Auth.js sessions establish the application identity. Administrative status and
 synchronization require a server-side allowlist decision; the browser receives
 only capability/status information. Guest portfolio ownership is represented by
-an HttpOnly cookie, marked `Secure` in production, and is not an administrator
-credential. Logout removes the session according to the Auth.js provider flow.
+an HttpOnly, `SameSite=Lax`, path-scoped cookie with a one-year maximum age. It
+is marked `Secure` in production and is not an administrator credential. Guest
+portfolio writes are not permitted: signing in is required before every
+workspace mutation. Logout removes the Auth.js session according to the provider
+flow; it does not transfer guest-owned data into an account or delete the guest
+cookie automatically. Users should clear site data to discard a guest notebook.
 
 Account deletion, token revocation, backup retention, and restore access are
 operational controls. Their current owner, retention duration, and quarterly
