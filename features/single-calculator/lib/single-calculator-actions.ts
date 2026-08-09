@@ -2,6 +2,7 @@ import { BondInputs, BondType, CalculationResult } from '@/features/bond-core/ty
 import { ScenarioKind, SingleBondCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import type { Language } from '@/i18n/config';
 import { bondSeriesClient } from '@/shared/lib/bond-series-client';
+import { CalculationCancelled } from '@/shared/lib/calculation-cancelled';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { logClientError } from '@/shared/lib/client-logger';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
@@ -32,7 +33,9 @@ type PostCalculation = <TResponse>(
 export function isCalculationAbort(error: unknown) {
   return (
     error instanceof Error &&
-    (error.name === 'AbortError' || error.message === 'Calculation aborted')
+    (error instanceof CalculationCancelled ||
+      error.name === 'AbortError' ||
+      error.message === 'Calculation aborted')
   );
 }
 
@@ -118,7 +121,8 @@ export function createSingleCalculatorActions({
         await portfolioClient.createLot({
           portfolioId,
           bondType: inputs.bondType,
-          selectedSeriesId: selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
+          selectedSeriesId:
+            selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
           purchaseDate: inputs.purchaseDate,
           amount: Math.floor(inputs.initialInvestment / 100),
           isRebought: inputs.isRebought,
