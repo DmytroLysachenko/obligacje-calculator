@@ -4,11 +4,11 @@ import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { okJson } from '@/lib/server/http/responses';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
-import { simulateOwnerPortfolio } from '@/lib/server/portfolio/queries';
 
 const PortfolioSimulationPayloadSchema = z
   .object({
@@ -25,7 +25,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
     );
 
     try {
-      const result = await simulateOwnerPortfolio(owner.ownerId, portfolioId, {
+      const result = await portfolioApplication.simulatePortfolio(owner.ownerId, portfolioId, {
         expectedInflation,
       });
       return okJson(result);

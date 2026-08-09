@@ -4,14 +4,13 @@ import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schema
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
-import { createPortfolioLot, deleteOwnerLot } from '@/lib/server/portfolio/commands';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
   getPortfolioRouteContext,
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
   withPortfolioOwnerResponse,
 } from '@/lib/server/portfolio/http';
-import { listPortfolioLots } from '@/lib/server/portfolio/queries';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   const { owner } = await getPortfolioRouteContext();
@@ -23,7 +22,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
   }
 
   try {
-    const lots = await listPortfolioLots(owner.ownerId, portfolioId);
+    const lots = await portfolioApplication.listLots(owner.ownerId, portfolioId);
     return withPortfolioOwnerResponse(okJson(lots), owner);
   } catch (error) {
     const response = portfolioDomainErrorResponse(error);
@@ -38,7 +37,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
     const validated = await readJsonBody(req, InvestmentLotSchema);
 
     try {
-      const newLot = await createPortfolioLot(owner.ownerId, validated);
+      const newLot = await portfolioApplication.createLot(owner.ownerId, validated);
       return okJson(newLot);
     } catch (error) {
       const response = portfolioDomainErrorResponse(error);
@@ -59,7 +58,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     }
 
     try {
-      await deleteOwnerLot(owner.ownerId, id);
+      await portfolioApplication.deleteLot(owner.ownerId, id);
       return okJson({ success: true });
     } catch (error) {
       const response = portfolioDomainErrorResponse(error);

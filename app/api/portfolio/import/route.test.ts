@@ -2,12 +2,12 @@ import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  importOwnerPortfolio: vi.fn(),
+  importPortfolio: vi.fn(),
   withAuthenticatedPortfolioOwner: vi.fn(),
 }));
 
-vi.mock('@/lib/server/portfolio/commands', () => ({
-  importOwnerPortfolio: mocks.importOwnerPortfolio,
+vi.mock('@/lib/server/portfolio/application', () => ({
+  portfolioApplication: { importPortfolio: mocks.importPortfolio },
 }));
 vi.mock('@/lib/server/portfolio/http', () => ({
   withAuthenticatedPortfolioOwner: mocks.withAuthenticatedPortfolioOwner,
@@ -24,14 +24,14 @@ const valid = {
 
 describe('portfolio import endpoint', () => {
   beforeEach(() => {
-    mocks.importOwnerPortfolio.mockReset();
+    mocks.importPortfolio.mockReset();
     mocks.withAuthenticatedPortfolioOwner.mockImplementation(async (_request, handler) =>
       handler({ ownerId: 'owner-1' }),
     );
   });
 
   it('passes a validated complete payload to the authenticated owner transaction', async () => {
-    mocks.importOwnerPortfolio.mockResolvedValue({
+    mocks.importPortfolio.mockResolvedValue({
       portfolio: { id: 'portfolio-1' },
       importedLots: 1,
     });
@@ -46,7 +46,7 @@ describe('portfolio import endpoint', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mocks.importOwnerPortfolio).toHaveBeenCalledWith('owner-1', valid.portfolio);
+    expect(mocks.importPortfolio).toHaveBeenCalledWith('owner-1', valid.portfolio);
     await expect(response.json()).resolves.toMatchObject({ data: { importedLots: 1 } });
   });
 
@@ -84,7 +84,7 @@ describe('portfolio import endpoint', () => {
     );
 
     expect(response.status).toBeGreaterThanOrEqual(400);
-    expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
+    expect(mocks.importPortfolio).not.toHaveBeenCalled();
   });
 
   it('rejects a declared oversize body before JSON parsing or import work', async () => {
@@ -102,7 +102,7 @@ describe('portfolio import endpoint', () => {
 
     expect(response.status).toBe(413);
     await expect(response.json()).resolves.toMatchObject({ code: 'PAYLOAD_TOO_LARGE' });
-    expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
+    expect(mocks.importPortfolio).not.toHaveBeenCalled();
   });
 
   it.each([undefined, 'text/plain', 'application/x-www-form-urlencoded'])(
@@ -122,7 +122,7 @@ describe('portfolio import endpoint', () => {
       await expect(response.json()).resolves.toMatchObject({
         code: 'UNSUPPORTED_MEDIA_TYPE',
       });
-      expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
+      expect(mocks.importPortfolio).not.toHaveBeenCalled();
     },
   );
 
@@ -142,6 +142,6 @@ describe('portfolio import endpoint', () => {
     );
 
     expect(response.status).toBeGreaterThanOrEqual(400);
-    expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
+    expect(mocks.importPortfolio).not.toHaveBeenCalled();
   });
 });

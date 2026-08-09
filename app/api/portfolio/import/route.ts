@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readBoundedJsonBody } from '@/lib/server/http/read-json-body';
 import { okJson } from '@/lib/server/http/responses';
-import { importOwnerPortfolio } from '@/lib/server/portfolio/commands';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import { withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
 import { ImportPayloadSchema } from '@/lib/server/portfolio/import-schema';
 
@@ -13,7 +13,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const payload = await readBoundedJsonBody(req, ImportPayloadSchema, MAX_IMPORT_BYTES);
     const { portfolio } = payload;
-    const importedPortfolio = await importOwnerPortfolio(owner.ownerId, portfolio);
+    const importedPortfolio = await portfolioApplication.importPortfolio(owner.ownerId, portfolio);
 
     return okJson({
       portfolio: importedPortfolio.portfolio,

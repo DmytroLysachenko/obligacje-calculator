@@ -5,7 +5,7 @@ import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { errorJson, okJson } from '@/lib/server/http/responses';
 import { createServerLogger } from '@/lib/server/logging';
-import { deleteOwnerLot, updateOwnerLot } from '@/lib/server/portfolio/commands';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
@@ -20,7 +20,7 @@ export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(
       const validated = await readJsonBody(req, InvestmentLotUpdateSchema);
 
       try {
-        const updatedLot = await updateOwnerLot(owner.ownerId, id, validated);
+        const updatedLot = await portfolioApplication.updateLot(owner.ownerId, id, validated);
         return okJson(updatedLot);
       } catch (error) {
         const response = portfolioDomainErrorResponse(error);
@@ -39,7 +39,7 @@ export const DELETE = apiHandler<{ params: Promise<{ id: string }> }>(
       const { id } = await params;
 
       try {
-        await deleteOwnerLot(owner.ownerId, id);
+        await portfolioApplication.deleteLot(owner.ownerId, id);
         return okJson({ success: true });
       } catch (error) {
         const response = portfolioDomainErrorResponse(error);

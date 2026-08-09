@@ -3,10 +3,8 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
 import { PortfolioDetails } from '@/features/notebook/components/PortfolioDetails';
-import {
-  buildSharedPortfolioPageMetadata,
-  getPublicSharedPortfolioPageData,
-} from '@/lib/server/portfolio/queries';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
+import { buildSharedPortfolioPageMetadata } from '@/lib/server/portfolio/queries';
 
 interface Props {
   params: Promise<{ shareId: string }>;
@@ -16,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const page = await getTranslations('metadata.pages.shared_portfolio');
   const common = await getTranslations('common');
   const { shareId } = await params;
-  const portfolio = await getPublicSharedPortfolioPageData(shareId);
+  const portfolio = await portfolioApplication.loadSharedPortfolio(shareId);
 
   return {
     ...buildSharedPortfolioPageMetadata({
@@ -32,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SharedPortfolioPage({ params }: Props) {
   const page = await getTranslations('shared_portfolio_page');
   const { shareId } = await params;
-  const portfolio = await getPublicSharedPortfolioPageData(shareId);
+  const portfolio = await portfolioApplication.loadSharedPortfolio(shareId);
 
   if (!portfolio) {
     notFound();

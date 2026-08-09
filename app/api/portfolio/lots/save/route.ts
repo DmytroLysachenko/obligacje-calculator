@@ -1,10 +1,11 @@
 import { NextRequest } from 'next/server';
+
 import { PortfolioLotTransactionSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { errorJson, okJson } from '@/lib/server/http/responses';
 import { createServerLogger } from '@/lib/server/logging';
-import { createPortfolioLotWithBuyTransaction } from '@/lib/server/portfolio/commands';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
@@ -20,7 +21,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
         PortfolioLotTransactionSchema,
       );
 
-      const result = await createPortfolioLotWithBuyTransaction(owner.ownerId, {
+      const result = await portfolioApplication.createLotWithTransaction(owner.ownerId, {
         portfolioId,
         bondType,
         purchaseDate,

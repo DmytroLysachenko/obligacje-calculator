@@ -2,11 +2,11 @@ import { NextRequest } from 'next/server';
 
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
-import { exportOwnerPortfolio } from '@/lib/server/portfolio/queries';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(req, async (owner) => {
@@ -19,7 +19,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     }
 
     try {
-      const { exportData, fileName } = await exportOwnerPortfolio(
+      const { exportData, fileName } = await portfolioApplication.exportPortfolio(
         owner.ownerId,
         portfolioId,
         formatMode === 'package' ? 'package' : 'portfolio',
