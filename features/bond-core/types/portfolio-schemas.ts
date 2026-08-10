@@ -15,7 +15,7 @@ export const PORTFOLIO_LIMITS = {
  * business ceiling and minor-unit precision at the HTTP boundary so database
  * and offer-resolution work never process impossible values.
  */
-export const PortfolioAmountSchema = z
+const PortfolioAmountSchema = z
   .number()
   .finite()
   .positive()
@@ -25,9 +25,9 @@ export const PortfolioAmountSchema = z
     'Amount must use at most two decimal places.',
   );
 
-export const PortfolioNameSchema = z.string().trim().min(1).max(PORTFOLIO_LIMITS.nameLength);
-export const PortfolioDescriptionSchema = z.string().trim().max(PORTFOLIO_LIMITS.descriptionLength);
-export const PortfolioNotesSchema = z.string().trim().max(PORTFOLIO_LIMITS.lotNotesLength);
+const PortfolioNameSchema = z.string().trim().min(1).max(PORTFOLIO_LIMITS.nameLength);
+const PortfolioDescriptionSchema = z.string().trim().max(PORTFOLIO_LIMITS.descriptionLength);
+const PortfolioNotesSchema = z.string().trim().max(PORTFOLIO_LIMITS.lotNotesLength);
 
 export const PortfolioSchema = z
   .object({
@@ -68,7 +68,3 @@ export const InvestmentLotUpdateSchema = z
   })
   .strict()
   .refine((command) => Object.keys(command).length > 0, 'Update must contain at least one field.');
-
-export type PortfolioCommand = z.infer<typeof PortfolioSchema>;
-export type InvestmentLotCommand = z.infer<typeof InvestmentLotSchema>;
-export type InvestmentLotUpdateCommand = z.infer<typeof InvestmentLotUpdateSchema>;
