@@ -30,4 +30,23 @@ describe('motion policy', () => {
 
     expect(globals).toContain('@media (prefers-reduced-motion: reduce)');
   });
+
+  it('keeps a visible focus treatment when shared primitives suppress native outlines', () => {
+    const primitiveFiles = [
+      'components/ui/accordion.tsx',
+      'components/ui/button.tsx',
+      'components/ui/input.tsx',
+      'components/ui/select.tsx',
+      'components/ui/slider.tsx',
+      'components/ui/switch.tsx',
+      'components/ui/tabs.tsx',
+    ];
+
+    for (const relativePath of primitiveFiles) {
+      const source = readFileSync(join(root, relativePath), 'utf8');
+      if (source.includes('outline-none')) {
+        expect(source, relativePath).toContain('focus-visible:ring');
+      }
+    }
+  });
 });
