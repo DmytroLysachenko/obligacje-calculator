@@ -36,6 +36,7 @@ describe('CalculationApplicationService dependencies', () => {
       calculationNotes: [],
       dataQualityFlags: [],
       dataFreshness: { status: 'fresh', usedFallback: false },
+      calculationVersion: 'test-model',
     };
     const handler = {
       kind: ScenarioKind.SINGLE_BOND,
@@ -78,6 +79,7 @@ describe('CalculationApplicationService dependencies', () => {
       calculationNotes: [],
       dataQualityFlags: [],
       dataFreshness: { status: 'fresh', usedFallback: false },
+      calculationVersion: 'test-model',
     };
     const freshness: CalculationDataFreshness = {
       status: 'fresh',
@@ -106,7 +108,10 @@ describe('CalculationApplicationService dependencies', () => {
 
     expect(dependencies.cache.generateKey).toHaveBeenCalledWith(
       expect.objectContaining({
-        dataRevision: JSON.stringify({ dataFreshness: freshness, taxRulesRevision: '2026:revision' }),
+        dataRevision: JSON.stringify({
+          dataFreshness: freshness,
+          taxRulesRevision: '2026:revision',
+        }),
       }),
     );
     expect(handler.handle).not.toHaveBeenCalled();
@@ -129,9 +134,15 @@ describe('CalculationApplicationService dependencies', () => {
       calculationNotes: [],
       dataQualityFlags: [],
       dataFreshness: { status: 'fresh', usedFallback: false },
+      calculationVersion: 'test-model',
     };
     const dependencies: CalculationServiceDependencies = {
-      cache: { generateKey: vi.fn(() => 'key'), get: vi.fn(() => null), set: vi.fn(), invalidateNamespace: vi.fn() },
+      cache: {
+        generateKey: vi.fn(() => 'key'),
+        get: vi.fn(() => null),
+        set: vi.fn(),
+        invalidateNamespace: vi.fn(),
+      },
       getDataFreshness: vi.fn(() => freshnessPromise),
       getTaxRulesRevision: vi.fn(async () => '2026:revision'),
       getDefinitions: vi.fn(() => definitionsPromise),

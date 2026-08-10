@@ -1,5 +1,5 @@
 export interface VersionedCalculationEnvelope {
-  calculationVersion?: unknown;
+  calculationVersion: unknown;
   result?: unknown;
 }
 

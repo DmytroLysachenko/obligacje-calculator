@@ -59,7 +59,7 @@ export interface CalculationEnvelope<T> {
   calculationNotes: string[];
   dataQualityFlags: string[];
   dataFreshness: CalculationDataFreshness;
-  calculationVersion?: string;
+  calculationVersion: string;
   historicalAverages?: HistoricalAverages;
 }
 
