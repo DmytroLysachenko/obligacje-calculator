@@ -21,6 +21,13 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Trusted & Experimental Feature Matrix](./product/26_trusted_and_experimental_feature_matrix.md) - Current support classes for core, conditional, and experimental pages.
 - [UX Improvement Plan](./product/18_ux_improvement_plan.md) - Continuous enhancement of the user experience.
 
+### UI System
+
+- [UI Design Direction](./ui/01_ui_design_direction.md) - Quiet instrument-panel visual direction.
+- [UI Rules](./ui/02_ui_rules.md) - Layout, typography, color, and table rules.
+- [Design System](./ui/03_design_system.md) - Shared formatter, token, component, and refactor rules.
+- [Financial Workflow Accessibility Contract](./ui/04_accessibility_financial_workflow_contract.md) - Required accessible behavior for financial workflows.
+
 ### 2. Technical Architecture
 
 - [System Architecture](./technical/architecture/19_system_architecture.md) - High-level technical design.
@@ -63,6 +70,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 ### 6. Archived Plans
 
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
+- [July 2026 UI Audit](./archive/ui/2026_07_ui_audit.md) - Superseded visual audit retained as historical evidence.
 
 ### 7. Operations
 

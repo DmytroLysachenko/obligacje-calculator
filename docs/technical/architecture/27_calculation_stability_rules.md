@@ -84,6 +84,31 @@ Cache invalidation is idempotent. Repeating it is safe; omitting it is not.
 
 Expiry is the final guardrail.
 
+## Model-version compatibility
+
+`MODEL_VERSION` identifies one exact financial model, including calculation
+rules, tax treatment, normalized scenario inputs, and authoritative
+offer/market-data revisions named in `dataFreshness`. A result is reproducible
+only with all of those values; the version alone is not a freshness claim.
+
+Persisted calculator envelopes use exact-version compatibility. Missing,
+malformed, or older versions are discarded on restore and only editable draft
+inputs remain. They are never silently recomputed or relabelled as current.
+Shared scenarios retain inputs, not a trusted historic result; opening one
+calculates against current authority and presents current freshness metadata.
+
+A model change requires all of the following in one delivery:
+
+1. bump `MODEL_VERSION`;
+2. add or update a named golden fixture for each supported scenario family;
+3. document any user-visible assumption or tax-rule change; and
+4. retain no compatibility reader unless an explicit migration owns its input,
+   output, expiry, and tests.
+
+There are currently no historical output migrations or supported older model
+versions. Exact-match rejection is deliberate: financial output must be
+recalculated rather than made to look compatible.
+
 The system should prefer explicit rejection over silent coercion.
 Users can recover from a clear validation error.
 They cannot recover from a successful-looking result that was produced from unsafe input or broken math.
@@ -198,6 +223,7 @@ Run before handoff:
 pnpm test:ci
 pnpm lint
 ```
+
 # Calculation Stability Rules
 
 ## Session ownership and persisted results
@@ -245,6 +271,7 @@ current offer/data revision is required before presenting updated output.
   and draft edits after a result.
 - Add a browser or component interaction test when a calculator changes the
   visible progress, focus, error, or result hierarchy.
+
 # Session ownership and persisted envelopes
 
 Every interactive calculator owns one shared session with separate draft inputs,

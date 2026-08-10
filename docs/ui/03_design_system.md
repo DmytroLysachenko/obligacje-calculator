@@ -1,4 +1,4 @@
-# Design Direction
+# 03. Design System
 
 ## Financial value formatting
 
@@ -7,12 +7,12 @@ All user-facing financial values use the shared formatter surface in
 a semantic value; they do not assemble decimal separators, currency symbols,
 or dates themselves.
 
-| Value | Formatter | Notes |
-| --- | --- | --- |
-| Monetary amount | `formatCurrency` | Always retains two minor-unit digits for financial comparison. |
-| Rate/return | `formatPercent` | Input is percentage points, not a 0–1 fraction. |
-| Dashboard magnitude | `formatCompactNumber` | Never use for CSV/export or editable values. |
-| Calendar date | `formatIsoDate` | ISO is storage/URL format; display is localized and UTC-stable. |
+| Value               | Formatter             | Notes                                                           |
+| ------------------- | --------------------- | --------------------------------------------------------------- |
+| Monetary amount     | `formatCurrency`      | Always retains two minor-unit digits for financial comparison.  |
+| Rate/return         | `formatPercent`       | Input is percentage points, not a 0–1 fraction.                 |
+| Dashboard magnitude | `formatCompactNumber` | Never use for CSV/export or editable values.                    |
+| Calendar date       | `formatIsoDate`       | ISO is storage/URL format; display is localized and UTC-stable. |
 
 Machine values remain ISO dates and unformatted numeric strings at API and
 export boundaries. Invalid display-date strings are returned unchanged so a
@@ -104,7 +104,7 @@ Use typography as the first hierarchy tool.
 - Large metric: 32px
 - Section title: 18px
 - Card title: 15px
-- Body: 14px
+- Body: 16px minimum for financial explanations, assumptions, warnings, validation, and freshness
 - Metadata: 12px
 
 Prefer shared classes from `app/globals.css`:

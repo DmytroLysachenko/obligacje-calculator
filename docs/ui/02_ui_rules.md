@@ -1,4 +1,4 @@
-# Layout Rules
+# 02. UI Rules
 
 ## Cards
 
@@ -34,7 +34,7 @@ Card Title:
 15px
 
 Body:
-14px
+16px minimum for financial explanations, assumptions, warnings, validation, and freshness. Compact metadata may use 12px.
 
 Metadata:
 12px

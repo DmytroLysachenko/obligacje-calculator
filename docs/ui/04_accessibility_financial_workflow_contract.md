@@ -1,4 +1,4 @@
-# Financial Workflow Accessibility Contract
+# 04. Financial Workflow Accessibility Contract
 
 ## Names and labels
 

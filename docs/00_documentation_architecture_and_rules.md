@@ -24,6 +24,8 @@ The `docs/` directory uses this structure:
   - active planning documents only
 - `archive/plans/`
   - completed or superseded plans
+- `archive/ui/`
+  - historical UI audits
 - `product/`
   - strategy, UX, copy, requirements
 - `technical/architecture/`
@@ -32,6 +34,8 @@ The `docs/` directory uses this structure:
   - financial domain and mathematical reference material
 - `technical/features/`
   - feature-specific technical design
+- `ui/`
+  - current UI direction, design-system, rules, and accessibility contracts
 
 ## Naming Rules
 
