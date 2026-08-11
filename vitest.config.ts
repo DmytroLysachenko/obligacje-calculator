@@ -26,6 +26,12 @@ export default defineConfig({
       reporter: ['text', 'json-summary'],
       include: ['features/bond-core/**', 'lib/server/**', 'shared/lib/**'],
       exclude: ['**/*.test.{ts,tsx}', '**/*.contract.test.{ts,tsx}'],
+      thresholds: {
+        branches: 20,
+        functions: 20,
+        lines: 20,
+        statements: 20,
+      },
     },
   },
   resolve: {

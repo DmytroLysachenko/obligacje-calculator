@@ -52,6 +52,8 @@ export const REQUIRED_READINESS_TABLES = [
   'web_vital_aggregates',
 ];
 const DRIZZLE_MIGRATIONS_TABLE = 'drizzle.__drizzle_migrations';
+/** Bump with every reviewed migration added to the journal. */
+export const REQUIRED_MIGRATION_COUNT = 9;
 
 export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
   const missing = [
@@ -92,9 +94,21 @@ export async function checkReadinessDatabase(
       ...(existingTables.has(DRIZZLE_MIGRATIONS_TABLE) ? [] : [DRIZZLE_MIGRATIONS_TABLE]),
     ];
 
-    return missingTables.length === 0
+    if (missingTables.length > 0) {
+      return { status: 'failed', detail: `Missing required tables: ${missingTables.join(', ')}` };
+    }
+
+    const migrationRows = await sql<{ migration_count: number }[]>`
+      select count(*)::int as migration_count from drizzle.__drizzle_migrations
+    `;
+    const migrationCount = migrationRows[0]?.migration_count ?? 0;
+
+    return migrationCount >= REQUIRED_MIGRATION_COUNT
       ? { status: 'ok' }
-      : { status: 'failed', detail: `Missing required tables: ${missingTables.join(', ')}` };
+      : {
+          status: 'failed',
+          detail: `Database migrations are behind: expected at least ${REQUIRED_MIGRATION_COUNT}, found ${migrationCount}`,
+        };
   } catch {
     return { status: 'failed', detail: 'Database readiness check failed' };
   } finally {

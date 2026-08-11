@@ -4,6 +4,7 @@ import {
   checkReadinessDatabase,
   checkReadinessEnv,
   getReadinessSnapshot,
+  REQUIRED_MIGRATION_COUNT,
   REQUIRED_READINESS_TABLES,
   type SqlClient,
 } from './service';
@@ -19,14 +20,20 @@ function completeEnv() {
   };
 }
 
-function createSqlClient(rows: Array<{ table_schema: string; table_name: string }>, fail = false) {
+function createSqlClient(
+  rows: Array<{ table_schema: string; table_name: string }>,
+  fail = false,
+  migrationCount = REQUIRED_MIGRATION_COUNT,
+) {
   const end = vi.fn().mockResolvedValue(undefined);
   const sql = vi.fn(async (strings: TemplateStringsArray | readonly string[]) => {
     if (fail) {
       throw new Error('db failed');
     }
 
-    return strings[0]?.includes('information_schema') ? rows : [];
+    if (strings[0]?.includes('information_schema')) return rows;
+    if (strings[0]?.includes('__drizzle_migrations')) return [{ migration_count: migrationCount }];
+    return [];
   }) as unknown as SqlClient;
   sql.end = end;
 
@@ -83,6 +90,22 @@ describe('readiness service', () => {
       status: 'failed',
       detail:
         'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verificationToken, shared_single_scenarios, admin_audit_events, rate_limit_windows, web_vital_aggregates, drizzle.__drizzle_migrations',
+    });
+  });
+
+  it('rejects a database that has not applied the reviewed migration journal', async () => {
+    const sql = createSqlClient(
+      [
+        ...REQUIRED_READINESS_TABLES.map((table_name) => ({ table_schema: 'public', table_name })),
+        { table_schema: 'drizzle', table_name: '__drizzle_migrations' },
+      ],
+      false,
+      REQUIRED_MIGRATION_COUNT - 1,
+    );
+
+    await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
+      status: 'failed',
+      detail: `Database migrations are behind: expected at least ${REQUIRED_MIGRATION_COUNT}, found ${REQUIRED_MIGRATION_COUNT - 1}`,
     });
   });
 
