@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 import { comparisonLayout } from './comparison-layout';
 
-export interface ComparisonPlanSummaryItem {
+interface ComparisonPlanSummaryItem {
   label: string;
   value: string;
 }

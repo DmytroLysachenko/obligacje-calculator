@@ -5,7 +5,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export interface SegmentedControlOption<TValue extends string = string> {
+interface SegmentedControlOption<TValue extends string = string> {
   value: TValue;
   label: React.ReactNode;
   disabled?: boolean;

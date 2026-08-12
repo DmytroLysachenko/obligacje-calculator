@@ -77,6 +77,7 @@ Current production-readiness notes:
 
 ```bash
 pnpm test:ci
+pnpm test:coverage
 pnpm test:release
 pnpm test:db # requires an isolated TEST_DATABASE_URL
 pnpm test:core
@@ -91,11 +92,9 @@ pnpm scan:unused
 curated release signal and does not replace it. `pnpm test:db` applies the
 checked-in migration journal only to a disposable database.
 
-`pnpm scan:unused` should not report confirmed unused files. Export findings are
-triaged as API-surface candidates because framework exports, scenario schemas,
-and UI primitive barrels can be intentionally retained. As of July 3, 2026 the
-reviewed baseline is 8 unused value exports and 11 unused exported-type
-candidates.
+`pnpm scan:unused` is a green gate: it must report no unused files, exports,
+types, unlisted binaries, or configuration hints. The checked 70% coverage
+threshold applies to high-risk calculation, server, and shared-library source.
 
 ### Data Sync
 

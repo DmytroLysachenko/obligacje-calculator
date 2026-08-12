@@ -14,4 +14,4 @@ export const SharedScenarioPayloadSchema = z
   })
   .strict();
 
-export type SharedScenarioPayloadCommand = z.infer<typeof SharedScenarioPayloadSchema>;
+type SharedScenarioPayloadCommand = z.infer<typeof SharedScenarioPayloadSchema>;

@@ -62,6 +62,9 @@ jobs:
       - name: Release tests
         run: pnpm test:release
 
+      - name: Measured coverage threshold
+        run: pnpm test:coverage
+
       - name: Quality summary
         if: always()
         run: |
@@ -71,6 +74,7 @@ jobs:
             echo "- TypeScript: \`pnpm check:types\`"
             echo "- Lint: \`pnpm lint\`"
             echo "- Release tests: \`pnpm test:release\`"
+            echo "- Coverage: \`pnpm test:coverage\` (70% per aggregate metric)"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   build:

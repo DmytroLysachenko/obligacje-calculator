@@ -20,8 +20,8 @@ export enum ScenarioKind {
 }
 
 export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
-export type BondOfferSource = 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
-export type BondOfferSyncStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
+type BondOfferSource = 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
+type BondOfferSyncStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
 
 export interface CalculationDataFreshness {
   status: DataFreshnessStatus;

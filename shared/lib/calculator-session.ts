@@ -1,4 +1,4 @@
-export type CalculatorSessionPhase = 'idle' | 'running' | 'succeeded' | 'failed' | 'cancelled';
+type CalculatorSessionPhase = 'idle' | 'running' | 'succeeded' | 'failed' | 'cancelled';
 
 export interface CalculatorSessionState<TInputs, TResult> {
   draftInputs: TInputs;

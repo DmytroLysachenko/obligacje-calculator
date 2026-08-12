@@ -19,7 +19,9 @@ pnpm build
 ```
 
 `test:release` is a fast, curated signal and must not replace the full
-`test:ci` gate. Coverage locates missing decision-path tests in calculation,
+`test:ci` gate. `test:coverage` measures the high-risk calculation, server, and
+shared-library set with a 70% branch/function/line/statement threshold; CI
+enforces that ratchet. Coverage locates missing decision-path tests in calculation,
 authorization, HTTP, and persistence modules; it is not a global percentage
 target. Prefer observable behavior and injected adapters over source spelling.
 

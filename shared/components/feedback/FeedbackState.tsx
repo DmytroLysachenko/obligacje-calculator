@@ -5,9 +5,9 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export type FeedbackStateTone = 'info' | 'loading' | 'success' | 'warning' | 'error';
+type FeedbackStateTone = 'info' | 'loading' | 'success' | 'warning' | 'error';
 
-export interface FeedbackStateAction {
+interface FeedbackStateAction {
   label: string;
   onClick?: () => void;
   href?: string;

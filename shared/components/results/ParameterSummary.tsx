@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
-export interface ParameterSummaryItem {
+interface ParameterSummaryItem {
   label: React.ReactNode;
   value: React.ReactNode;
   help?: React.ReactNode;

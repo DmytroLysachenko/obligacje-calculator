@@ -91,10 +91,7 @@ export class PortfolioSimulationHandler
         rebuyDiscount: def.rebuyDiscount,
         taxStrategy: inv.taxStrategy ?? TaxStrategy.STANDARD,
         rollover: inv.rollover ?? false,
-        historicalData: allHistoricalData.historicalData as Record<
-          string,
-          import('@/features/bond-core/types').HistoricalEntry
-        >,
+        historicalData: allHistoricalData.historicalData as BondInputs['historicalData'],
       } as BondInputs & { rollover: boolean });
       items.push({
         bondType: inv.bondType,

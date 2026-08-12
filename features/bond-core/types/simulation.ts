@@ -20,7 +20,7 @@ export interface SimulationEvent {
   metadata?: Record<string, unknown>;
 }
 
-export interface SimulationPoint {
+interface SimulationPoint {
   date: string;
   nominalValue: number;
   netValue: number;
@@ -35,7 +35,7 @@ export interface SimulationPoint {
   events?: SimulationEvent[];
 }
 
-export interface SimulationSummary {
+interface SimulationSummary {
   initialInvestment: number;
   finalNominalValue: number;
   finalNetValue: number;
@@ -49,7 +49,7 @@ export interface SimulationSummary {
   maturityDate: string;
 }
 
-export interface SimulationResult {
+interface SimulationResult {
   summary: SimulationSummary;
   timeline: SimulationPoint[];
   explanationBlocks: string[];

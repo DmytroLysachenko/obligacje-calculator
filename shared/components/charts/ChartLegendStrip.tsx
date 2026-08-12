@@ -4,7 +4,7 @@ import React from 'react';
 
 import { cn } from '@/lib/utils';
 
-export interface ChartLegendItem {
+interface ChartLegendItem {
   label: string;
   color: string;
   style?: 'solid' | 'dashed' | 'muted';

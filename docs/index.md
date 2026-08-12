@@ -84,4 +84,4 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 
 ---
 
-_Last Updated: July 30, 2026 - App is in production-readiness remediation for the trusted-core Cloud Run scope. The comprehensive codebase audit ledger distinguishes repository evidence from pending external operational evidence._
+_Last Updated: August 11, 2026 - App is in production-readiness remediation for the trusted-core Cloud Run scope. The comprehensive codebase audit ledger distinguishes repository-complete controls from pending external operational evidence._

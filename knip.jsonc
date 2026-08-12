@@ -4,7 +4,6 @@
     "app/**/*.{ts,tsx}",
     "components/**/*.{ts,tsx}",
     "db/**/*.ts",
-    "docs/**/*.ts",
     "features/**/*.{ts,tsx}",
     "i18n/**/*.{ts,tsx}",
     "lib/**/*.ts",
@@ -16,4 +15,5 @@
     "auth.ts",
   ],
   "ignoreDependencies": ["shadcn", "tailwindcss", "tailwindcss-animate", "tw-animate-css"],
+  "ignoreBinaries": ["gcloud", "gh"],
 }
