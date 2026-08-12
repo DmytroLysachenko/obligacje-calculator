@@ -20,11 +20,13 @@ curl https://obligacje-calculator-ji72nqwtea-lm.a.run.app/api/health
 curl https://obligacje-calculator-ji72nqwtea-lm.a.run.app/api/readiness
 ```
 
-Expected current state:
+Expected deployment contract:
 
 - `/api/health`: `200`
-- `/api/readiness`: `503` until Google OAuth credentials are configured
-- readiness database check should be `ok`
+- `/api/readiness`: `200` only when runtime configuration, database
+  connectivity, required tables, and every reviewed migration hash are present
+- OAuth may be deferred only with the explicit preview exception documented by
+  the verifier; it does not establish authenticated-preview readiness
 
 For the same smoke checks against the deployed service, run:
 
@@ -41,6 +43,11 @@ The verifier checks:
 - `/api/readiness`
 
 `--allow-missing-oauth` is valid only while Google OAuth is intentionally not configured. The database readiness check must still pass.
+
+The readiness endpoint is dependency-aware but cannot prove a deployed state
+from this repository. Record a redacted `ops:verify-prod` result, revision, and
+authenticated workspace smoke in the private-preview evidence log before
+claiming operational readiness.
 
 After a deploy or rollback, pass the expected Cloud Run revision when checking
 traffic routing:

@@ -54,6 +54,18 @@ export const REQUIRED_READINESS_TABLES = [
 const DRIZZLE_MIGRATIONS_TABLE = 'drizzle.__drizzle_migrations';
 /** Bump with every reviewed migration added to the journal. */
 export const REQUIRED_MIGRATION_COUNT = 9;
+/** SHA-256 hashes of the complete reviewed Drizzle journal, in migration order. */
+export const REQUIRED_MIGRATION_HASHES = [
+  '0f4eecdf14be3137035a8807afcafdf6d2159924dadd276531c78d0d72a25257',
+  '7b7b56dbf957d400db99938cf5ee3bd968b526a8a18a9f2f61b4341283c6c286',
+  '4fedd0b7214ee33d4507c71bcd79ac65241c925836b0d0f7305b7a9e435a4d39',
+  '4ae30fef07a1924ad7afcd0a066a07c8d946dd85edde86e675f059d57c6d5417',
+  'a6a7525f648cc7287e7f2318ffb43bd62f981db336d13e27bd7378b50971a79f',
+  'e552d13f52377417cad6c491606bc3d6b1c071760fde00e4fa25b6ef7c7e1958',
+  '6eb8d4e281ffea14283ac94ca078e4b34deff85a4dc4a35fca471984beb4310e',
+  '6fc6efbb29b8cd445b843f4d4e42102e731b7f27e8d3867d298cd3819953e318',
+  'e699eb7886b491bfadb5268293cb524068670ba48934eca91f5288283c9aa307',
+] as const;
 
 export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
   const missing = [
@@ -98,17 +110,22 @@ export async function checkReadinessDatabase(
       return { status: 'failed', detail: `Missing required tables: ${missingTables.join(', ')}` };
     }
 
-    const migrationRows = await sql<{ migration_count: number }[]>`
-      select count(*)::int as migration_count from drizzle.__drizzle_migrations
+    const migrationRows = await sql<{ hash: string }[]>`
+      select hash from drizzle.__drizzle_migrations order by created_at asc, id asc
     `;
-    const migrationCount = migrationRows[0]?.migration_count ?? 0;
+    const appliedHashes = new Set(migrationRows.map((row) => row.hash));
+    const missingMigrationHashes = REQUIRED_MIGRATION_HASHES.filter(
+      (hash) => !appliedHashes.has(hash),
+    );
 
-    return migrationCount >= REQUIRED_MIGRATION_COUNT
-      ? { status: 'ok' }
-      : {
-          status: 'failed',
-          detail: `Database migrations are behind: expected at least ${REQUIRED_MIGRATION_COUNT}, found ${migrationCount}`,
-        };
+    if (migrationRows.length < REQUIRED_MIGRATION_COUNT || missingMigrationHashes.length > 0) {
+      return {
+        status: 'failed',
+        detail: `Database migration journal is incomplete: expected ${REQUIRED_MIGRATION_COUNT} reviewed migrations, found ${migrationRows.length}`,
+      };
+    }
+
+    return { status: 'ok' };
   } catch {
     return { status: 'failed', detail: 'Database readiness check failed' };
   } finally {

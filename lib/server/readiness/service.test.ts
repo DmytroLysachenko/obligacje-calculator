@@ -5,6 +5,7 @@ import {
   checkReadinessEnv,
   getReadinessSnapshot,
   REQUIRED_MIGRATION_COUNT,
+  REQUIRED_MIGRATION_HASHES,
   REQUIRED_READINESS_TABLES,
   type SqlClient,
 } from './service';
@@ -23,7 +24,7 @@ function completeEnv() {
 function createSqlClient(
   rows: Array<{ table_schema: string; table_name: string }>,
   fail = false,
-  migrationCount = REQUIRED_MIGRATION_COUNT,
+  migrationHashes: string[] = [...REQUIRED_MIGRATION_HASHES],
 ) {
   const end = vi.fn().mockResolvedValue(undefined);
   const sql = vi.fn(async (strings: TemplateStringsArray | readonly string[]) => {
@@ -32,7 +33,9 @@ function createSqlClient(
     }
 
     if (strings[0]?.includes('information_schema')) return rows;
-    if (strings[0]?.includes('__drizzle_migrations')) return [{ migration_count: migrationCount }];
+    if (strings[0]?.includes('__drizzle_migrations')) {
+      return migrationHashes.map((hash) => ({ hash }));
+    }
     return [];
   }) as unknown as SqlClient;
   sql.end = end;
@@ -100,12 +103,28 @@ describe('readiness service', () => {
         { table_schema: 'drizzle', table_name: '__drizzle_migrations' },
       ],
       false,
-      REQUIRED_MIGRATION_COUNT - 1,
+      REQUIRED_MIGRATION_HASHES.slice(0, -1),
     );
 
     await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
       status: 'failed',
-      detail: `Database migrations are behind: expected at least ${REQUIRED_MIGRATION_COUNT}, found ${REQUIRED_MIGRATION_COUNT - 1}`,
+      detail: `Database migration journal is incomplete: expected ${REQUIRED_MIGRATION_COUNT} reviewed migrations, found ${REQUIRED_MIGRATION_COUNT - 1}`,
+    });
+  });
+
+  it('rejects a migration ledger with an unknown replacement hash', async () => {
+    const sql = createSqlClient(
+      [
+        ...REQUIRED_READINESS_TABLES.map((table_name) => ({ table_schema: 'public', table_name })),
+        { table_schema: 'drizzle', table_name: '__drizzle_migrations' },
+      ],
+      false,
+      [...REQUIRED_MIGRATION_HASHES.slice(0, -1), 'unreviewed-migration'],
+    );
+
+    await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
+      status: 'failed',
+      detail: `Database migration journal is incomplete: expected ${REQUIRED_MIGRATION_COUNT} reviewed migrations, found ${REQUIRED_MIGRATION_COUNT}`,
     });
   });
 
