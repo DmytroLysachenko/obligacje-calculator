@@ -1,28 +1,29 @@
 import { describe, expect, it } from 'vitest';
 
 import scenarios from '../../fixtures/regression-scenarios.json';
+import { MODEL_VERSION } from '../../model-version';
 import { BondInputs } from '../../types';
 import { calculateBondInvestment } from '../../utils/calculations';
 
 describe('Bond Engine Regression: Golden Results', () => {
-  scenarios.forEach((scenario) => {
+  it('uses the fixture written for the active financial model', () => {
+    expect(scenarios.modelVersion).toBe(MODEL_VERSION);
+  });
+
+  scenarios.scenarios.forEach((scenario) => {
     it(`matches golden result for: ${scenario.name}`, () => {
       const result = calculateBondInvestment(scenario.inputs as unknown as BondInputs);
 
       const expected = scenario.expected;
 
-      if (expected.totalProfit !== undefined) {
-        expect(result.totalProfit).toBeCloseTo(expected.totalProfit, 1);
-      }
-
-      if (expected.totalTax !== undefined) {
-        // Tax rounding can be tricky, allow small margin of 2 PLN
-        expect(Math.abs(result.totalTax - expected.totalTax)).toBeLessThanOrEqual(2);
-      }
-
-      if (expected.netPayoutValue !== undefined) {
-        expect(result.netPayoutValue).toBeCloseTo(expected.netPayoutValue, 1);
-      }
+      expect(String(result.totalProfit)).toBe(expected.totalProfit);
+      expect(String(result.totalTax)).toBe(expected.totalTax);
+      expect(String(result.netPayoutValue)).toBe(expected.netPayoutValue);
+      expect(String(result.finalNominalValue)).toBe(expected.finalNominalValue);
+      expect(String(result.finalRealValue)).toBe(expected.finalRealValue);
+      expect(result.maturityDate).toBe(expected.maturityDate);
+      expect(result.isEarlyWithdrawal).toBe(expected.isEarlyWithdrawal);
+      expect(result.timeline).toHaveLength(expected.timelineLength);
     });
   });
 });

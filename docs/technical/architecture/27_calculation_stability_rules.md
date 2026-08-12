@@ -106,8 +106,17 @@ A model change requires all of the following in one delivery:
    output, expiry, and tests.
 
 There are currently no historical output migrations or supported older model
-versions. Exact-match rejection is deliberate: financial output must be
-recalculated rather than made to look compatible.
+versions. Historic committed results are retained only as an unavailable
+persisted envelope plus editable draft; they are never displayed as current,
+silently recomputed, or used to populate a shared scenario. Exact-match
+rejection is deliberate: financial output must be recalculated rather than made
+to look compatible.
+
+Versioned golden fixtures live in `features/bond-core/fixtures/` and contain
+the model version, source inputs, exact engine-output strings (to avoid losing a
+floating-point unit while parsing JSON), and rounding policy.
+Changing a fixture requires an intentional model-version bump and a documented
+financial-rule reason; tolerances may not hide an output change.
 
 The system should prefer explicit rejection over silent coercion.
 Users can recover from a clear validation error.
