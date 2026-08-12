@@ -15,6 +15,8 @@ import {
 import { parseCalculationScenarioRequest } from './types/schemas';
 import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
+import { CalculationCachePolicy } from './calculation-cache-policy';
+import { CalculationContextProvider } from './calculation-context';
 import { HandlerFactory, MODEL_VERSION, ScenarioHandler } from './handlers';
 import { BondType } from './types';
 
@@ -58,32 +60,26 @@ export class CalculationApplicationService {
 
     // Context revisions are part of financial correctness: an identical request
     // must not reuse a result calculated against an older offer/data snapshot.
-    const [dataFreshness, dbDefinitions, taxRulesRevision] = await Promise.all([
-      this.dependencies.getDataFreshness(),
-      this.dependencies.getDefinitions(),
-      this.dependencies.getTaxRulesRevision(),
-    ]);
+    const context = await new CalculationContextProvider(this.dependencies).load();
 
     // 2. Check cache with sanitized inputs and authoritative freshness metadata.
-    const cacheKey = this.dependencies.cache.generateKey({
+    const cachePolicy = new CalculationCachePolicy({
+      cache: this.dependencies.cache,
       modelVersion: MODEL_VERSION,
-      request: sanitizedRequest,
-      dataRevision: JSON.stringify({ dataFreshness, taxRulesRevision }),
     });
-    const cachedResult = this.dependencies.cache.get(cacheKey);
-    if (cachedResult) {
-      return cachedResult as CalculationEnvelope<unknown>;
-    }
 
     try {
-      const handler = this.dependencies.getHandler(sanitizedRequest.kind);
-      const response = await handler.handle(sanitizedRequest.payload, {
-        dataFreshness,
-        dbDefinitions,
+      return await cachePolicy.getOrCalculate({
+        request: sanitizedRequest,
+        dataRevision: context.cacheRevision,
+        calculate: async () => {
+          const handler = this.dependencies.getHandler(sanitizedRequest.kind);
+          return handler.handle(sanitizedRequest.payload, {
+            dataFreshness: context.dataFreshness,
+            dbDefinitions: context.dbDefinitions,
+          });
+        },
       });
-
-      this.dependencies.cache.set(cacheKey, response);
-      return response;
     } catch (error) {
       logger.error(`FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
@@ -91,7 +87,10 @@ export class CalculationApplicationService {
   }
 
   invalidateAuthoritativeData(namespace = '') {
-    this.dependencies.cache.invalidateNamespace(namespace);
+    new CalculationCachePolicy({
+      cache: this.dependencies.cache,
+      modelVersion: MODEL_VERSION,
+    }).invalidate(namespace);
   }
 }
 
