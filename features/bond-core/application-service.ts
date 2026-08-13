@@ -8,7 +8,7 @@ import { createServerLogger } from '@/lib/server/logging';
 import { BondDefinition } from './constants/bond-definitions';
 import {
   CalculationDataFreshness,
-  CalculationEnvelope,
+  CalculationEnvelopeForKind,
   CalculationScenarioRequest,
   ScenarioKind,
 } from './types/scenarios';
@@ -46,7 +46,9 @@ export class CalculationApplicationService {
   /**
    * Main entry point for all calculation requests.
    */
-  async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
+  async calculate<TRequest extends CalculationScenarioRequest>(
+    request: TRequest,
+  ): Promise<CalculationEnvelopeForKind<TRequest['kind']>> {
     // 1. Validate before any normalization so invalid scenarios are rejected,
     // not silently clamped into a different calculation.
     const validatedRequest = parseCalculationScenarioRequest(request) as CalculationScenarioRequest;
@@ -58,18 +60,19 @@ export class CalculationApplicationService {
       payload: sanitizedPayload,
     } as unknown as CalculationScenarioRequest;
 
-    // Context revisions are part of financial correctness: an identical request
-    // must not reuse a result calculated against an older offer/data snapshot.
-    const context = await new CalculationContextProvider(this.dependencies).load();
-
-    // 2. Check cache with sanitized inputs and authoritative freshness metadata.
-    const cachePolicy = new CalculationCachePolicy({
-      cache: this.dependencies.cache,
-      modelVersion: MODEL_VERSION,
-    });
-
     try {
-      return await cachePolicy.getOrCalculate({
+      // Context revisions are part of financial correctness: an identical request
+      // must not reuse a result calculated against an older offer/data snapshot.
+      // Keep acquisition in this boundary so failures are correlated and logged
+      // exactly like handler failures.
+      const context = await new CalculationContextProvider(this.dependencies).load();
+
+      // 2. Check cache with sanitized inputs and authoritative freshness metadata.
+      const cachePolicy = new CalculationCachePolicy({
+        cache: this.dependencies.cache,
+        modelVersion: MODEL_VERSION,
+      });
+      return (await cachePolicy.getOrCalculate({
         request: sanitizedRequest,
         dataRevision: context.cacheRevision,
         calculate: async () => {
@@ -79,7 +82,7 @@ export class CalculationApplicationService {
             dbDefinitions: context.dbDefinitions,
           });
         },
-      });
+      })) as CalculationEnvelopeForKind<TRequest['kind']>;
     } catch (error) {
       logger.error(`FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;

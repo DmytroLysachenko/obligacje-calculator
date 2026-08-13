@@ -63,12 +63,12 @@ export interface CalculationEnvelope<T> {
   historicalAverages?: HistoricalAverages;
 }
 
-interface SingleBondScenarioRequest {
+export interface SingleBondScenarioRequest {
   kind: ScenarioKind.SINGLE_BOND;
   payload: BondInputs;
 }
 
-interface RegularInvestmentScenarioRequest {
+export interface RegularInvestmentScenarioRequest {
   kind: ScenarioKind.REGULAR_INVESTMENT;
   payload: RegularInvestmentInputs;
 }
@@ -83,7 +83,7 @@ export interface RetirementPlannerPayload {
   horizonYears: number;
 }
 
-interface RetirementPlannerRequest {
+export interface RetirementPlannerRequest {
   kind: ScenarioKind.RETIREMENT_PLANNER;
   payload: RetirementPlannerPayload;
 }
@@ -182,7 +182,7 @@ export interface IndependentBondComparisonPayload {
   };
 }
 
-interface BondComparisonScenarioRequest {
+export interface BondComparisonScenarioRequest {
   kind: ScenarioKind.BOND_COMPARISON;
   payload: NormalizedBondComparisonPayload | IndependentBondComparisonPayload;
 }
@@ -201,7 +201,7 @@ export interface PortfolioSimulationPayload {
   withdrawalDate: string;
 }
 
-interface PortfolioSimulationRequest {
+export interface PortfolioSimulationRequest {
   kind: ScenarioKind.PORTFOLIO_SIMULATION;
   payload: PortfolioSimulationPayload;
 }
@@ -243,7 +243,7 @@ export interface BondOptimizerPayload {
   includeFamilyBonds?: boolean;
 }
 
-interface BondOptimizerRequest {
+export interface BondOptimizerRequest {
   kind: ScenarioKind.BOND_OPTIMIZER;
   payload: BondOptimizerPayload;
 }
@@ -277,3 +277,19 @@ export type CalculationScenarioRequest =
 export type SingleBondCalculationEnvelope = CalculationEnvelope<CalculationResult>;
 export type RegularInvestmentCalculationEnvelope = CalculationEnvelope<RegularInvestmentResult>;
 export type BondComparisonCalculationEnvelope = CalculationEnvelope<BondComparisonScenarioItem[]>;
+
+/** Maps a declared scenario kind to the envelope exposed at API consumers. */
+export type CalculationEnvelopeForKind<TKind extends CalculationScenarioRequest['kind']> =
+  TKind extends ScenarioKind.SINGLE_BOND
+    ? SingleBondCalculationEnvelope
+    : TKind extends ScenarioKind.REGULAR_INVESTMENT
+      ? RegularInvestmentCalculationEnvelope
+      : TKind extends ScenarioKind.BOND_COMPARISON
+        ? BondComparisonCalculationEnvelope
+        : TKind extends ScenarioKind.PORTFOLIO_SIMULATION
+          ? PortfolioSimulationCalculationEnvelope
+          : TKind extends ScenarioKind.BOND_OPTIMIZER
+            ? BondOptimizerCalculationEnvelope
+            : TKind extends ScenarioKind.RETIREMENT_PLANNER
+              ? RetirementPlannerCalculationEnvelope
+              : never;

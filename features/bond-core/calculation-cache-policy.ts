@@ -3,6 +3,8 @@ import { calculationCache } from './utils/calculation-cache';
 export interface CalculationCachePolicyDependencies {
   cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set' | 'invalidateNamespace'>;
   modelVersion: string;
+  /** Opportunistic reuse only; authoritative revisions remain part of every key. */
+  ttlMs?: number;
 }
 
 export interface CachedCalculationRequest<TResult> {
@@ -33,7 +35,7 @@ export class CalculationCachePolicy {
     if (cached !== undefined && cached !== null) return cached;
 
     const result = await calculate();
-    this.dependencies.cache.set(key, result);
+    this.dependencies.cache.set(key, result, this.dependencies.ttlMs ?? 5 * 60_000);
     return result;
   }
 

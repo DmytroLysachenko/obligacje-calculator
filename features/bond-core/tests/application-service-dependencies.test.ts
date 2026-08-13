@@ -68,7 +68,7 @@ describe('CalculationApplicationService dependencies', () => {
       dataFreshness: freshness,
       dbDefinitions: BOND_DEFINITIONS,
     });
-    expect(dependencies.cache.set).toHaveBeenCalledWith('cache-key', envelope);
+    expect(dependencies.cache.set).toHaveBeenCalledWith('cache-key', envelope, 5 * 60_000);
   });
 
   it('uses the authoritative freshness revision as part of the cache identity', async () => {

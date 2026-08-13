@@ -46,7 +46,7 @@ describe('CalculationCachePolicy', () => {
     await expect(
       policy.getOrCalculate({ request: {}, dataRevision: 'r1', calculate: async () => expected }),
     ).resolves.toBe(expected);
-    expect(cache.set).toHaveBeenCalledWith('revision-aware-key', expected);
+    expect(cache.set).toHaveBeenCalledWith('revision-aware-key', expected, 5 * 60_000);
 
     cache.set.mockClear();
     await expect(
@@ -57,6 +57,15 @@ describe('CalculationCachePolicy', () => {
       }),
     ).rejects.toThrow('provider failed');
     expect(cache.set).not.toHaveBeenCalled();
+  });
+
+  it('uses an explicit bounded policy TTL instead of letting callers choose cache lifetime', async () => {
+    const { cache } = createPolicy();
+    const policy = new CalculationCachePolicy({ cache, modelVersion: 'model:42', ttlMs: 30_000 });
+
+    await policy.getOrCalculate({ request: {}, dataRevision: 'r1', calculate: async () => ({}) });
+
+    expect(cache.set).toHaveBeenCalledWith('revision-aware-key', {}, 30_000);
   });
 
   it('delegates namespace invalidation without exposing cache mechanism', () => {
