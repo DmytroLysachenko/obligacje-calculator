@@ -63,12 +63,12 @@ export interface CalculationEnvelope<T> {
   historicalAverages?: HistoricalAverages;
 }
 
-export interface SingleBondScenarioRequest {
+interface SingleBondScenarioRequest {
   kind: ScenarioKind.SINGLE_BOND;
   payload: BondInputs;
 }
 
-export interface RegularInvestmentScenarioRequest {
+interface RegularInvestmentScenarioRequest {
   kind: ScenarioKind.REGULAR_INVESTMENT;
   payload: RegularInvestmentInputs;
 }
@@ -83,7 +83,7 @@ export interface RetirementPlannerPayload {
   horizonYears: number;
 }
 
-export interface RetirementPlannerRequest {
+interface RetirementPlannerRequest {
   kind: ScenarioKind.RETIREMENT_PLANNER;
   payload: RetirementPlannerPayload;
 }
@@ -182,7 +182,7 @@ export interface IndependentBondComparisonPayload {
   };
 }
 
-export interface BondComparisonScenarioRequest {
+interface BondComparisonScenarioRequest {
   kind: ScenarioKind.BOND_COMPARISON;
   payload: NormalizedBondComparisonPayload | IndependentBondComparisonPayload;
 }
@@ -201,7 +201,7 @@ export interface PortfolioSimulationPayload {
   withdrawalDate: string;
 }
 
-export interface PortfolioSimulationRequest {
+interface PortfolioSimulationRequest {
   kind: ScenarioKind.PORTFOLIO_SIMULATION;
   payload: PortfolioSimulationPayload;
 }
@@ -243,7 +243,7 @@ export interface BondOptimizerPayload {
   includeFamilyBonds?: boolean;
 }
 
-export interface BondOptimizerRequest {
+interface BondOptimizerRequest {
   kind: ScenarioKind.BOND_OPTIMIZER;
   payload: BondOptimizerPayload;
 }
