@@ -1,9 +1,14 @@
+import {
+  createCurrencyFormatter,
+  createDateFormatter,
+  createNumberFormatter,
+  createPercentageFormatter,
+} from './formatters';
+
 export type FinancialLocale = 'pl' | 'en';
 
-const localeTag: Record<FinancialLocale, string> = { pl: 'pl-PL', en: 'en-GB' };
-
 export function formatCurrency(value: number, locale: FinancialLocale, currency = 'PLN') {
-  return new Intl.NumberFormat(localeTag[locale], {
+  return createCurrencyFormatter(locale, {
     style: 'currency',
     currency,
     maximumFractionDigits: 2,
@@ -12,15 +17,14 @@ export function formatCurrency(value: number, locale: FinancialLocale, currency 
 }
 
 export function formatPercent(value: number, locale: FinancialLocale, fractionDigits = 2) {
-  return new Intl.NumberFormat(localeTag[locale], {
-    style: 'percent',
+  return createPercentageFormatter(locale, {
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
   }).format(value / 100);
 }
 
 export function formatCompactNumber(value: number, locale: FinancialLocale) {
-  return new Intl.NumberFormat(localeTag[locale], {
+  return createNumberFormatter(locale, {
     notation: 'compact',
     maximumFractionDigits: 1,
   }).format(value);
@@ -35,9 +39,13 @@ export function formatIsoDate(value: string, locale: FinancialLocale) {
     date.getUTCFullYear() !== Number(year) ||
     date.getUTCMonth() !== Number(month) - 1 ||
     date.getUTCDate() !== Number(day)
-  ) return value;
+  )
+    return value;
 
-  return new Intl.DateTimeFormat(localeTag[locale], {
-    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC',
+  return createDateFormatter(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone: 'UTC',
   }).format(date);
 }

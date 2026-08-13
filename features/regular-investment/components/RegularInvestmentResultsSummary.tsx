@@ -9,13 +9,14 @@ import {
 } from '@/features/regular-investment/lib/regular-investment-results-model';
 import { RegularInvestmentResultsSummaryProps } from '@/features/regular-investment/types/results';
 import { useAppI18n } from '@/i18n/client';
-import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
+import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { FinancialInsightStrip } from '@/shared/components/results/FinancialInsightStrip';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { RecentLotList } from '@/shared/components/results/RecentLotList';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { ScenarioDecisionRail } from '@/shared/components/results/ScenarioDecisionRail';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
+import { createCurrencyFormatter } from '@/shared/lib/formatters';
 import { buildRegularInvestmentYearBuckets } from '@/shared/lib/regular-investment-display';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
 
@@ -30,7 +31,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
   const dateLocale = getDateFnsLocale(language);
   const currencyFormatter = useMemo(
     () =>
-      new Intl.NumberFormat(getIntlLocale(language), {
+      createCurrencyFormatter(language, {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,

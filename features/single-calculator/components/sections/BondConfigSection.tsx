@@ -13,11 +13,11 @@ import {
   MAX_BOND_QUANTITY,
 } from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
-import { getIntlLocale } from '@/i18n/locale-utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
-import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { createDateFormatter, createNumberFormatter } from '@/shared/lib/formatters';
 interface BondSeries {
   id: string;
   seriesCode: string;
@@ -48,12 +48,12 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
       `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.duration_months')}`;
     const maxBondUnits = MAX_BOND_QUANTITY;
     const bondUnits = bondQuantityFromInvestment(inputs.initialInvestment);
-    const purchaseValueLabel = inputs.initialInvestment.toLocaleString(getIntlLocale(language));
+    const purchaseValueLabel = createNumberFormatter(language).format(inputs.initialInvestment);
     const formatSeriesMonth = (value: string) =>
-      new Date(value).toLocaleDateString(getIntlLocale(language), {
+      createDateFormatter(language, {
         month: 'short',
         year: 'numeric',
-      });
+      }).format(new Date(value));
     const handleBondUnitsChange = (value: number) => {
       if (!Number.isFinite(value)) {
         return;

@@ -1,5 +1,5 @@
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { AppLanguage } from '@/shared/lib/bond-display';
+import { createNumberFormatter } from '@/shared/lib/formatters';
 
 export const CSV_SEPARATOR = ';';
 
@@ -13,7 +13,7 @@ export function formatExportDate(value: string | undefined) {
 
 export function formatCsvValue(value: unknown, language: AppLanguage) {
   if (typeof value === 'number') {
-    return value.toLocaleString(getIntlLocale(language), {
+    return createNumberFormatter(language, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
       useGrouping: false,

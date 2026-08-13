@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BondTimelineProps } from '@/features/single-calculator/types/timeline';
 import { useAppI18n } from '@/i18n/client';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import {
   applyTableRowLimit,
@@ -19,6 +18,7 @@ import {
   buildBondTimelineDisplayRows,
   getSimulationEventDisplayLabel,
 } from '@/shared/lib/bond-display';
+import { createCurrencyFormatter } from '@/shared/lib/formatters';
 
 import { SimulationEventType } from '../../bond-core/types/simulation';
 
@@ -42,7 +42,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
   const formatCurrency = React.useMemo(
     () => (value: number) => {
       if (!hasMounted) return '---';
-      return new Intl.NumberFormat(getIntlLocale(language), {
+      return createCurrencyFormatter(language, {
         style: 'currency',
         currency: 'PLN',
       }).format(value);
