@@ -18,6 +18,12 @@ unless they pass the same calculation and UX checks.
 - **Runtime port:** Cloud Run provides `PORT`; the container exposes `8080` and
   runs the standalone `server.js` with `HOSTNAME=0.0.0.0`.
 
+The Docker base image is pinned by digest. Dependabot owns controlled Docker and
+GitHub Action updates; review each digest update with the production image
+build, Trivy high/critical scan, and release checks. The production Buildx push
+also publishes an SBOM and maximum-mode provenance attestation beside the
+immutable commit-tagged Artifact Registry image.
+
 ## 1.1 Local Development Workflow
 
 WSL 2 with Docker Desktop WSL integration is the recommended local development

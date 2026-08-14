@@ -190,6 +190,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Scan production image
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: obligacje-calculator:ci
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
       - name: Start production image
         run: |
           docker run --detach --name obligacje-calculator-ci \
@@ -220,6 +230,7 @@ jobs:
             echo "### Docker build"
             echo ""
             echo "- Production image: \`docker/build-push-action\`"
+            echo "- Image scan: Trivy fails on fixable high/critical OS or library vulnerabilities"
             echo "- Production smoke: \`pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type\`"
             echo "- Push: disabled"
           } >> "${GITHUB_STEP_SUMMARY}"
@@ -258,7 +269,7 @@ jobs:
         run: pnpm build
 
       - name: Browser smoke, accessibility, and web vitals
-        run: pnpm test:browser:ci && pnpm test:a11y
+        run: pnpm test:browser:ci && pnpm test:a11y && pnpm test:browser:visual
 
       - name: Lighthouse quality gate
         run: pnpm test:lighthouse
@@ -309,5 +320,5 @@ jobs:
             echo "- Checks: title, main landmark, navigation label, axe WCAG 2.2 AA, console/page errors, failed requests, 5xx responses"
             echo "- Lighthouse: accessibility, best practices, SEO, LCP, and CLS"
             echo "- Diagnostics: browser-diagnostics attachment and Playwright trace on failure"
-            echo "- Browser gate: \`pnpm test:browser:ci\`"
+            echo "- Browser gate: \`pnpm test:browser:ci\` plus committed Chromium visual baselines"
           } >> "${GITHUB_STEP_SUMMARY}"

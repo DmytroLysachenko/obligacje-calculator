@@ -75,6 +75,8 @@ jobs:
           LATEST="${REGION}-docker.pkg.dev/${PROJECT_ID}/${AR_REPOSITORY}/${SERVICE}:latest"
           docker buildx build \
             --push \
+            --sbom=true \
+            --provenance=mode=max \
             --cache-from type=gha \
             --cache-to type=gha,mode=max \
             --tag "${IMAGE}" \
