@@ -17,10 +17,8 @@ import {
   getInputGuardrails,
   InputGuardrailIssue,
 } from '../lib/input-guardrails';
-import {
-  buildSingleCalculatorReadingGuide,
-} from '../lib/single-calculator-container-model';
 import { createSingleCalculatorActions } from '../lib/single-calculator-actions';
+import { buildSingleCalculatorReadingGuide } from '../lib/single-calculator-container-model';
 import { parseBondType } from '../lib/single-calculator-state';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
@@ -63,6 +61,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
   const { canManageWorkspace } = usePortfolioAccess();
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<'success' | 'error'>('success');
+  const guardrailSummaryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (
@@ -98,7 +97,11 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isCalculating && blockingGuardrails.length === 0) {
+    if (blockingGuardrails.length > 0) {
+      guardrailSummaryRef.current?.focus();
+      return;
+    }
+    if (!isCalculating) {
       calculate();
     }
   };
@@ -176,6 +179,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               availableSeries={availableSeries}
               selectedSeriesId={selectedSeriesId}
               guardrails={guardrails}
+              guardrailSummaryRef={guardrailSummaryRef}
               onApplyGuardrailFix={handleApplyGuardrailFix}
             />
           }

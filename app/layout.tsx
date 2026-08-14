@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import React from 'react';
 
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { AppLocaleProvider } from '@/i18n/client';
 import { defaultLocale, type Language } from '@/i18n/config';
 import { getMetadataLocale } from '@/i18n/locale-utils';
@@ -102,6 +103,7 @@ export default async function RootLayout({
           <AppLocaleProvider>
             <ThemeProvider>
               <ErrorBoundary>
+                <TooltipProvider>
                   <div className="flex min-h-screen bg-background">
                     <WebVitalsReporter />
                     <RouteFocusManager />
@@ -145,6 +147,7 @@ export default async function RootLayout({
                       </footer>
                     </main>
                   </div>
+                </TooltipProvider>
               </ErrorBoundary>
             </ThemeProvider>
           </AppLocaleProvider>

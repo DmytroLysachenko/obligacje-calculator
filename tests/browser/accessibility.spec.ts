@@ -1,5 +1,5 @@
 import { AxeBuilder } from '@axe-core/playwright';
-import { expect, type Page,test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 import {
   expectNoBrowserDiagnostics,
@@ -226,5 +226,24 @@ test('reduced-motion preference keeps core navigation usable', async ({ page }, 
   await expect(
     page.getByRole('link', { name: /skip to content|przejdź do treści/i }),
   ).toBeFocused();
+  await expectNoBrowserDiagnostics(testInfo, diagnostics);
+});
+
+test('single-calculator submission moves focus to blocking input feedback', async ({
+  page,
+}, testInfo) => {
+  const diagnostics = installBrowserDiagnostics(page);
+  await stubOpportunisticSync(page);
+  await page.goto('/single-calculator', { waitUntil: 'networkidle' });
+
+  const investment = page.locator('input[name="initialInvestment"]').first();
+  await investment.fill('0');
+  await page
+    .getByRole('button', { name: /calculate|oblicz/i })
+    .last()
+    .click();
+
+  const summary = page.locator('[role="alert"]').filter({ hasText: /minimum purchase/i });
+  await expect(summary).toBeFocused();
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
 });
