@@ -99,6 +99,16 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Report route bundles
+        run: pnpm analyze:bundles
+
+      - name: Retain route bundle report
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        with:
+          name: route-bundle-report
+          path: artifacts/route-bundle-report.json
+          if-no-files-found: error
+
       - name: Build summary
         if: always()
         run: |
