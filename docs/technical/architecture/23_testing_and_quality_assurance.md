@@ -93,7 +93,11 @@ when a financial boundary changes.
 - **Tool:** Playwright.
 - **Scope:** runtime smoke checks for the core public routes, with focused user journeys added when a feature needs browser-level regression coverage.
 - **Current CI Gate:** `pnpm test:browser` verifies home, single calculator, comparison, and economic-data routes render without client exceptions, expose the main content landmark, retain navigation, and keep the skip link available.
-- **Visual Regression:** Ensure charts render correctly across Chrome, Firefox, and Safari (Mobile/Desktop).
+- **Visual Regression:** `pnpm test:browser:visual` compares committed Linux
+  Chromium baselines for English/Polish, mobile/tablet/desktop, light/dark,
+  200% zoom, and reduced motion. Firefox/WebKit retain focused smoke and axe
+  coverage; their rendering differences are not compared against Chromium
+  pixels.
 
 ## 2. Calculation Verification (Audit)
 
@@ -104,6 +108,10 @@ when a financial boundary changes.
 ## 3. Performance Testing
 
 - Use Lighthouse to track Core Web Vitals before major releases.
+- `pnpm test:lighthouse` uses the installed Playwright Chromium binary on Linux
+  and accepts `LHCI_CHROME_PATH` for a controlled browser override. Its profile
+  is always under `/tmp`; it never relies on a Windows Chrome profile when run
+  from WSL.
 - `pnpm test:web-vitals` installs its LCP observer before navigation and fails if LCP is absent. It currently covers home and single-calculator routes, guarding blank/error pages, slow navigation, oversized script payloads, and late LCP. Extend the route set and ratchet budgets only from captured baselines.
 - Stress-test the chart rendering with 30 years of daily data points.
 
@@ -120,7 +128,9 @@ when a financial boundary changes.
 ## 6. Release Contracts
 
 - `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, SEO metadata, product readiness, script, and clean-code contract suites.
-- `pnpm test:browser` and `pnpm test:web-vitals` run against a production build through Playwright. CI executes them in the `browser-smoke` job after `pnpm build` and `pnpm check:local-env -- --require-playwright`.
+- `pnpm test:browser`, `pnpm test:web-vitals`, and `pnpm test:browser:visual`
+  run against a production build through Playwright. CI executes them in the
+  `browser-smoke` job after `pnpm build` and `pnpm check:local-env -- --require-playwright`.
 - Browser failures should preserve `browser-diagnostics.json` and Playwright traces so hydration errors, console errors, failed requests, and 5xx responses are visible from CI artifacts.
 - Feature-owned tests live under `features/<feature>/tests/**`. Subfolders mirror the tested ownership when useful, for example `tests/lib/**`, `tests/components/**`, and `tests/utils/**`.
 - `tests/contracts/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, direct sync/provider fetch calls, unmanaged API body parsing, and undocumented lint-disable comments.
