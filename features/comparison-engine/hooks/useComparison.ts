@@ -61,7 +61,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   );
   const hasTouchedMacroAssumptions = useRef(false);
   const hasAppliedMacroDefaults = useRef(false);
-  const hasAppliedInitialUrlState = useRef(false);
+  const appliedUrlState = useRef<string | null>(null);
   const session = useCalculatorWorkflow<ComparisonDraft, BondComparisonCalculationEnvelope>({
     initialInputs: fallbackDraft,
     storageKey: COMPARISON_CALCULATOR_STORAGE_KEY,
@@ -139,9 +139,10 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   }, [macroDefaults, session]);
 
   useEffect(() => {
-    if (!initialUrlState || !session.isPersistenceReady || hasAppliedInitialUrlState.current)
-      return;
-    hasAppliedInitialUrlState.current = true;
+    if (!initialUrlState || !session.isPersistenceReady) return;
+    const nextUrlState = JSON.stringify(initialUrlState);
+    if (appliedUrlState.current === nextUrlState) return;
+    appliedUrlState.current = nextUrlState;
     session.setDraftInputs({
       sharedConfig: initialUrlState.sharedConfig,
       scenarioA: initialUrlState.scenarioA,
