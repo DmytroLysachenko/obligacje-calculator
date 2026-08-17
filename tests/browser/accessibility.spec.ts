@@ -124,7 +124,9 @@ for (const route of [
     await page.goto(route.path, { waitUntil: 'networkidle' });
 
     await page.keyboard.press('Tab');
-    const skipLink = page.getByRole('link', { name: /skip to content|przejdź do treści/i });
+    const skipLink = page.getByRole('link', {
+      name: /skip to (main )?content|przejd(?:ź|z) do g(?:ł|l)ownej tre(?:ś|s)ci/i,
+    });
     await expect(skipLink).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.locator('main#main-content')).toBeFocused();
@@ -208,7 +210,7 @@ test('mobile navigation control meets the 44px comfortable target and returns fo
 
   await navigationButton.focus();
   await navigationButton.press('Enter');
-  const navigation = page.locator('nav[aria-label]').first();
+  const navigation = page.locator('nav[aria-label]:visible');
   await expect(navigation).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(navigationButton).toBeFocused();
@@ -224,7 +226,9 @@ test('reduced-motion preference keeps core navigation usable', async ({ page }, 
   await expect(page.locator('main#main-content')).toBeVisible();
   await page.keyboard.press('Tab');
   await expect(
-    page.getByRole('link', { name: /skip to content|przejdź do treści/i }),
+    page.getByRole('link', {
+      name: /skip to (main )?content|przejd(?:ź|z) do g(?:ł|l)ownej tre(?:ś|s)ci/i,
+    }),
   ).toBeFocused();
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
 });
@@ -236,12 +240,9 @@ test('single-calculator submission moves focus to blocking input feedback', asyn
   await stubOpportunisticSync(page);
   await page.goto('/single-calculator', { waitUntil: 'networkidle' });
 
-  const investment = page.locator('input[name="initialInvestment"]').first();
+  const investment = page.locator('input[name="bondUnits"]');
   await investment.fill('0');
-  await page
-    .getByRole('button', { name: /calculate|oblicz/i })
-    .last()
-    .click();
+  await investment.press('Enter');
 
   const summary = page.locator('[role="alert"]').filter({ hasText: /minimum purchase/i });
   await expect(summary).toBeFocused();

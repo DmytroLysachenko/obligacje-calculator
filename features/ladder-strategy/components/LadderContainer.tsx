@@ -111,6 +111,7 @@ export const LadderContainer: React.FC = () => {
         detailsClassName="min-w-0"
         hasResults={isPersistenceReady && !!results}
         isDirty={isDirty}
+        isCalculating={isCalculating}
         scenarioSummary={[
           { label: t('bonds.bond.type'), value: inputs.bondType },
           {

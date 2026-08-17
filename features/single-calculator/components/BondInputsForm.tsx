@@ -122,6 +122,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
       <form
         id={formId}
         onSubmit={onSubmit}
+        noValidate
         className="ui-form-panel w-full space-y-7"
         aria-label={t('bonds.single_calculator')}
       >

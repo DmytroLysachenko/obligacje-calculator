@@ -12,6 +12,7 @@ interface CalculatorWorkspaceProps {
   results: React.ReactNode;
   hasResults?: boolean;
   isDirty?: boolean;
+  isCalculating?: boolean;
   scenarioSummary?: ReadonlyArray<{ label: string; value: string }>;
   details?: React.ReactNode;
   className?: string;
@@ -25,6 +26,7 @@ export function CalculatorWorkspace({
   results,
   hasResults = false,
   isDirty = false,
+  isCalculating = false,
   scenarioSummary,
   details,
   className,
@@ -120,6 +122,7 @@ export function CalculatorWorkspace({
         <section
           id="calculator-results"
           aria-live="polite"
+          aria-busy={isCalculating || undefined}
           className={cn('ui-section-anchor', pageLayout.sectionFlow, resultsClassName)}
         >
           {results}

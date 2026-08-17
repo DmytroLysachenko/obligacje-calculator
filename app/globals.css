@@ -283,7 +283,7 @@ html {
     @apply text-xs font-medium leading-5 text-muted-foreground;
   }
   .ui-body {
-    @apply text-[15px] leading-7 text-foreground;
+    @apply text-base leading-7 text-foreground;
   }
   .ui-meta {
     @apply text-xs leading-5 text-muted-foreground;

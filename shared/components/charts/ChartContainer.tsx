@@ -76,10 +76,20 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
         </div>
       ) : null}
       {hasMounted && size && React.isValidElement(children)
-        ? React.cloneElement(children as React.ReactElement<{ width?: number; height?: number }>, {
-            width: size.width,
-            height: size.height,
-          })
+        ? React.cloneElement(
+            children as React.ReactElement<{
+              width?: number;
+              height?: number;
+              'aria-hidden'?: boolean;
+            }>,
+            {
+              width: size.width,
+              height: size.height,
+              // The labelled region plus data table are the accessible chart surface.
+              // Keep Recharts' many SVG nodes out of screen-reader navigation.
+              'aria-hidden': Boolean(ariaLabel),
+            },
+          )
         : null}
     </div>
   );

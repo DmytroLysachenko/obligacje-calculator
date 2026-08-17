@@ -58,6 +58,12 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
       if (!Number.isFinite(value)) {
         return;
       }
+      // Keep invalid zero in draft state so the form can announce and focus its
+      // domain-specific minimum-purchase feedback instead of silently restoring 1.
+      if (value === 0) {
+        onUpdate('initialInvestment', 0);
+        return;
+      }
       const investment = investmentFromBondQuantity(value);
       if (investment === null) return;
       onUpdate('initialInvestment', investment);
