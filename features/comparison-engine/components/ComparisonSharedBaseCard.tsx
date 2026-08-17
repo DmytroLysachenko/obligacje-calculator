@@ -50,7 +50,7 @@ export function ComparisonSharedBaseCard({
       <div className="space-y-2 border-b border-border pb-4">
         <h2 className="ui-section-title">{t('comparison.shared_base_title')}</h2>
         <p className="ui-body text-muted-foreground">{t('comparison.shared_base_desc')}</p>
-        <p className="ui-metadata leading-5 text-muted-foreground">
+        <p className="text-base leading-7 text-muted-foreground">
           {t('comparison.shared_base_scope')}
         </p>
       </div>
@@ -91,8 +91,7 @@ export function ComparisonSharedBaseCard({
             {t('bonds.bond_quantity')}
           </Label>
           <p className="ui-metadata text-muted-foreground">
-            {numberFormatter.format(sharedConfig.initialInvestment)}{' '}
-            PLN
+            {numberFormatter.format(sharedConfig.initialInvestment)} PLN
           </p>
           <div className="relative">
             <Input
@@ -214,7 +213,7 @@ export function ComparisonSharedBaseCard({
             unit={t('common.month_compact')}
             onCommit={(value) => onUpdateSharedConfig('investmentHorizonMonths', value)}
           />
-          <p className="text-xs leading-5 text-muted-foreground">
+          <p className="text-base leading-7 text-muted-foreground">
             {t('comparison.shared_horizon_desc')}
           </p>
         </div>
@@ -279,8 +278,8 @@ export function ComparisonSharedAssumptionsPanel({
         </section>
 
         <section className="space-y-3 py-3 xl:pl-6">
-          <Label className="ui-metadata text-muted-foreground">{t('bonds.tax_strategy')}</Label>
           <FormSelect
+            label={t('bonds.tax_strategy')}
             value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
             onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
             options={[
@@ -289,7 +288,7 @@ export function ComparisonSharedAssumptionsPanel({
               { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
             ]}
           />
-          <p className="text-xs leading-5 text-muted-foreground">
+          <p className="text-base leading-7 text-muted-foreground">
             {t('comparison.shared_tax_desc')}
           </p>
         </section>

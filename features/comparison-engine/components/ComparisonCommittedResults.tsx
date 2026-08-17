@@ -67,8 +67,14 @@ export function ComparisonCommittedResults({
   warningsB,
 }: ComparisonCommittedResultsProps) {
   return (
-    <div className={`${comparisonLayout.results} ${isCalculating ? 'pointer-events-none opacity-60' : ''}`}>
-      {isDirty ? <Notice tone="warning" compact>{staleResultsLabel}</Notice> : null}
+    <div
+      className={`${comparisonLayout.results} ${isCalculating ? 'pointer-events-none opacity-60' : ''}`}
+    >
+      {isDirty ? (
+        <Notice tone="warning" compact>
+          {staleResultsLabel}
+        </Notice>
+      ) : null}
       <ComparisonVerdict
         resultsA={resultsA}
         resultsB={resultsB}
@@ -77,6 +83,14 @@ export function ComparisonCommittedResults({
         expectedInflation={inputsA.expectedInflation}
         taxStrategy={inputsA.taxStrategy}
         formatCurrency={formatCurrency}
+      />
+      <ComparisonAssumptionsMetaPanel
+        envelopeA={envelopeA}
+        envelopeB={envelopeB}
+        warningsA={warningsA}
+        warningsB={warningsB}
+        inputsA={inputsA}
+        inputsB={inputsB}
       />
       {hasMounted ? (
         <ComparisonResultsPanel
@@ -102,14 +116,6 @@ export function ComparisonCommittedResults({
         bondTypeB={inputsB.bondType}
         formatCurrency={formatCurrency}
         chartStep={chartStep}
-      />
-      <ComparisonAssumptionsMetaPanel
-        envelopeA={envelopeA}
-        envelopeB={envelopeB}
-        warningsA={warningsA}
-        warningsB={warningsB}
-        inputsA={inputsA}
-        inputsB={inputsB}
       />
     </div>
   );
