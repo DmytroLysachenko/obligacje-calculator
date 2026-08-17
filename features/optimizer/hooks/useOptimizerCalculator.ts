@@ -23,6 +23,7 @@ import { useCalculatorWorkflow } from '@/shared/hooks/useCalculatorWorkflow';
 import { useCurrencyFormatter, usePercentFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { areCalculatorStatesEqual } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
 
 export function useOptimizerCalculator() {
@@ -48,9 +49,14 @@ export function useOptimizerCalculator() {
       return;
     }
 
-    setDraftInputs(
-      applyOptimizerMacroDefaults(inputs, macroDefaults, hasTouchedMacroAssumptions.current),
+    const nextInputs = applyOptimizerMacroDefaults(
+      inputs,
+      macroDefaults,
+      hasTouchedMacroAssumptions.current,
     );
+    if (!areCalculatorStatesEqual(inputs, nextInputs)) {
+      setDraftInputs(nextInputs);
+    }
   }, [inputs, macroDefaults, setDraftInputs]);
 
   const { results, leadingScenario, horizonYears, hasResults } = useMemo(

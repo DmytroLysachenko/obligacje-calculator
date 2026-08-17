@@ -50,6 +50,17 @@ describe('optimizer state model', () => {
         true,
       ),
     ).toBe(inputs);
+
+    expect(
+      applyOptimizerMacroDefaults(
+        inputs,
+        {
+          expectedInflation: inputs.expectedInflation,
+          expectedNbpRate: inputs.expectedNbpRate,
+        },
+        false,
+      ),
+    ).toBe(inputs);
   });
 
   it('identifies macro updates and formats horizons', () => {
