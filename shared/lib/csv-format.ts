@@ -17,7 +17,7 @@ export function formatCsvValue(value: unknown, language: AppLanguage) {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
       useGrouping: false,
-    });
+    }).format(value);
   }
 
   if (Array.isArray(value)) {
