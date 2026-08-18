@@ -36,7 +36,7 @@ export function SecondarySurfaceIntro({
     >
       <div className="ui-eyebrow">{eyebrow}</div>
       <div className="ui-section-intro space-y-3">
-        <h1 className="ui-section-title">{title}</h1>
+        <h2 className="ui-section-title">{title}</h2>
         <p className="ui-body ui-pretty">{description}</p>
       </div>
       {actions.length > 0 ? (

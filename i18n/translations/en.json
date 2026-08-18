@@ -1827,7 +1827,7 @@
     "growth_chart_label": "Comparison growth chart",
     "drawdown_chart_label": "Comparison drawdown chart",
     "chart_accessible_summary_empty": "The comparison chart has no visible asset data yet.",
-    "chart_accessible_summary": "The chart contains {count} sampled points. Scenario A moves from {startA} to {endA}; Scenario B moves from {startB} to {endB}.",
+    "chart_accessible_summary": "The chart contains {count} sampled points. {leader} leads at {leaderValue}; {trailing} is at {trailingValue}.",
     "drawdown_accessible_summary_empty": "The drawdown chart has no visible risk data yet.",
     "drawdown_accessible_summary": "The drawdown chart contains {count} sampled points. The deepest current drawdown is {drawdown}% for {asset}.",
     "table_row_fallback": "Row {row}",

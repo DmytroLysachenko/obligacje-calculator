@@ -1827,7 +1827,7 @@
     "growth_chart_label": "Wykres wzrostu porownania",
     "drawdown_chart_label": "Wykres obsuniec porownania",
     "chart_accessible_summary_empty": "Wykres porownania nie ma jeszcze widocznych danych aktywow.",
-    "chart_accessible_summary": "Wykres zawiera {count} probkowanych punktow. Scenariusz A przechodzi z {startA} do {endA}; Scenariusz B przechodzi z {startB} do {endB}.",
+    "chart_accessible_summary": "Wykres zawiera {count} probkowanych punktow. {leader} prowadzi z wartoscia {leaderValue}; {trailing} ma wartosc {trailingValue}.",
     "drawdown_accessible_summary_empty": "Wykres obsuniec nie ma jeszcze widocznych danych ryzyka.",
     "drawdown_accessible_summary": "Wykres obsuniec zawiera {count} probkowanych punktow. Najglebsze obecne obsuniecie to {drawdown}% dla {asset}.",
     "table_row_fallback": "Wiersz {row}",
