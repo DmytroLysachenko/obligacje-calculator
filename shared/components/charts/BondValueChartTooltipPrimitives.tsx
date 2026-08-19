@@ -3,6 +3,7 @@ import type { NameType } from 'recharts/types/component/DefaultTooltipContent';
 import { cn } from '@/lib/utils';
 
 import type { BondValueChartTooltipMetric } from './BondValueChart';
+import { chartColorClass } from './chart-color-class';
 
 export type ChartTooltipTranslate = (key: string) => string;
 
@@ -18,7 +19,7 @@ export function TooltipMetricRow({
   return (
     <div className="ui-chart-tooltip-row">
       <span className="ui-chart-tooltip-label">
-        <span className="ui-chart-tooltip-dot" style={{ backgroundColor: color }} />
+        <span className={`ui-chart-tooltip-dot ${chartColorClass(color)}`} />
         {label}:
       </span>
       <span className="ui-chart-tooltip-value">

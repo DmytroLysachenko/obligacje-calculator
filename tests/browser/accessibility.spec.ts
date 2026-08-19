@@ -88,7 +88,7 @@ test('serves the scoped runtime-style CSP required by charts and sheets', async 
   const policy = response?.headers()['content-security-policy'] ?? '';
 
   expect(policy).toContain("style-src-elem 'self' 'nonce-");
-  expect(policy).toContain("style-src-attr 'unsafe-inline'");
+  expect(policy).toContain("style-src-attr 'none'");
   expect(policy).toMatch(/style-src 'self' 'nonce-[^']+';/);
   expect(policy).not.toMatch(/(?:^|;\s*)style-src\s[^;]*'unsafe-inline'/);
 });

@@ -16,6 +16,7 @@ import {
   TooltipMetricRow,
   TooltipStatusHeader,
 } from './BondValueChartTooltipPrimitives';
+import { chartColorClass } from './chart-color-class';
 
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   payload?: BondValueTooltipPayloadEntry[];
@@ -59,7 +60,7 @@ function ScenarioGroupTooltip({
               <p className="text-xs font-bold uppercase tracking-[0.08em] text-foreground">
                 {group.title}
               </p>
-              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: group.color }} />
+              <span className={`h-2.5 w-2.5 rounded-full ${chartColorClass(group.color)}`} />
             </div>
             <TooltipInterestRate
               interestRate={group.interestRate}
