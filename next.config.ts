@@ -3,6 +3,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Enables Partial Prerendering: the request-specific locale/CSP shell can
+  // stream independently while cacheable public component trees are reused.
+  cacheComponents: true,
   async headers() {
     return [
       {
