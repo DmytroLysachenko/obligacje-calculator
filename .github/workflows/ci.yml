@@ -156,7 +156,15 @@ jobs:
         run: PGPASSWORD=obligacje psql -h 127.0.0.1 -U obligacje -d obligacje_test -c 'CREATE EXTENSION IF NOT EXISTS pgcrypto;'
 
       - name: Verify migrated PostgreSQL constraints and rollback
-        run: pnpm test:db
+        run: pnpm test:db --reporter=json --outputFile=test-results/database-integration.json
+
+      - name: Upload database integration result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: database-integration-result
+          path: test-results/database-integration.json
+          if-no-files-found: error
 
   docker-build:
     runs-on: ubuntu-latest

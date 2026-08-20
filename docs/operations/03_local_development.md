@@ -45,7 +45,10 @@ Use `.env.example` as the no-secret template. Do not commit `.env`,
 task dev:container      # Compose app + local Postgres
 task dev:host           # Next.js directly on the host
 task preflight          # WSL, Docker, Playwright, gcloud, and gh readiness
-task db:up              # local Postgres only
+task db:local:up        # persistent local Postgres for development on localhost:5432
+task db:up              # alias for db:local:up
+task db:test:up         # isolated disposable PostgreSQL on localhost:5433
+task test:db:local      # migrated PostgreSQL constraints and rollback suite
 task db:migrate         # apply Drizzle schema to local Postgres
 task db:seed            # seed local reference data
 task smoke:container    # verify local app routes

@@ -58,6 +58,24 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  postgres-test:
+    profiles:
+      - test
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: obligacje_test
+      POSTGRES_USER: obligacje_test
+      POSTGRES_PASSWORD: obligacje_test
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U obligacje_test -d obligacje_test']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - '5433:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+
 volumes:
   app_node_modules:
   app_next:

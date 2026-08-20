@@ -80,6 +80,8 @@ pnpm test:ci
 pnpm test:coverage
 pnpm test:release
 pnpm test:db # requires an isolated TEST_DATABASE_URL
+task test:db:local # starts an isolated disposable Postgres container on port 5433
+task db:local:up # starts the persistent local development database on port 5432
 pnpm test:core
 pnpm test:browser
 pnpm test:web-vitals
