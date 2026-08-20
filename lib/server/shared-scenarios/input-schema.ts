@@ -14,4 +14,12 @@ export const SharedScenarioPayloadSchema = z
   })
   .strict();
 
+/** A report contains only an opaque reference and a bounded reason code. */
+export const SharedScenarioAbuseReportSchema = z
+  .object({
+    shareId: z.string().uuid(),
+    reason: z.enum(['spam', 'illegal-content', 'privacy', 'other']),
+  })
+  .strict();
+
 type SharedScenarioPayloadCommand = z.infer<typeof SharedScenarioPayloadSchema>;

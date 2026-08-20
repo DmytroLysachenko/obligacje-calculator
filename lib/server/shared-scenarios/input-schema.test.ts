@@ -3,7 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 
-import { SHARED_SCENARIO_LIMITS, SharedScenarioPayloadSchema } from './input-schema';
+import {
+  SHARED_SCENARIO_LIMITS,
+  SharedScenarioAbuseReportSchema,
+  SharedScenarioPayloadSchema,
+} from './input-schema';
 
 const definition = BOND_DEFINITIONS[BondType.EDO];
 const validInputs = {
@@ -28,6 +32,21 @@ const validInputs = {
 };
 
 describe('SharedScenarioPayloadSchema', () => {
+  it('accepts only opaque references and reason codes for abuse reports', () => {
+    expect(
+      SharedScenarioAbuseReportSchema.parse({
+        shareId: '123e4567-e89b-12d3-a456-426614174000',
+        reason: 'spam',
+      }),
+    ).toEqual({ shareId: '123e4567-e89b-12d3-a456-426614174000', reason: 'spam' });
+    expect(
+      SharedScenarioAbuseReportSchema.safeParse({
+        shareId: 'not-a-reference',
+        reason: 'freeform payload is not accepted',
+      }).success,
+    ).toBe(false);
+  });
+
   it('accepts a complete bounded calculator snapshot', () => {
     const payload = SharedScenarioPayloadSchema.parse({
       inputs: validInputs,

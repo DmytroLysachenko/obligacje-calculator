@@ -6,6 +6,7 @@ import {
   defaultApiRateLimitPolicy,
   observabilityRateLimitPolicy,
   publicChartReadRateLimitPolicy,
+  shareAbuseReportRateLimitPolicy,
   shareCreationRateLimitPolicy,
 } from './rate-limiter';
 
@@ -15,6 +16,11 @@ describe('endpoint rate-limit policies', () => {
     expect(shareCreationRateLimitPolicy.windowMs).toBeGreaterThan(
       defaultApiRateLimitPolicy.windowMs,
     );
+  });
+
+  it('limits abuse reports independently from share creation', () => {
+    expect(shareAbuseReportRateLimitPolicy.key).not.toBe(shareCreationRateLimitPolicy.key);
+    expect(shareAbuseReportRateLimitPolicy.limit).toBeLessThan(shareCreationRateLimitPolicy.limit);
   });
 
   it('assigns separate bounded budgets to charts and calculation execution', () => {

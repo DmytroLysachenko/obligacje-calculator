@@ -130,6 +130,13 @@ export const shareCreationRateLimitPolicy: RateLimitPolicy = {
   windowMs: 60 * 60_000,
 };
 
+/** Reports are intentionally rarer than share creation to prevent log abuse. */
+export const shareAbuseReportRateLimitPolicy: RateLimitPolicy = {
+  key: 'share-abuse-report',
+  limit: 5,
+  windowMs: 60 * 60_000,
+};
+
 export const adminRateLimitPolicy: RateLimitPolicy = {
   key: 'admin-write',
   limit: 10,

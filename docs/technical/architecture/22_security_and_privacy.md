@@ -115,8 +115,10 @@ quota. Shared scenarios have a documented expiry and cleanup process. A public
 share may expose only the serialized scenario selected for publication, never a
 portfolio, owner identifier, session state, raw telemetry, or private notes.
 
-Abuse reports identify the share reference and correlation ID. The report path
-does not reveal whether an identifier exists to an unauthenticated caller.
+Abuse reports use `POST /api/scenarios/share/report` with only an opaque share
+reference and a bounded reason code; they identify the share reference and
+correlation ID in redacted operator logs. The report path does not resolve or
+reveal whether an identifier exists to an unauthenticated caller.
 Deletion/expiry takes precedence over cache display. Search engines must not
 receive user-generated share pages as public landing content unless a future
 product policy explicitly permits it.
