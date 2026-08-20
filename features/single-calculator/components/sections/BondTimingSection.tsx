@@ -4,8 +4,8 @@ import { AlertCircle, CalendarIcon } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
+import { LazyCalendar } from '@/components/ui/lazy-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
@@ -87,7 +87,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
                   fromYear={2010}
@@ -132,7 +132,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
+                  <LazyCalendar
                     mode="single"
                     captionLayout="dropdown"
                     fromYear={2010}

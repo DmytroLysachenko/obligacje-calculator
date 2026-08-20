@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   // Enables Partial Prerendering: the request-specific locale/CSP shell can
   // stream independently while cacheable public component trees are reused.
   cacheComponents: true,
+  experimental: {
+    // Lucide's public entry point is a large icon barrel. Rewrite its named
+    // imports at build time so each route only ships the icons it renders.
+    optimizePackageImports: ['lucide-react'],
+  },
   async headers() {
     return [
       {

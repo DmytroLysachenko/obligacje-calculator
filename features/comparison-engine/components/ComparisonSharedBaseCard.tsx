@@ -5,9 +5,9 @@ import { History } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { LazyCalendar } from '@/components/ui/lazy-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
@@ -143,7 +143,7 @@ export function ComparisonSharedBaseCard({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
                   fromYear={2010}
@@ -184,7 +184,7 @@ export function ComparisonSharedBaseCard({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
+                  <LazyCalendar
                     mode="single"
                     captionLayout="dropdown"
                     fromYear={2010}

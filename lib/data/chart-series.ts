@@ -15,7 +15,7 @@ import {
 } from './chart-reference-series';
 
 export async function getInflationChartSeries(): Promise<ChartSeriesEnvelope<ChartRatePoint>> {
-  if (!isDatabaseConfigured) {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
     return getFallbackInflationSeries();
   }
 
@@ -59,7 +59,7 @@ export async function getInflationChartSeries(): Promise<ChartSeriesEnvelope<Cha
 }
 
 export async function getNbpChartSeries(): Promise<ChartSeriesEnvelope<ChartRatePoint>> {
-  if (!isDatabaseConfigured) {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
     return getFallbackNbpSeries();
   }
 

@@ -5,7 +5,7 @@ import { CalendarIcon } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
+import { LazyCalendar } from '@/components/ui/lazy-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { FormField } from '@/shared/components/forms/FormField';
@@ -76,7 +76,7 @@ export function TimingSection({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
+              <LazyCalendar
                 mode="single"
                 captionLayout="dropdown"
                 fromYear={2010}
@@ -113,7 +113,7 @@ export function TimingSection({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
                   fromYear={2010}

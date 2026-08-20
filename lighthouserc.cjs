@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- Lighthouse loads CommonJS config. */
 const { existsSync, readdirSync } = require('node:fs');
-const { homedir } = require('node:os');
+const { homedir, tmpdir } = require('node:os');
 const { join } = require('node:path');
 
 const isIndexableEnvironment = process.env.NEXT_PUBLIC_DEPLOYMENT_TIER === 'production';
@@ -19,6 +19,9 @@ function findPlaywrightChromium() {
 }
 
 const chromePath = process.env.LHCI_CHROME_PATH ?? findPlaywrightChromium();
+// A unique profile prevents an interrupted local run from locking the next
+// Lighthouse collection. It remains outside the repository on WSL/Linux.
+const chromeUserDataDir = join(tmpdir(), `obligacje-calculator-lighthouse-${process.pid}`);
 
 module.exports = {
   ci: {
@@ -34,10 +37,9 @@ module.exports = {
         'http://127.0.0.1:3100/compare',
         'http://127.0.0.1:3100/regular-investment',
       ],
+      ...(chromePath ? { chromePath } : {}),
       settings: {
-        ...(chromePath ? { chromePath } : {}),
-        chromeFlags:
-          '--no-sandbox --headless=new --user-data-dir=/tmp/obligacje-calculator-lighthouse',
+        chromeFlags: `--no-sandbox --headless=new --user-data-dir=${chromeUserDataDir}`,
       },
     },
     assert: {
