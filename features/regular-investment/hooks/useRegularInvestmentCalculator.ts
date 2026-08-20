@@ -44,6 +44,7 @@ export function useRegularInvestmentCalculator() {
     initialInputs: fallbackInputs,
     storageKey: STORAGE_KEY,
     isCommittedResultValid,
+    modelVersion: MODEL_VERSION,
   });
   const {
     draftInputs: inputs,

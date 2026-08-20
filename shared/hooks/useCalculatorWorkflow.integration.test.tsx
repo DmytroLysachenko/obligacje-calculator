@@ -10,6 +10,8 @@ interface ProbeResult {
   value: number;
 }
 
+const isProbeResult = (result: ProbeResult) => typeof result.value === 'number';
+
 let root: Root | undefined;
 let container: HTMLDivElement;
 let workflow: ReturnType<typeof useCalculatorWorkflow<number, ProbeResult>> | undefined;
@@ -18,6 +20,8 @@ function WorkflowProbe() {
   const currentWorkflow = useCalculatorWorkflow<number, ProbeResult>({
     initialInputs: 10,
     storageKey: 'calculator-workflow.integration',
+    modelVersion: 'model-v1',
+    isCommittedResultValid: isProbeResult,
   });
   useEffect(() => {
     workflow = currentWorkflow;
@@ -74,6 +78,7 @@ describe('useCalculatorWorkflow integration', () => {
       expect.objectContaining({ method: 'POST', body: JSON.stringify({ inputs: 10 }) }),
     );
     expect(window.localStorage.getItem('calculator-workflow.integration')).toContain('42');
+    expect(window.localStorage.getItem('calculator-workflow.integration')).toContain('model-v1');
   });
 
   it('cancels transport synchronously and never commits a late response', async () => {
@@ -144,5 +149,22 @@ describe('useCalculatorWorkflow integration', () => {
     });
     expect(container.textContent).toBe('2');
     expect(container.querySelector('output')?.dataset.phase).toBe('succeeded');
+  });
+
+  it('keeps a persisted draft but drops a result from an old calculation model', async () => {
+    window.localStorage.setItem(
+      'calculator-workflow.integration',
+      JSON.stringify({
+        modelVersion: 'model-v0',
+        draftInputs: 17,
+        committedInputs: 17,
+        committedResult: { value: 17 },
+      }),
+    );
+    await renderProbe();
+
+    expect(workflow?.draftInputs).toBe(17);
+    expect(workflow?.committedInputs).toBeNull();
+    expect(workflow?.committedResult).toBeNull();
   });
 });

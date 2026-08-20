@@ -66,6 +66,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     initialInputs: fallbackDraft,
     storageKey: COMPARISON_CALCULATOR_STORAGE_KEY,
     isCommittedResultValid,
+    modelVersion: MODEL_VERSION,
   });
   const { sharedConfig, scenarioA, scenarioB } = session.draftInputs;
 
