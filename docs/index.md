@@ -81,6 +81,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Redacted Operational Evidence Template](./operations/evidence-template.md) - Required record for cloud, IAM, backup, load-test, and deployment controls.
 - [Durable Synchronization Contract](./operations/05_durable_sync_contract.md) - Event ownership, retries, retention cleanup, and external Inngest evidence gate.
 - [External Evidence Gate](./operations/06_external_evidence_gate.md) - Redacted proof required before repository controls are described as deployed.
+- [OAuth Token Lifecycle Runbook](./operations/07_oauth_token_lifecycle.md) - Token inventory, retention, revocation, and evidence procedure.
 
 ---
 
