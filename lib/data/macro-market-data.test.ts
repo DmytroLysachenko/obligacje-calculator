@@ -128,7 +128,7 @@ describe('resolveGlobalDataFreshness', () => {
     });
   });
 
-  it('treats partial NBP reference history as fresh when recently checked', () => {
+  it('surfaces partial NBP reference history as fallback even when recently checked', () => {
     const result = resolveGlobalDataFreshness(
       [
         series({
@@ -151,8 +151,8 @@ describe('resolveGlobalDataFreshness', () => {
     );
 
     expect(result).toMatchObject({
-      status: 'fresh',
-      usedFallback: false,
+      status: 'fallback',
+      usedFallback: true,
       coverageAsOf: '2026-04',
     });
   });
@@ -190,8 +190,8 @@ describe('resolveGlobalDataFreshness', () => {
     );
 
     expect(result).toMatchObject({
-      status: 'fresh',
-      usedFallback: false,
+      status: 'fallback',
+      usedFallback: true,
       asOf: '2026-04',
       coverageAsOf: '2026-04',
       lastSyncedAt: '2026-06-15T09:01:00.000Z',
@@ -203,7 +203,11 @@ describe('resolveGlobalDataFreshness', () => {
     const result = resolveGlobalDataFreshness(
       [
         series({ slug: 'pl-cpi', lastDataPointDate: '2026-04-01', lastSyncStatus: 'success' }),
-        series({ slug: 'nbp-ref-rate', lastDataPointDate: '2026-03-05', lastSyncStatus: 'success' }),
+        series({
+          slug: 'nbp-ref-rate',
+          lastDataPointDate: '2026-03-05',
+          lastSyncStatus: 'success',
+        }),
       ],
       [
         syncRun({ seriesSlug: 'nbp-ref-rate' }),
@@ -233,7 +237,11 @@ describe('resolveGlobalDataFreshness', () => {
       const result = resolveGlobalDataFreshness(
         [
           series({ slug: 'pl-cpi', lastDataPointDate: '2026-04-01', lastSyncStatus: 'success' }),
-          series({ slug: 'nbp-ref-rate', lastDataPointDate: '2026-03-05', lastSyncStatus: 'success' }),
+          series({
+            slug: 'nbp-ref-rate',
+            lastDataPointDate: '2026-03-05',
+            lastSyncStatus: 'success',
+          }),
         ],
         [
           syncRun({ seriesSlug: 'nbp-ref-rate' }),
@@ -242,7 +250,11 @@ describe('resolveGlobalDataFreshness', () => {
         now,
       );
 
-      expect(result).toMatchObject({ status: 'fallback', usedFallback: true, bondOfferStatus: status });
+      expect(result).toMatchObject({
+        status: 'fallback',
+        usedFallback: true,
+        bondOfferStatus: status,
+      });
     },
   );
 
@@ -250,7 +262,11 @@ describe('resolveGlobalDataFreshness', () => {
     const result = resolveGlobalDataFreshness(
       [
         series({ slug: 'pl-cpi', lastDataPointDate: '2026-04-01', lastSyncStatus: 'success' }),
-        series({ slug: 'nbp-ref-rate', lastDataPointDate: '2026-03-05', lastSyncStatus: 'success' }),
+        series({
+          slug: 'nbp-ref-rate',
+          lastDataPointDate: '2026-03-05',
+          lastSyncStatus: 'success',
+        }),
       ],
       [syncRun({ seriesSlug: 'nbp-ref-rate' })],
       now,

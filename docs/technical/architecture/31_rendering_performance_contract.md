@@ -30,11 +30,18 @@
 ## Bundle rules
 
 - Use direct imports instead of broad barrels for heavy dependencies.
+- `radix-ui` is the reviewed, tree-shakeable primitive facade; do not add a
+  second Radix package family without a measured bundle reason.
 - Dynamically import charts below the initial input/result viewport.
 - Dynamically import PDF generation after an export click.
 - Keep one icon system unless a documented semantic gap requires another.
 - Remove unused exports before introducing a duplicate helper.
 - Capture per-route bundle report artifacts in CI.
+
+`pnpm analyze:bundles` reads the completed Next build manifest and writes
+`artifacts/route-bundle-report.json`. It is a deterministic ownership inventory
+(emitted, uncompressed bytes); Lighthouse remains the source of transfer and
+user-facing performance budgets.
 
 ## Font and asset rules
 
@@ -76,13 +83,13 @@ No repository-only change can substitute for these external measurements.
 
 ## Budget ownership
 
-| Route class | Primary budget | Owner |
-| --- | --- | --- |
-| Landing | LCP and initial JS | public-shell owner |
-| Calculator | input responsiveness and chart deferral | calculator owner |
-| Data dashboard | main-thread work and request count | data-feature owner |
-| Workspace | private cache boundary and mutation latency | portfolio owner |
-| Shared scenario | safe metadata and public payload size | sharing owner |
+| Route class     | Primary budget                              | Owner              |
+| --------------- | ------------------------------------------- | ------------------ |
+| Landing         | LCP and initial JS                          | public-shell owner |
+| Calculator      | input responsiveness and chart deferral     | calculator owner   |
+| Data dashboard  | main-thread work and request count          | data-feature owner |
+| Workspace       | private cache boundary and mutation latency | portfolio owner    |
+| Shared scenario | safe metadata and public payload size       | sharing owner      |
 
 When a budget regresses, capture the before/after report, identify the loading
 boundary that changed, and either restore the budget or record a reviewed

@@ -12,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import type { Language } from '@/i18n/config';
+import { createNumberFormatter } from '@/shared/lib/formatters';
 
 import type { AdminSeriesRowModel } from '../lib/admin-status-model';
 import type { AdminDashboardCopy } from '../types/admin-status-types';
@@ -20,11 +22,13 @@ export function AdminInventoryTable({
   rows,
   loading,
   isEmpty,
+  language,
   copy,
 }: {
   rows: AdminSeriesRowModel[];
   loading: boolean;
   isEmpty: boolean;
+  language: Language;
   copy: AdminDashboardCopy['inventory'];
 }) {
   return (
@@ -52,7 +56,12 @@ export function AdminInventoryTable({
           </TableHeader>
           <TableBody>
             {rows.map((seriesItem) => (
-              <AdminInventoryRow key={seriesItem.id} seriesItem={seriesItem} copy={copy} />
+              <AdminInventoryRow
+                key={seriesItem.id}
+                seriesItem={seriesItem}
+                language={language}
+                copy={copy}
+              />
             ))}
             {isEmpty && !loading ? (
               <TableRow>
@@ -73,9 +82,11 @@ export function AdminInventoryTable({
 
 function AdminInventoryRow({
   seriesItem,
+  language,
   copy,
 }: {
   seriesItem: AdminSeriesRowModel;
+  language: Language;
   copy: AdminDashboardCopy['inventory'];
 }) {
   return (
@@ -116,7 +127,7 @@ function AdminInventoryRow({
         </div>
       </TableCell>
       <TableCell className="px-6 py-5 text-right font-mono text-xs font-semibold">
-        {seriesItem.pointCount.toLocaleString()}
+        {createNumberFormatter(language).format(seriesItem.pointCount)}
       </TableCell>
       <TableCell className="px-6 py-5">
         <div className="flex flex-col">

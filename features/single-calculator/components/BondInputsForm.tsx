@@ -48,6 +48,7 @@ interface BondInputsFormProps {
   selectedSeriesId?: string | null;
   guardrails?: InputGuardrailIssue[];
   onApplyGuardrailFix?: (issue: InputGuardrailIssue) => void;
+  guardrailSummaryRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export const BondInputsForm: React.FC<BondInputsFormProps> = ({
@@ -60,6 +61,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   selectedSeriesId = 'current',
   guardrails = [],
   onApplyGuardrailFix,
+  guardrailSummaryRef,
 }) => {
   const { t } = useAppI18n();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
@@ -120,11 +122,18 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
       <form
         id={formId}
         onSubmit={onSubmit}
-        className="ui-form-panel w-full space-y-7 xl:sticky xl:top-8"
+        noValidate
+        className="ui-form-panel w-full space-y-7"
         aria-label={t('bonds.single_calculator')}
       >
         {guardrails.length > 0 ? (
-          <div className="ui-control-stack" role="status">
+          <div
+            ref={guardrailSummaryRef}
+            tabIndex={-1}
+            className="ui-control-stack"
+            role="alert"
+            aria-live="assertive"
+          >
             {guardrails.map((issue) => (
               <FormInlineNotice
                 key={issue.id}

@@ -7,12 +7,16 @@ import { okJson } from '@/lib/server/http/responses';
 import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 import { getOwnerSettings, updateOwnerSettings } from '@/lib/server/settings/service';
 
-const UserSettingsUpdateSchema = z.object({
-  currency: z.string().optional(),
-  theme: z.string().optional(),
-  defaultInflationScenario: z.string().optional(),
-  chartType: z.string().optional(),
-});
+const UserSettingsUpdateSchema = z
+  .object({
+    currency: z.literal('PLN').optional(),
+    theme: z.enum(['light', 'dark', 'system']).optional(),
+    defaultInflationScenario: z.enum(['low', 'base', 'high']).optional(),
+    chartType: z.enum(['area', 'line', 'bar']).optional(),
+  })
+  .strict();
+
+const SETTINGS_MAX_BODY_BYTES = 8 * 1024;
 
 export const GET = apiHandler(async () => {
   const { owner } = await getPortfolioRouteContext();
@@ -23,7 +27,9 @@ export const GET = apiHandler(async () => {
 
 export const PATCH = apiHandler(async (req: NextRequest) => {
   const { owner } = await getPortfolioRouteContext();
-  const validated = await readJsonBody(req, UserSettingsUpdateSchema);
+  const validated = await readJsonBody(req, UserSettingsUpdateSchema, {
+    maxBytes: SETTINGS_MAX_BODY_BYTES,
+  });
   const updated = await updateOwnerSettings(owner.ownerId, validated);
 
   return withPortfolioOwnerResponse(okJson(updated), owner);

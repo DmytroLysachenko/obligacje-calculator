@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:24-bookworm-slim AS base
+FROM node:24-bookworm-slim@sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03 AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
@@ -17,11 +17,15 @@ COPY . .
 RUN --mount=type=cache,id=next-cache,target=/app/.next/cache \
   pnpm build
 
-FROM node:24-bookworm-slim AS runner
+FROM node:24-bookworm-slim@sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV PORT=8080
+
+# The standalone server is launched directly with Node. Removing npm keeps its
+# bundled development-only dependency tree out of the production image.
+RUN rm -rf /usr/local/lib/node_modules/npm
 
 COPY --from=builder --chown=node:node /app/public ./public
 COPY --from=builder --chown=node:node /app/.next/standalone ./

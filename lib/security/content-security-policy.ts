@@ -53,26 +53,25 @@ export function createContentSecurityPolicy(nonce: string, isDevelopment = false
     ? `style-src-elem 'self' 'nonce-${nonce}' 'unsafe-inline'`
     : `style-src-elem 'self' 'nonce-${nonce}'`;
 
-  // Recharts and Radix set presentation-only style attributes at runtime.
   return [
     ...baseDirectives,
     scriptSource,
     styleElementSource,
     styleElementDirective,
-    "style-src-attr 'unsafe-inline'",
+    "style-src-attr 'none'",
+    'report-to csp',
   ].join('; ');
 }
 
 /**
- * A deliberately narrow assertion for browser-facing presentation styles.
- * Recharts and Radix write style attributes for positioning and transforms;
- * their runtime behavior must not weaken nonce-protected style elements.
+ * Production rejects inline style attributes; chart palette presentation is
+ * expressed through reviewed utility classes instead of DOM style mutation.
  */
 export function supportsRuntimePresentationStyles(policy: string) {
   const directives = parseContentSecurityPolicy(policy);
 
   return (
-    hasCspSource(directives, 'style-src-attr', "'unsafe-inline'") &&
+    hasCspSource(directives, 'style-src-attr', "'none'") &&
     hasCspSource(directives, 'style-src-elem', "'self'") &&
     !hasCspSource(directives, 'style-src', "'unsafe-inline'")
   );
@@ -88,3 +87,21 @@ export const permissionsPolicy = [
   'payment=()',
   'usb=()',
 ].join(', ');
+
+/**
+ * Keep browsing contexts and same-origin assets isolated without enabling
+ * COEP, which would block the official data sources used by the application.
+ */
+export const crossOriginSecurityHeaders = {
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+} as const;
+
+export const cspReportingHeaders = {
+  'Reporting-Endpoints': 'csp="/api/security/csp-report"',
+  'Report-To': JSON.stringify({
+    group: 'csp',
+    max_age: 86_400,
+    endpoints: [{ url: '/api/security/csp-report' }],
+  }),
+} as const;

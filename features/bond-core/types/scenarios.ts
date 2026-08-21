@@ -20,8 +20,8 @@ export enum ScenarioKind {
 }
 
 export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
-export type BondOfferSource = 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
-export type BondOfferSyncStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
+type BondOfferSource = 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
+type BondOfferSyncStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
 
 export interface CalculationDataFreshness {
   status: DataFreshnessStatus;
@@ -59,7 +59,7 @@ export interface CalculationEnvelope<T> {
   calculationNotes: string[];
   dataQualityFlags: string[];
   dataFreshness: CalculationDataFreshness;
-  calculationVersion?: string;
+  calculationVersion: string;
   historicalAverages?: HistoricalAverages;
 }
 
@@ -277,3 +277,19 @@ export type CalculationScenarioRequest =
 export type SingleBondCalculationEnvelope = CalculationEnvelope<CalculationResult>;
 export type RegularInvestmentCalculationEnvelope = CalculationEnvelope<RegularInvestmentResult>;
 export type BondComparisonCalculationEnvelope = CalculationEnvelope<BondComparisonScenarioItem[]>;
+
+/** Maps a declared scenario kind to the envelope exposed at API consumers. */
+export type CalculationEnvelopeForKind<TKind extends CalculationScenarioRequest['kind']> =
+  TKind extends ScenarioKind.SINGLE_BOND
+    ? SingleBondCalculationEnvelope
+    : TKind extends ScenarioKind.REGULAR_INVESTMENT
+      ? RegularInvestmentCalculationEnvelope
+      : TKind extends ScenarioKind.BOND_COMPARISON
+        ? BondComparisonCalculationEnvelope
+        : TKind extends ScenarioKind.PORTFOLIO_SIMULATION
+          ? PortfolioSimulationCalculationEnvelope
+          : TKind extends ScenarioKind.BOND_OPTIMIZER
+            ? BondOptimizerCalculationEnvelope
+            : TKind extends ScenarioKind.RETIREMENT_PLANNER
+              ? RetirementPlannerCalculationEnvelope
+              : never;

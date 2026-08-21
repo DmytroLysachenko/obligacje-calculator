@@ -6,7 +6,8 @@ import React from 'react';
 import { ChartStep, RegularInvestmentResult } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
-import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import type { BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import { LazyBondValueChart } from '@/shared/components/charts/LazyBondValueChart';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { computeNumericDomain } from '@/shared/lib/chart-series';
@@ -99,7 +100,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({
 
   return (
     <div>
-      <BondValueChart
+      <LazyBondValueChart
         data={chartData}
         series={chartSeries}
         formatCurrency={formatCurrency}

@@ -4,6 +4,7 @@ import React from 'react';
 
 import { BondInputs, CalculationResult, TaxStrategy } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 interface ComparisonVerdictProps {
   resultsA: CalculationResult;
   resultsB: CalculationResult;
@@ -110,25 +111,35 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
                 years: horizonYears,
               })}
             </p>
-            <p className="ui-body text-muted-foreground">
-              {t('comparison.verdict.mode_context', {
-                mode: t('comparison.auto_rollover_mode_label'),
-              })}
-            </p>
-            <p className="ui-body text-muted-foreground">{t('comparison.verdict.caution_text')}</p>
+            <InfoTooltip
+              content={
+                <>
+                  <p>
+                    {t('comparison.verdict.mode_context', {
+                      mode: t('comparison.auto_rollover_mode_label'),
+                    })}
+                  </p>
+                  <p className="mt-2">{t('comparison.verdict.caution_text')}</p>
+                </>
+              }
+            />
           </div>
 
           <div className="ui-control-group">
-            <p className="ui-metadata font-semibold text-muted-foreground">
-              {t('comparison.verdict.drivers_title')}
-            </p>
-            <ul className="mt-3 space-y-2 ui-body text-muted-foreground">
-              {verdictDrivers.map((driver) => (
-                <li key={driver} className="border-l-2 border-border pl-3">
-                  {driver}
-                </li>
-              ))}
-            </ul>
+            <div className="flex items-center gap-1">
+              <p className="ui-metadata font-semibold text-muted-foreground">
+                {t('comparison.verdict.drivers_title')}
+              </p>
+              <InfoTooltip
+                content={
+                  <ul className="space-y-2">
+                    {verdictDrivers.map((driver) => (
+                      <li key={driver}>{driver}</li>
+                    ))}
+                  </ul>
+                }
+              />
+            </div>
           </div>
 
           <div className="ui-action-row border-t border-border pt-4">

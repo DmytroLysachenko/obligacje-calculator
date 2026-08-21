@@ -124,6 +124,52 @@ describe('calculation request validation hardening', () => {
     );
   });
 
+  it('rejects negative monetary values across every calculator payload', () => {
+    expectInvalid('negative single-bond investment', () =>
+      BondInputsSchema.parse(singlePayload({ initialInvestment: -100 })),
+    );
+    expectInvalid('negative savings goal', () =>
+      BondInputsSchema.parse(singlePayload({ savingsGoal: -1 })),
+    );
+    expectInvalid('negative regular contribution', () =>
+      RegularInvestmentInputsSchema.parse(regularPayload({ contributionAmount: -100 })),
+    );
+    expectInvalid('negative comparison investment', () =>
+      BondComparisonScenarioPayloadSchema.parse({
+        mode: 'normalized',
+        bondTypes: [BondType.EDO],
+        initialInvestment: -100,
+        purchaseDate: '2026-05-30',
+        withdrawalDate: '2028-05-30',
+        expectedInflation: 3,
+      }),
+    );
+    expectInvalid('negative optimizer investment', () =>
+      BondOptimizerPayloadSchema.parse({
+        initialInvestment: -100,
+        purchaseDate: '2026-05-30',
+        investmentHorizonMonths: 24,
+        expectedInflation: 3,
+      }),
+    );
+    expectInvalid('negative retirement capital', () =>
+      RetirementPlannerPayloadSchema.parse({
+        initialCapital: -100,
+        monthlyWithdrawal: 2500,
+        expectedInflation: 3,
+        bondType: BondType.EDO,
+        horizonYears: 20,
+      }),
+    );
+    expectInvalid('negative portfolio lot amount', () =>
+      PortfolioSimulationPayloadSchema.parse({
+        investments: [{ bondType: BondType.EDO, amount: -100, purchaseDate: '2026-05-30' }],
+        expectedInflation: 3,
+        withdrawalDate: '2028-05-30',
+      }),
+    );
+  });
+
   it('rejects date order and impossible horizon combinations', () => {
     expectInvalid('reversed dates', () =>
       BondInputsSchema.parse(

@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 interface ScenarioFieldsetProps {
   title: string;
@@ -24,8 +25,10 @@ export function ScenarioFieldset({
       className={cn('ui-control-stack', divided && 'border-t border-border pt-6', className)}
     >
       <div className="ui-section-intro">
-        <h3 className="ui-card-title">{title}</h3>
-        {description ? <p className="ui-field-description ui-pretty">{description}</p> : null}
+        <div className="flex items-center gap-1">
+          <h3 className="ui-card-title">{title}</h3>
+          {description ? <InfoTooltip content={description} /> : null}
+        </div>
       </div>
       {children}
     </section>

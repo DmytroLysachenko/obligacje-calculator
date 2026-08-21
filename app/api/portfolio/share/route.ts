@@ -4,23 +4,25 @@ import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { okJson } from '@/lib/server/http/responses';
-import { toggleOwnerPortfolioSharing } from '@/lib/server/portfolio/commands';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
 
-const PortfolioSharePayloadSchema = z.object({
-  portfolioId: z.string().uuid(),
-  isPublic: z.boolean().optional(),
-});
+const PortfolioSharePayloadSchema = z
+  .object({
+    portfolioId: z.string().uuid(),
+    isPublic: z.boolean().optional(),
+  })
+  .strict();
 
 export const POST = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const { portfolioId, isPublic } = await readJsonBody(req, PortfolioSharePayloadSchema);
 
     try {
-      const result = await toggleOwnerPortfolioSharing(
+      const result = await portfolioApplication.setPortfolioVisibility(
         owner.ownerId,
         portfolioId,
         Boolean(isPublic),

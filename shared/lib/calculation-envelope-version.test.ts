@@ -1,10 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { createCalculationEnvelopeVersionValidator, isCompatibleCalculationEnvelope } from './calculation-envelope-version';
+import {
+  createCalculationEnvelopeVersionValidator,
+  isCompatibleCalculationEnvelope,
+} from './calculation-envelope-version';
 
 describe('persisted calculation envelope compatibility', () => {
   it.each([
-    [null, false], [{}, false], [{ calculationVersion: '2.8.0' }, false],
+    [null, false],
+    [{}, false],
+    [{ calculationVersion: '2.8.0' }, false],
+    [{ calculationVersion: undefined, result: {} }, false],
     [{ calculationVersion: '2.7.0', result: {} }, false],
     [{ calculationVersion: '2.8.0', result: null }, true],
     [{ calculationVersion: '2.8.0', result: { total: 100 } }, true],

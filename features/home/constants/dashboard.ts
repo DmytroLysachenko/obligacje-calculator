@@ -12,10 +12,6 @@ export type HomeToolDefinition = {
   status: FeatureStatus;
 };
 
-export const heroTrustStripKeys = ['item_1', 'item_2', 'item_3'] as const;
-
-export const homeStepIds = ['learn-rules', 'run-one', 'expand-later'] as const;
-
 const iconByRoute: Record<string, HomeToolDefinition['icon']> = {
   '/single-calculator': Calculator,
   '/education': BookOpen,

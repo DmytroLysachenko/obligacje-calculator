@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { SyncProvider } from '../types';
 
@@ -22,6 +22,7 @@ function createRepository(overrides: Partial<ProviderSyncRepository> = {}): Prov
     findLatestPointForSeries: vi.fn(async () => null),
     upsertDataPoints: vi.fn(async () => undefined),
     markSeriesSyncSuccess: vi.fn(async () => undefined),
+    markSeriesSyncFailure: vi.fn(async () => undefined),
     ...overrides,
   };
 }
@@ -37,6 +38,10 @@ function createProvider(records: Awaited<ReturnType<SyncProvider['fetchData']>>)
 describe('ProviderSyncService repository boundary', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('records a failed result when base series metadata is missing', async () => {
@@ -89,6 +94,37 @@ describe('ProviderSyncService repository boundary', () => {
       }),
     ]);
     expect(repository.upsertDataPoints).not.toHaveBeenCalled();
+  });
+
+  it('re-fetches the latest month through today so market-closed days do not create a gap', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-02T12:00:00.000Z'));
+    const repository = createRepository({
+      findLatestPointForSeries: vi.fn(async () => ({ date: '2026-07-31' })),
+    });
+    const provider = createProvider([]);
+    const service = new ProviderSyncService([provider], logger, recorder, repository);
+
+    await service.syncAll(2024);
+
+    expect(provider.fetchData).toHaveBeenCalledWith('2026-07-01', '2026-08-02');
+  });
+
+  it('marks the existing series failed when its provider throws', async () => {
+    const repository = createRepository();
+    const provider = createProvider([]);
+    provider.fetchData = vi.fn(async () => {
+      throw new Error('upstream unavailable');
+    });
+    const service = new ProviderSyncService([provider], logger, recorder, repository);
+
+    await expect(service.syncAll(2024)).resolves.toEqual([
+      expect.objectContaining({ status: 'failed', error: 'Error: upstream unavailable' }),
+    ]);
+    expect(repository.markSeriesSyncFailure).toHaveBeenCalledWith(
+      'series-1',
+      'Error: upstream unavailable',
+    );
   });
 
   it('upserts known records and skips records without series metadata', async () => {

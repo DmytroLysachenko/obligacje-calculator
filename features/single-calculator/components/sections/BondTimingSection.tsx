@@ -4,8 +4,8 @@ import { AlertCircle, CalendarIcon } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
+import { LazyCalendar } from '@/components/ui/lazy-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
@@ -32,6 +32,8 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
     const { t, locale: language } = useAppI18n();
     const dateLocale = getDateFnsLocale(language);
     const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
+    const purchaseDateLabelId = React.useId();
+    const purchaseDateErrorId = React.useId();
     const durationMonths = Math.round(currentDef.duration * 12);
     const autoRollover = investmentHorizonMonths > durationMonths;
     const taxOptions = [
@@ -55,7 +57,10 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
 
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs font-semibold uppercase text-muted-foreground">
+            <Label
+              id={purchaseDateLabelId}
+              className="text-xs font-semibold uppercase text-muted-foreground"
+            >
               {t('bonds.purchase_date')}
             </Label>
             <Popover>
@@ -69,6 +74,9 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
                       isFutureDate &&
                       'border-destructive focus-visible:ring-destructive',
                   )}
+                  aria-labelledby={purchaseDateLabelId}
+                  aria-describedby={hasMounted && isFutureDate ? purchaseDateErrorId : undefined}
+                  aria-invalid={hasMounted && isFutureDate ? true : undefined}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {hasMounted && inputs.purchaseDate ? (
@@ -79,7 +87,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
                   fromYear={2010}
@@ -92,6 +100,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
             </Popover>
             {hasMounted && isFutureDate && (
               <div
+                id={purchaseDateErrorId}
                 className="flex items-center gap-2 text-xs font-medium text-destructive"
                 role="alert"
               >
@@ -123,7 +132,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
+                  <LazyCalendar
                     mode="single"
                     captionLayout="dropdown"
                     fromYear={2010}

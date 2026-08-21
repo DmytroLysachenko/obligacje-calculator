@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 export interface FinancialInsightItem {
   label: string;
@@ -45,11 +46,13 @@ export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
               toneClass[item.tone ?? 'default'],
             )}
           >
-            <p className="ui-meta font-semibold">{item.label}</p>
+            <div className="flex items-center gap-1">
+              <p className="ui-meta font-semibold">{item.label}</p>
+              <InfoTooltip content={item.description} />
+            </div>
             <p className="financial-number mt-1 text-lg font-semibold text-foreground">
               {item.value}
             </p>
-            <p className="mt-1 text-muted-foreground">{item.description}</p>
           </div>
         ))}
       </div>

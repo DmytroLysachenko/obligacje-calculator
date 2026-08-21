@@ -5,8 +5,8 @@ import React from 'react';
 
 import { ComparisonResultsPanelProps } from '@/features/comparison-engine/types/comparison-results-panel';
 import { useAppI18n } from '@/i18n/client';
-import { BondValueChart } from '@/shared/components/charts/BondValueChart';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { LazyBondValueChart } from '@/shared/components/charts/LazyBondValueChart';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
 import { buildComparisonExportHeaders } from '@/shared/lib/export-headers';
@@ -116,13 +116,13 @@ export function ComparisonResultsPanel({
         <p className="ui-body text-muted-foreground">{t('comparison.chart_header_desc')}</p>
       </div>
       <div className="ui-control-stack">
-        <div className="ui-control-stack">
+        <div className="divide-y divide-border border-y border-border">
           <MetricStrip
             items={differenceMetrics}
             columns="grid-cols-1 md:grid-cols-3"
-            className="ui-surface-flush shadow-none"
+            className="border-0 bg-transparent shadow-none"
           />
-          <div className="grid overflow-hidden border-y border-border bg-card 2xl:grid-cols-[minmax(0,1fr)_minmax(250px,0.3fr)]">
+          <div className="grid 2xl:grid-cols-[minmax(0,1fr)_minmax(250px,0.3fr)]">
             <MetricStrip
               items={comparisonMetrics}
               columns="grid-cols-1 md:grid-cols-2"
@@ -130,7 +130,7 @@ export function ComparisonResultsPanel({
             />
             <ResultActionGrid
               actions={exportActions}
-              className="grid-cols-1 border-x-0 border-b-0 bg-muted/20 px-5 py-4 2xl:w-auto 2xl:border-l 2xl:border-t-0"
+              className="grid-cols-1 border-x-0 border-b-0 bg-transparent px-5 py-4 2xl:w-auto 2xl:border-l 2xl:border-t-0"
             />
           </div>
         </div>
@@ -140,7 +140,7 @@ export function ComparisonResultsPanel({
           description={t('comparison.chart_help_desc')}
         />
 
-        <BondValueChart
+        <LazyBondValueChart
           data={valueChartData}
           series={chartSeries}
           formatCurrency={formatCurrency}

@@ -48,8 +48,6 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       inputs.investmentHorizonMonths ??
       getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
     const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
-    const isDivisibleBy100 = inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
-
     return (
       <section
         className="ui-form-panel w-full ui-control-stack"
@@ -78,9 +76,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           <ScenarioFieldset title={t('comparison.configuration')} divided>
             <ContributionPlanSection
               contributionAmount={inputs.contributionAmount}
+              language={language}
               frequency={inputs.frequency}
               taxStrategy={inputs.taxStrategy}
-              isDivisibleBy100={isDivisibleBy100}
               onUpdate={onUpdate}
               t={t}
             />

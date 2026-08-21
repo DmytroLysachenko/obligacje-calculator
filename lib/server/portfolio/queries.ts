@@ -14,10 +14,7 @@ import {
   listPortfoliosByOwner,
 } from '@/lib/server/portfolio/repository';
 import { buildPortfolioSimulationPayload } from '@/lib/server/portfolio/simulation';
-export {
-  buildSharedPortfolioPageMetadata,
-  getPublicSharedPortfolioPageData,
-} from './shared-page-service';
+export { buildSharedPortfolioPageMetadata } from './shared-page-service';
 
 const emptySimulationResult: PortfolioSimulationResult = {
   items: [],

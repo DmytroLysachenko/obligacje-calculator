@@ -114,6 +114,16 @@
   --sidebar-width: 15rem;
 }
 
+@media (min-width: 1800px) {
+  :root {
+    --layout-app-max: 1800px;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 .dark {
   color-scheme: dark;
   --canvas: #111315;
@@ -273,7 +283,7 @@
     @apply text-xs font-medium leading-5 text-muted-foreground;
   }
   .ui-body {
-    @apply text-[15px] leading-7 text-foreground;
+    @apply text-base leading-7 text-foreground;
   }
   .ui-meta {
     @apply text-xs leading-5 text-muted-foreground;
@@ -331,8 +341,15 @@
     @apply text-xs font-medium leading-5 text-destructive;
   }
   .ui-form-panel {
-    @apply border border-border bg-card p-5 md:p-6;
-    border-radius: var(--finance-radius-md);
+    @apply border-y border-border bg-transparent p-5 md:p-6;
+  }
+  .ui-plan-region {
+    @apply border-y border-border bg-muted/15;
+  }
+  .ui-plan-region .surface-panel,
+  .ui-plan-assumptions .surface-panel {
+    @apply border-0 border-t border-border bg-transparent shadow-none;
+    border-radius: 0;
   }
   .ui-result-panel {
     @apply border-t-2 border-border pt-6 md:pt-8;

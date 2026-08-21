@@ -1,14 +1,13 @@
 'use client';
 import { format } from 'date-fns';
-import { HelpCircle } from 'lucide-react';
 import React from 'react';
 
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondInputs } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { ParameterSummary } from '@/shared/components/results/ParameterSummary';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 
@@ -65,12 +64,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(
         label: (
           <span className="inline-flex items-center gap-1">
             {t('bonds.payout_type')}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-3 w-3 cursor-help text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent>{t('bonds.glossary.capitalization')}</TooltipContent>
-            </Tooltip>
+            <InfoTooltip content={t('bonds.glossary.capitalization')} />
           </span>
         ),
         value: inputs.isCapitalized ? t('bonds.capitalization') : t('bonds.payout'),
@@ -79,12 +73,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(
         label: (
           <span className="inline-flex items-center gap-1">
             {t('bonds.early_withdrawal_fee')}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-3 w-3 cursor-help text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent>{t('bonds.glossary.early_withdrawal')}</TooltipContent>
-            </Tooltip>
+            <InfoTooltip content={t('bonds.glossary.early_withdrawal')} />
           </span>
         ),
         value: `${inputs.earlyWithdrawalFee} PLN`,

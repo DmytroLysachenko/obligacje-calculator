@@ -6,6 +6,7 @@ import {
   getSyncSecret,
   hasAuthSecret,
   hasOAuthProvider,
+  isOAuthOptionalPreview,
   readRuntimeEnv,
   type RuntimeEnv,
 } from '@/lib/server/runtime/env';
@@ -51,6 +52,20 @@ export const REQUIRED_READINESS_TABLES = [
   'web_vital_aggregates',
 ];
 const DRIZZLE_MIGRATIONS_TABLE = 'drizzle.__drizzle_migrations';
+/** Bump with every reviewed migration added to the journal. */
+export const REQUIRED_MIGRATION_COUNT = 9;
+/** SHA-256 hashes of the complete reviewed Drizzle journal, in migration order. */
+export const REQUIRED_MIGRATION_HASHES = [
+  '0f4eecdf14be3137035a8807afcafdf6d2159924dadd276531c78d0d72a25257',
+  '7b7b56dbf957d400db99938cf5ee3bd968b526a8a18a9f2f61b4341283c6c286',
+  '4fedd0b7214ee33d4507c71bcd79ac65241c925836b0d0f7305b7a9e435a4d39',
+  '4ae30fef07a1924ad7afcd0a066a07c8d946dd85edde86e675f059d57c6d5417',
+  'a6a7525f648cc7287e7f2318ffb43bd62f981db336d13e27bd7378b50971a79f',
+  'e552d13f52377417cad6c491606bc3d6b1c071760fde00e4fa25b6ef7c7e1958',
+  '6eb8d4e281ffea14283ac94ca078e4b34deff85a4dc4a35fca471984beb4310e',
+  '6fc6efbb29b8cd445b843f4d4e42102e731b7f27e8d3867d298cd3819953e318',
+  'e699eb7886b491bfadb5268293cb524068670ba48934eca91f5288283c9aa307',
+] as const;
 
 export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
   const missing = [
@@ -58,7 +73,7 @@ export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
     !hasAuthSecret(env) ? 'AUTH_SECRET' : null,
     !getSyncSecret(env) ? 'SYNC_SECRET' : null,
     !getPublicAppUrl(env) ? 'NEXT_PUBLIC_APP_URL' : null,
-    !hasOAuthProvider(env) ? 'OAUTH_PROVIDER' : null,
+    !hasOAuthProvider(env) && !isOAuthOptionalPreview(env) ? 'OAUTH_PROVIDER' : null,
   ].filter((value): value is string => Boolean(value));
 
   return missing.length === 0
@@ -91,9 +106,26 @@ export async function checkReadinessDatabase(
       ...(existingTables.has(DRIZZLE_MIGRATIONS_TABLE) ? [] : [DRIZZLE_MIGRATIONS_TABLE]),
     ];
 
-    return missingTables.length === 0
-      ? { status: 'ok' }
-      : { status: 'failed', detail: `Missing required tables: ${missingTables.join(', ')}` };
+    if (missingTables.length > 0) {
+      return { status: 'failed', detail: `Missing required tables: ${missingTables.join(', ')}` };
+    }
+
+    const migrationRows = await sql<{ hash: string }[]>`
+      select hash from drizzle.__drizzle_migrations order by created_at asc, id asc
+    `;
+    const appliedHashes = new Set(migrationRows.map((row) => row.hash));
+    const missingMigrationHashes = REQUIRED_MIGRATION_HASHES.filter(
+      (hash) => !appliedHashes.has(hash),
+    );
+
+    if (migrationRows.length < REQUIRED_MIGRATION_COUNT || missingMigrationHashes.length > 0) {
+      return {
+        status: 'failed',
+        detail: `Database migration journal is incomplete: expected ${REQUIRED_MIGRATION_COUNT} reviewed migrations, found ${migrationRows.length}`,
+      };
+    }
+
+    return { status: 'ok' };
   } catch {
     return { status: 'failed', detail: 'Database readiness check failed' };
   } finally {

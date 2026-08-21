@@ -47,7 +47,7 @@ export function ComparisonFairnessPanel({
   const { t } = useAppI18n();
 
   return (
-    <section className="ui-surface-flush ui-control-stack p-5 md:p-6">
+    <section className="ui-plan-region ui-control-stack px-5 py-5 md:px-6 md:py-6">
       <div className="ui-section-header gap-4">
         <div className="ui-section-intro">
           <h2 className="ui-card-title">{t('comparison.fairness.title')}</h2>

@@ -102,7 +102,6 @@ describe('layer boundary contract', () => {
       'app/api/admin/status/route.ts',
       'app/api/admin/sync/route.ts',
       'app/api/scenarios/share/route.ts',
-      'app/api/sync/opportunistic/route.ts',
       'app/api/user/settings/route.ts',
     ];
 

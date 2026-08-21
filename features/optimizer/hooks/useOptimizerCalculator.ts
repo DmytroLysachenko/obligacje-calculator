@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 
 import { TaxStrategy } from '@/features/bond-core/types';
 import {
@@ -19,19 +19,20 @@ import {
   type OptimizerInputs,
 } from '@/features/optimizer/lib/optimizer-state';
 import { useAppI18n } from '@/i18n/client';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useCalculatorWorkflow } from '@/shared/hooks/useCalculatorWorkflow';
 import { useCurrencyFormatter, usePercentFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { areCalculatorStatesEqual } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
 
 export function useOptimizerCalculator() {
   const { t, locale: language } = useAppI18n();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const [inputs, setInputs] = useState<OptimizerInputs>(() => buildDefaultOptimizerInputs());
-  const [envelope, setEnvelope] = useState<BondOptimizerCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(true);
-  const { isCalculating, post } = useCalculationRequest();
+  const workflow = useCalculatorWorkflow<OptimizerInputs, BondOptimizerCalculationEnvelope>({
+    initialInputs: useMemo(() => buildDefaultOptimizerInputs(), []),
+  });
+  const { draftInputs: inputs, committedResult: envelope, setDraftInputs } = workflow;
   const hasTouchedMacroAssumptions = React.useRef(false);
   const currencyFormatter = useCurrencyFormatter(language, {
     style: 'currency',
@@ -48,10 +49,15 @@ export function useOptimizerCalculator() {
       return;
     }
 
-    setInputs((previous) =>
-      applyOptimizerMacroDefaults(previous, macroDefaults, hasTouchedMacroAssumptions.current),
+    const nextInputs = applyOptimizerMacroDefaults(
+      inputs,
+      macroDefaults,
+      hasTouchedMacroAssumptions.current,
     );
-  }, [macroDefaults]);
+    if (!areCalculatorStatesEqual(inputs, nextInputs)) {
+      setDraftInputs(nextInputs);
+    }
+  }, [inputs, macroDefaults, setDraftInputs]);
 
   const { results, leadingScenario, horizonYears, hasResults } = useMemo(
     () => getOptimizerClientViewState({ inputs, envelope }),
@@ -80,18 +86,15 @@ export function useOptimizerCalculator() {
     if (update.touchedMacroAssumptions) {
       hasTouchedMacroAssumptions.current = true;
     }
-    setInputs(update.inputs);
-    setIsDirty(true);
+    setDraftInputs(update.inputs);
   };
 
   const handleCalculate = async () => {
     try {
-      const data = await post<BondOptimizerCalculationEnvelope>(
+      await workflow.runRemoteCalculation(
         getCalculationEndpoint(ScenarioKind.BOND_OPTIMIZER),
-        inputs,
+        (draftInputs) => draftInputs,
       );
-      setEnvelope(data);
-      setIsDirty(false);
     } catch (error) {
       logClientError('Scenario ranking error:', error);
     }
@@ -101,8 +104,8 @@ export function useOptimizerCalculator() {
     t,
     inputs,
     envelope,
-    isDirty,
-    isCalculating,
+    isDirty: workflow.isDirty,
+    isCalculating: workflow.isCalculating,
     hasResults,
     results,
     leadingScenario,

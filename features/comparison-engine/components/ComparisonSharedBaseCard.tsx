@@ -5,26 +5,33 @@ import { History } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { LazyCalendar } from '@/components/ui/lazy-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
+import {
+  bondQuantityFromInvestment,
+  investmentFromBondQuantity,
+  MAX_BOND_QUANTITY,
+} from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
+import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { useNumberFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { toDateString } from '@/shared/lib/date-timing';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
 
-interface ComparisonSharedBaseCardProps {
+export interface ComparisonSharedBaseCardProps {
   sharedConfig: SharedConfig;
-  assumptionsBondType: BondType;
   onUpdateSharedConfig: {
     bivarianceHack: (key: keyof SharedConfig | string, value: unknown) => void;
   }['bivarianceHack'];
@@ -32,18 +39,18 @@ interface ComparisonSharedBaseCardProps {
 
 export function ComparisonSharedBaseCard({
   sharedConfig,
-  assumptionsBondType,
   onUpdateSharedConfig,
 }: ComparisonSharedBaseCardProps) {
   const { t, locale: language } = useAppI18n();
   const dateLocale = getDateFnsLocale(language);
+  const numberFormatter = useNumberFormatter(language);
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 border-l-2 border-t border-border px-4 py-4 sm:px-5">
       <div className="space-y-2 border-b border-border pb-4">
         <h2 className="ui-section-title">{t('comparison.shared_base_title')}</h2>
         <p className="ui-body text-muted-foreground">{t('comparison.shared_base_desc')}</p>
-        <p className="ui-metadata leading-5 text-muted-foreground">
+        <p className="text-base leading-7 text-muted-foreground">
           {t('comparison.shared_base_scope')}
         </p>
       </div>
@@ -81,22 +88,29 @@ export function ComparisonSharedBaseCard({
             htmlFor="comparison-initial-investment"
             className="ui-metadata text-muted-foreground"
           >
-            {t('comparison.initial_sum')}
+            {t('bonds.bond_quantity')}
           </Label>
+          <p className="ui-metadata text-muted-foreground">
+            {numberFormatter.format(sharedConfig.initialInvestment)} PLN
+          </p>
           <div className="relative">
             <Input
               type="number"
               id="comparison-initial-investment"
               name="comparison-initial-investment"
-              inputMode="decimal"
+              min={1}
+              max={MAX_BOND_QUANTITY}
+              step={1}
+              inputMode="numeric"
               className="h-11 rounded-lg pr-12 text-lg font-semibold"
-              value={sharedConfig.initialInvestment}
-              onChange={(event) =>
-                onUpdateSharedConfig('initialInvestment', Number(event.target.value))
-              }
+              value={bondQuantityFromInvestment(sharedConfig.initialInvestment)}
+              onChange={(event) => {
+                const investment = investmentFromBondQuantity(Number(event.target.value));
+                if (investment !== null) onUpdateSharedConfig('initialInvestment', investment);
+              }}
             />
             <div className="absolute right-4 top-1/2 -translate-y-1/2 ui-metadata text-muted-foreground">
-              PLN
+              {t('bonds.units')}
             </div>
           </div>
         </div>
@@ -129,7 +143,7 @@ export function ComparisonSharedBaseCard({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
                   fromYear={2010}
@@ -170,7 +184,7 @@ export function ComparisonSharedBaseCard({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
+                  <LazyCalendar
                     mode="single"
                     captionLayout="dropdown"
                     fromYear={2010}
@@ -199,50 +213,97 @@ export function ComparisonSharedBaseCard({
             unit={t('common.month_compact')}
             onCommit={(value) => onUpdateSharedConfig('investmentHorizonMonths', value)}
           />
-          <p className="text-xs leading-5 text-muted-foreground">
+          <p className="text-base leading-7 text-muted-foreground">
             {t('comparison.shared_horizon_desc')}
           </p>
         </div>
-
-        <SecondaryInsightAccordion
-          title={t('comparison.shared_assumptions_title')}
-          description={t('comparison.shared_assumptions_desc')}
-          badge={t('comparison.helper_secondary')}
-          className="border-t border-dashed pt-4"
-        >
-          <div className="ui-control-stack">
-            <MarketAssumptionsForm
-              expectedInflation={sharedConfig.expectedInflation}
-              expectedNbpRate={sharedConfig.expectedNbpRate}
-              customInflation={sharedConfig.customInflation}
-              customNbpRate={sharedConfig.customNbpRate}
-              bondType={assumptionsBondType}
-              inflationHorizonYears={Math.max(
-                1,
-                Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12),
-              )}
-              onUpdate={onUpdateSharedConfig}
-              compact
-            />
-
-            <div className="ui-control-group">
-              <Label className="ui-metadata text-muted-foreground">{t('bonds.tax_strategy')}</Label>
-              <FormSelect
-                value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
-                onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
-                options={[
-                  { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
-                  { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
-                  { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
-                ]}
-              />
-              <p className="text-xs leading-5 text-muted-foreground">
-                {t('comparison.shared_tax_desc')}
-              </p>
-            </div>
-          </div>
-        </SecondaryInsightAccordion>
       </div>
+    </section>
+  );
+}
+
+interface ComparisonSharedAssumptionsPanelProps extends ComparisonSharedBaseCardProps {
+  assumptionsBondType: BondType;
+}
+
+export function ComparisonSharedAssumptionsPanel({
+  sharedConfig,
+  assumptionsBondType,
+  onUpdateSharedConfig,
+}: ComparisonSharedAssumptionsPanelProps) {
+  const { t } = useAppI18n();
+
+  return (
+    <section className="ui-plan-region space-y-6 px-5 py-6 md:px-6 md:py-7">
+      <div className="max-w-3xl space-y-2">
+        <p className="ui-kicker">{t('comparison.shared_assumptions_title')}</p>
+        <p className="ui-body text-muted-foreground">{t('comparison.shared_assumptions_desc')}</p>
+      </div>
+
+      <div className="grid grid-cols-1 divide-y divide-border xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(16rem,20rem)] xl:divide-x xl:divide-y-0">
+        <section className="min-w-0 py-3 xl:pr-6">
+          <MarketAssumptionsForm
+            expectedInflation={sharedConfig.expectedInflation}
+            expectedNbpRate={sharedConfig.expectedNbpRate}
+            customInflation={sharedConfig.customInflation}
+            customNbpRate={sharedConfig.customNbpRate}
+            bondType={assumptionsBondType}
+            inflationHorizonYears={Math.max(
+              1,
+              Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12),
+            )}
+            onUpdate={onUpdateSharedConfig}
+            compact
+            section="inflation"
+            showIntro={false}
+          />
+        </section>
+
+        <section className="min-w-0 py-3 xl:px-6">
+          <MarketAssumptionsForm
+            expectedInflation={sharedConfig.expectedInflation}
+            expectedNbpRate={sharedConfig.expectedNbpRate}
+            customInflation={sharedConfig.customInflation}
+            customNbpRate={sharedConfig.customNbpRate}
+            bondType={assumptionsBondType}
+            inflationHorizonYears={Math.max(
+              1,
+              Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12),
+            )}
+            onUpdate={onUpdateSharedConfig}
+            compact
+            section="nbp"
+            showIntro={false}
+          />
+        </section>
+
+        <section className="space-y-3 py-3 xl:pl-6">
+          <FormSelect
+            label={t('bonds.tax_strategy')}
+            value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
+            onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
+            options={[
+              { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
+              { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
+              { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
+            ]}
+          />
+          <p className="text-base leading-7 text-muted-foreground">
+            {t('comparison.shared_tax_desc')}
+          </p>
+        </section>
+      </div>
+
+      <AssumptionSemanticsNote bondType={assumptionsBondType} className="border-solid pt-5" />
+
+      <SecondaryInsightAccordion
+        title={t('bonds.market_assumptions.source_title')}
+        description={t('bonds.market_assumptions.source_description')}
+        badge={t('comparison.helper_secondary')}
+        className="ui-plan-assumptions"
+      >
+        <MacroDefaultsSummary showNbp compact />
+      </SecondaryInsightAccordion>
     </section>
   );
 }

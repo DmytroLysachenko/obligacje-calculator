@@ -54,9 +54,8 @@ and collect final release-gate evidence.
 - core bond calculation logic exists and can be evolved
 - the UI surface area is still larger than the trusted release scope
 - some secondary features remain intentionally conditional, experimental, or limited
-- unused-code inventory is now scanable with `pnpm scan:unused`; the current
-  baseline reports 8 unused value exports and 11 unused exported-type candidates
-  that need human review before removal, with no confirmed unused files
+- `pnpm scan:unused` is green with no unused files, exports, types, unlisted
+  binaries, or configuration hints
 - single and comparison calculator hooks now delegate persistence, macro/default,
   definition-sync, fetch, and auto-calculation effects to feature-local
   `hooks/use*Effects.ts` modules

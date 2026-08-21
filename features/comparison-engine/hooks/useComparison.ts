@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
+import { useCalculatorWorkflow } from '@/shared/hooks/useCalculatorWorkflow';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { createCalculationEnvelopeVersionValidator } from '@/shared/lib/calculation-envelope-version';
 import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-persistence';
 import { logClientError } from '@/shared/lib/client-logger';
@@ -14,7 +14,8 @@ import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { MODEL_VERSION } from '../../bond-core/handlers';
 import { BondType } from '../../bond-core/types';
 import type { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
-import { runComparisonCalculation } from '../lib/comparison-actions';
+import { ScenarioKind } from '../../bond-core/types/scenarios';
+import { buildIndependentComparisonPayload } from '../lib/comparison-actions';
 import {
   buildDefaultSharedConfig,
   buildScenarioInputs,
@@ -60,12 +61,12 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   );
   const hasTouchedMacroAssumptions = useRef(false);
   const hasAppliedMacroDefaults = useRef(false);
-  const hasAppliedInitialUrlState = useRef(false);
-  const { isCalculating, post } = useCalculationRequest();
-  const session = useCalculatorSession<ComparisonDraft, BondComparisonCalculationEnvelope>({
+  const appliedUrlState = useRef<string | null>(null);
+  const session = useCalculatorWorkflow<ComparisonDraft, BondComparisonCalculationEnvelope>({
     initialInputs: fallbackDraft,
     storageKey: COMPARISON_CALCULATOR_STORAGE_KEY,
     isCommittedResultValid,
+    modelVersion: MODEL_VERSION,
   });
   const { sharedConfig, scenarioA, scenarioB } = session.draftInputs;
 
@@ -139,9 +140,10 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   }, [macroDefaults, session]);
 
   useEffect(() => {
-    if (!initialUrlState || !session.isPersistenceReady || hasAppliedInitialUrlState.current)
-      return;
-    hasAppliedInitialUrlState.current = true;
+    if (!initialUrlState || !session.isPersistenceReady) return;
+    const nextUrlState = JSON.stringify(initialUrlState);
+    if (appliedUrlState.current === nextUrlState) return;
+    appliedUrlState.current = nextUrlState;
     session.setDraftInputs({
       sharedConfig: initialUrlState.sharedConfig,
       scenarioA: initialUrlState.scenarioA,
@@ -151,13 +153,15 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
 
   const calculate = useCallback(async () => {
     try {
-      await session.runCalculation(({ sharedConfig, scenarioA, scenarioB }) =>
-        runComparisonCalculation({ sharedConfig, scenarioA, scenarioB, post }),
+      await session.runRemoteCalculation(
+        getCalculationEndpoint(ScenarioKind.BOND_COMPARISON),
+        ({ sharedConfig, scenarioA, scenarioB }) =>
+          buildIndependentComparisonPayload({ sharedConfig, scenarioA, scenarioB }),
       );
     } catch (error) {
       logClientError('Comparison error:', error);
     }
-  }, [post, session]);
+  }, [session]);
 
   const updateSharedConfig = (key: keyof SharedComparisonConfig, value: ComparisonUpdateValue) => {
     if (isSharedComparisonMacroUpdate(key)) hasTouchedMacroAssumptions.current = true;
@@ -242,7 +246,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     offerStatusB,
     warningsA: envelopeA?.warnings ?? [],
     warningsB: envelopeB?.warnings ?? [],
-    isCalculating,
+    isCalculating: session.isCalculating,
     isDirty,
     calculate,
     updateSharedConfig,

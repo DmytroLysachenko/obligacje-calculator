@@ -109,10 +109,8 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('comparison.year')}
-                      </Label>
                       <FormSelect
+                        label={t('comparison.year')}
                         value={startYear}
                         onValueChange={updateStartYear}
                         triggerClassName="min-h-10"
@@ -123,10 +121,8 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t('comparison.month')}
-                      </Label>
                       <FormSelect
+                        label={t('comparison.month')}
                         value={startMonth}
                         onValueChange={updateStartMonth}
                         triggerClassName="min-h-10"

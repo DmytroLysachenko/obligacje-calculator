@@ -1,6 +1,7 @@
 'use client';
 
 import { Calendar } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { formatRetirementRate } from '@/features/retirement/lib/retirement-format';
@@ -9,9 +10,17 @@ import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPa
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 
-import { RetirementResultsOverview } from './RetirementResultsOverview';
 import { RetirementSection, RetirementSummaryMetric } from './RetirementSummarySections';
 import { RetirementSupportList } from './RetirementSupportList';
+
+const RetirementResultsOverview = dynamic(
+  () => import('./RetirementResultsOverview').then((module) => module.RetirementResultsOverview),
+  {
+    loading: () => (
+      <div className="h-[440px] w-full animate-pulse rounded-lg bg-muted" role="status" />
+    ),
+  },
+);
 
 type RetirementLabels = Record<string, string>;
 type RetirementChartDataPoint = {

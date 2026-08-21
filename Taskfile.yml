@@ -2,6 +2,7 @@ version: '3'
 
 vars:
   LOCAL_DATABASE_URL: postgresql://obligacje:obligacje@localhost:5432/obligacje?sslmode=disable
+  TEST_DATABASE_URL: postgresql://obligacje_test:obligacje_test@localhost:5433/obligacje_test?sslmode=disable
 
 tasks:
   setup:
@@ -76,9 +77,28 @@ tasks:
       - pnpm smoke:local -- --base-url http://localhost:8080
 
   db:up:
-    desc: Start only the local Postgres service.
+    desc: Alias for db:local:up.
     cmds:
-      - docker compose up -d postgres
+      - task: db:local:up
+
+  db:local:up:
+    desc: Start the persistent local PostgreSQL 17 database for development on port 5432.
+    cmds:
+      - docker compose up -d --wait postgres
+
+  db:test:up:
+    desc: Start an isolated disposable PostgreSQL 17 test database on port 5433.
+    cmds:
+      - docker compose --profile test up -d --wait postgres-test
+
+  test:db:local:
+    desc: Run migrated PostgreSQL constraints and rollback tests against the disposable database.
+    deps:
+      - db:test:up
+    env:
+      TEST_DATABASE_URL: '{{.TEST_DATABASE_URL}}'
+    cmds:
+      - pnpm test:db
 
   db:down:
     desc: Stop local Compose services.

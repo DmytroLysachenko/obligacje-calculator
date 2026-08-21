@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
+
 import { ResultAction, ResultActionGrid } from './ResultActionGrid';
 
 interface ResultSummaryHeroProps {
@@ -41,7 +43,21 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
             >
               {value}
             </h2>
-            <p className="ui-body max-w-4xl text-muted-foreground">{description}</p>
+            <div className="flex items-start gap-1">
+              <p className="ui-body max-w-4xl text-muted-foreground">{description}</p>
+              {narrative || deltaText ? (
+                <InfoTooltip
+                  content={
+                    <>
+                      {narrative ? <p>{narrative}</p> : null}
+                      {deltaText ? (
+                        <p className={narrative ? 'mt-2' : undefined}>{deltaText}</p>
+                      ) : null}
+                    </>
+                  }
+                />
+              ) : null}
+            </div>
           </div>
         </div>
 
@@ -53,15 +69,6 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
           </div>
         ) : null}
       </div>
-
-      {narrative || deltaText ? (
-        <div className="w-full space-y-3 border-t border-border bg-background px-5 py-4 md:px-6">
-          {narrative ? (
-            <p className="ui-body max-w-[var(--layout-reading-max)]">{narrative}</p>
-          ) : null}
-          {deltaText ? <p className="ui-meta">{deltaText}</p> : null}
-        </div>
-      ) : null}
     </section>
   );
 });

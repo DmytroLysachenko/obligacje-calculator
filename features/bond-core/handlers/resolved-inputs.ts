@@ -32,11 +32,13 @@ export async function resolveScenarioInputs({
       firstYearRate:
         resolvedOffer.firstYearRate ?? inputs.firstYearRate ?? definition.firstYearRate,
       margin: resolvedOffer.margin ?? inputs.margin ?? definition.margin,
-      duration: inputs.duration ?? definition.duration,
-      earlyWithdrawalFee: inputs.earlyWithdrawalFee ?? definition.earlyWithdrawalFee,
-      isCapitalized: inputs.isCapitalized ?? definition.isCapitalized,
-      payoutFrequency: inputs.payoutFrequency ?? definition.payoutFrequency,
-      rebuyDiscount: inputs.rebuyDiscount ?? definition.rebuyDiscount,
+      // Bond structure is issuer-defined. Never trust a persisted/client draft
+      // to turn EDO into a payout bond or alter its statutory exit fee.
+      duration: definition.duration,
+      earlyWithdrawalFee: definition.earlyWithdrawalFee,
+      isCapitalized: definition.isCapitalized,
+      payoutFrequency: definition.payoutFrequency,
+      rebuyDiscount: definition.rebuyDiscount,
     } as BondInputs,
   };
 }

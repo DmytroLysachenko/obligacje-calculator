@@ -1,10 +1,12 @@
 import { spawn } from 'node:child_process';
-import { cpSync, existsSync } from 'node:fs';
+import { appendFileSync, cpSync, existsSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 
 const port = process.env.PORT ?? '3100';
+const stderrFile = process.env.PLAYWRIGHT_SERVER_STDERR_FILE ?? '.playwright-server.stderr';
+rmSync(stderrFile, { force: true });
 const env = {
   ...process.env,
   HOSTNAME: process.env.HOSTNAME ?? '127.0.0.1',
@@ -33,7 +35,12 @@ const args = useStandalone
 
 const server = spawn(command, args, {
   env,
-  stdio: 'inherit',
+  stdio: ['ignore', 'inherit', 'pipe'],
+});
+
+server.stderr.on('data', (chunk) => {
+  appendFileSync(stderrFile, chunk);
+  process.stderr.write(chunk);
 });
 
 function forwardSignal(signal) {

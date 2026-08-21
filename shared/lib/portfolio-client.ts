@@ -28,7 +28,7 @@ export interface ImportPortfolioResult {
   importedLots?: number;
 }
 
-export interface ExportPortfolioResult {
+interface ExportPortfolioResult {
   data: Record<string, unknown> | null;
   fileName: string;
 }

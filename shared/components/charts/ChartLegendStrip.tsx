@@ -4,7 +4,9 @@ import React from 'react';
 
 import { cn } from '@/lib/utils';
 
-export interface ChartLegendItem {
+import { chartColorClass } from './chart-color-class';
+
+interface ChartLegendItem {
   label: string;
   color: string;
   style?: 'solid' | 'dashed' | 'muted';
@@ -36,11 +38,9 @@ export const ChartLegendStrip = React.memo(function ChartLegendStrip({
               'h-0.5 w-6 rounded-full',
               item.style === 'dashed' && 'border-t border-dashed bg-transparent',
               item.style === 'muted' && 'opacity-55',
+              item.style !== 'dashed' && chartColorClass(item.color),
+              chartColorClass(item.color, 'border'),
             )}
-            style={{
-              backgroundColor: item.style === 'dashed' ? 'transparent' : item.color,
-              borderColor: item.color,
-            }}
           />
           <span>{item.label}</span>
         </div>

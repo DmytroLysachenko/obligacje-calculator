@@ -1,6 +1,6 @@
 'use client';
 import { Wallet } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 
 import { TaxStrategy } from '@/features/bond-core/types';
 import {
@@ -22,10 +22,11 @@ import { RetirementInputs } from '@/features/retirement/types/retirement';
 import { useAppI18n } from '@/i18n/client';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useCalculatorWorkflow } from '@/shared/hooks/useCalculatorWorkflow';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { logClientError } from '@/shared/lib/client-logger';
 
 import { RetirementInputsPanel } from './RetirementInputsPanel';
 import {
@@ -38,15 +39,15 @@ import {
 export const RetirementPlannerContainer: React.FC = () => {
   const { t, locale: language } = useAppI18n();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const { isCalculating, post } = useCalculationRequest();
+  const workflow = useCalculatorWorkflow<RetirementInputs, RetirementPlannerCalculationEnvelope>({
+    initialInputs: DEFAULT_RETIREMENT_INPUTS,
+  });
   const currencyFormatter = useCurrencyFormatter(language, {
     style: 'currency',
     currency: 'PLN',
     maximumFractionDigits: 0,
   });
-  const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_RETIREMENT_INPUTS);
-  const [isDirty, setIsDirty] = useState(true);
-  const [results, setResults] = useState<RetirementPlannerCalculationEnvelope | null>(null);
+  const { draftInputs: inputs, committedResult: results, setDraftInputs } = workflow;
   const hasTouchedMacroAssumptions = React.useRef(false);
   const formatCurrency = React.useCallback(
     (value: number) => currencyFormatter.format(value),
@@ -56,23 +57,30 @@ export const RetirementPlannerContainer: React.FC = () => {
     if (!macroDefaults || hasTouchedMacroAssumptions.current) {
       return;
     }
-    setInputs((previous) => ({
-      ...previous,
+    if (
+      inputs.expectedInflation === macroDefaults.expectedInflation &&
+      inputs.expectedNbpRate === macroDefaults.expectedNbpRate
+    ) {
+      return;
+    }
+    setDraftInputs({
+      ...inputs,
       expectedInflation: macroDefaults.expectedInflation,
       expectedNbpRate: macroDefaults.expectedNbpRate,
-    }));
-  }, [macroDefaults]);
+    });
+  }, [inputs, macroDefaults, setDraftInputs]);
   const handleCalculate = async () => {
-    const bondType = getSupportedRetirementBondType(inputs.bondType);
-    const response = await post<RetirementPlannerCalculationEnvelope>(
-      getCalculationEndpoint(ScenarioKind.RETIREMENT_PLANNER),
-      {
-        ...inputs,
-        bondType,
-      },
-    );
-    setResults(response);
-    setIsDirty(false);
+    try {
+      await workflow.runRemoteCalculation(
+        getCalculationEndpoint(ScenarioKind.RETIREMENT_PLANNER),
+        (draft) => ({
+          ...draft,
+          bondType: getSupportedRetirementBondType(draft.bondType),
+        }),
+      );
+    } catch (error) {
+      logClientError('Retirement calculation error:', error);
+    }
   };
   const chartData = useMemo(() => createRetirementChartData(results), [results]);
   const scenarioCoverage = useMemo(
@@ -86,16 +94,15 @@ export const RetirementPlannerContainer: React.FC = () => {
     if (key === 'expectedInflation' || key === 'expectedNbpRate') {
       hasTouchedMacroAssumptions.current = true;
     }
-    setInputs((prev) => ({ ...prev, [key]: value }));
-    setIsDirty(true);
+    setDraftInputs({ ...inputs, [key]: value });
   };
   return (
     <CalculatorPageShell
       title={labels.pageTitle}
       description={labels.pageDescription}
       icon={<Wallet className="h-8 w-8" />}
-      isCalculating={isCalculating}
-      isDirty={isDirty}
+      isCalculating={workflow.isCalculating}
+      isDirty={workflow.isDirty}
       hasResults={!!results}
     >
       <div className="ui-page-flow grid grid-cols-1 xl:grid-cols-12 xl:gap-10">
@@ -118,7 +125,7 @@ export const RetirementPlannerContainer: React.FC = () => {
           {results ? (
             <RetirementResultsPanel
               results={results}
-              isDirty={isDirty}
+              isDirty={workflow.isDirty}
               labels={labels}
               chartData={chartData}
               scenarioCoverage={scenarioCoverage}
@@ -150,8 +157,8 @@ export const RetirementPlannerContainer: React.FC = () => {
       </div>
 
       <RecalculateButton
-        isDirty={isDirty}
-        loading={isCalculating}
+        isDirty={workflow.isDirty}
+        loading={workflow.isCalculating}
         hasResults={!!results}
         onClick={handleCalculate}
       />

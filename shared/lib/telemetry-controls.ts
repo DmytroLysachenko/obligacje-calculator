@@ -1,4 +1,4 @@
-export const WEB_VITAL_SAMPLE_RATE = 0.1;
+const WEB_VITAL_SAMPLE_RATE = 0.1;
 
 export interface BrowserPrivacySignals {
   doNotTrack?: string | null;

@@ -14,6 +14,38 @@ export function withRequestId(response: NextResponse, requestId: string) {
   return response;
 }
 
+/**
+ * Adds the correlation ID to the response header and to JSON response bodies.
+ * Wrapped success payloads expose it through `meta`; problem and legacy JSON
+ * payloads receive a top-level field without disclosing server-only causes.
+ */
+export async function withCorrelatedRequestId(response: NextResponse, requestId: string) {
+  if (response.status === 204 || !response.headers.get('content-type')?.includes('application/json')) {
+    return withRequestId(response, requestId);
+  }
+
+  try {
+    const payload: unknown = await response.clone().json();
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      return withRequestId(response, requestId);
+    }
+
+    const body = payload as Record<string, unknown>;
+    const meta = body.meta;
+    const correlated =
+      meta && typeof meta === 'object' && !Array.isArray(meta)
+        ? { ...body, meta: { ...meta, requestId } }
+        : { ...body, requestId: body.requestId ?? requestId };
+    const result = NextResponse.json(correlated, {
+      status: response.status,
+      headers: response.headers,
+    });
+    return withRequestId(result, requestId);
+  } catch {
+    return withRequestId(response, requestId);
+  }
+}
+
 export function addRequestIdToProblem<T extends object>(problem: T, requestId: string): T & { requestId: string } {
   return { ...problem, requestId };
 }

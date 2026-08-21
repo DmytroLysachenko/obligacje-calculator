@@ -48,13 +48,13 @@ export function ComparisonChartHelpSection({
         <div className="grid gap-4 md:grid-cols-2">
           <div className="border-t border-border py-4">
             <p className="ui-card-title">{t('comparison.end_level')}</p>
-            <p className="mt-1 text-xs leading-6 text-muted-foreground">
+            <p className="mt-1 text-base leading-6 text-muted-foreground">
               {t('comparison.end_level_desc')}
             </p>
           </div>
           <div className="border-t border-border py-4">
             <p className="ui-card-title">{t('comparison.update_rhythm')}</p>
-            <p className="mt-1 text-xs leading-6 text-muted-foreground">
+            <p className="mt-1 text-base leading-6 text-muted-foreground">
               {t('comparison.update_rhythm_desc')}
             </p>
           </div>

@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
+import { useCalculatorWorkflow } from '@/shared/hooks/useCalculatorWorkflow';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { createCalculationEnvelopeVersionValidator } from '@/shared/lib/calculation-envelope-version';
@@ -39,20 +38,20 @@ export function useLadder() {
     [],
   );
   const hasTouchedMacroAssumptions = useRef(false);
-  const { isCalculating, post } = useCalculationRequest();
-  const session = useCalculatorSession<
+  const session = useCalculatorWorkflow<
     RegularInvestmentInputs,
     RegularInvestmentCalculationEnvelope
   >({
     initialInputs: fallbackInputs,
     storageKey: STORAGE_KEY,
     isCommittedResultValid,
+    modelVersion: MODEL_VERSION,
   });
   const {
     draftInputs: inputs,
     committedResult: envelope,
     setDraftInputs,
-    runCalculation,
+    runRemoteCalculation,
   } = session;
 
   const updateDraft = useCallback(
@@ -79,17 +78,14 @@ export function useLadder() {
 
   const calculate = useCallback(async () => {
     try {
-      await runCalculation((draftInputs) =>
-        post<RegularInvestmentCalculationEnvelope>(
-          getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
-          draftInputs,
-          { preferWorker: true },
-        ),
+      await runRemoteCalculation(
+        getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
+        (draftInputs) => draftInputs,
       );
     } catch (error) {
       logClientError('Ladder calculation error:', error);
     }
-  }, [post, runCalculation]);
+  }, [runRemoteCalculation]);
 
   const updateInput = useCallback(
     (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
@@ -116,7 +112,7 @@ export function useLadder() {
     assumptions: envelope?.assumptions ?? [],
     dataFreshness: envelope?.dataFreshness,
     isDirty: session.isDirty,
-    isCalculating,
+    isCalculating: session.isCalculating,
     calculate,
     updateInput,
     setBondType,

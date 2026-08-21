@@ -15,9 +15,10 @@ export const pageLayout = {
   actionRowEnd: 'ui-action-row-end',
   controlStack: 'ui-control-stack',
   resultPanel: 'ui-result-panel',
-  calculatorGrid:
-    'grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10',
-  stickyScenario: 'space-y-5 2xl:sticky 2xl:top-8 2xl:h-fit',
+  // A calculation plan is primary content, not secondary navigation. Keep it above
+  // the outcome on large displays so result tables and charts use the whole desk.
+  calculatorGrid: 'grid grid-cols-1 gap-8 2xl:gap-12',
+  scenarioPlan: 'mx-auto w-full max-w-[var(--layout-wide-max)] space-y-5',
   stickySidebar: 'space-y-5 lg:sticky lg:top-8 lg:h-fit',
   compactCalculatorGrid:
     'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:items-start lg:gap-8',
@@ -30,26 +31,4 @@ export const pageLayout = {
   mobileActionBar: 'ui-mobile-action-bar',
   mobileActionBarInner: 'ui-mobile-action-bar-inner',
   resultFlow: 'space-y-8 md:space-y-10',
-} as const;
-
-export const pageSurface = {
-  plain: 'bg-transparent',
-  panel: 'ui-surface',
-  inset: 'ui-surface-inset',
-  flush: 'ui-surface-flush',
-  raised: 'ui-surface-raised',
-} as const;
-
-export const pageCopy = {
-  title: 'ui-page-title',
-  sectionTitle: 'ui-section-title',
-  cardTitle: 'ui-card-title',
-  body: 'ui-body',
-  meta: 'ui-meta',
-  eyebrow: 'ui-eyebrow',
-  caption: 'ui-caption',
-  label: 'ui-label',
-  description: 'ui-field-description',
-  metric: 'ui-primary-metric financial-number',
-  largeMetric: 'ui-large-metric financial-number',
 } as const;

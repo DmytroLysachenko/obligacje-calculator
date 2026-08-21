@@ -1,4 +1,4 @@
-import { addMonths, format, isBefore, parseISO, startOfMonth } from 'date-fns';
+import { format, isBefore, parseISO, startOfMonth } from 'date-fns';
 
 import type { SyncLogger } from '../sync-logger';
 import type { SyncProvider } from '../types';
@@ -43,11 +43,23 @@ export class ProviderSyncService {
         results.push(await this.syncProvider(provider, startYear));
       } catch (error) {
         this.logger.error(`Failed sync for ${provider.name}`, error);
+        const errorMessage = String(error);
+        try {
+          const series = await this.repository.findSeriesBySlug(provider.seriesSlug);
+          if (series) {
+            await this.repository.markSeriesSyncFailure(series.id, errorMessage);
+          }
+        } catch (persistenceError) {
+          this.logger.error(
+            `Failed to persist failed status for ${provider.name}`,
+            persistenceError,
+          );
+        }
         const failure: ProviderSyncResult = {
           provider: provider.name,
           seriesSlug: provider.seriesSlug,
           status: 'failed',
-          error: String(error),
+          error: errorMessage,
         };
         await this.recorder.record({
           scope: provider.name,
@@ -55,7 +67,7 @@ export class ProviderSyncService {
           seriesSlug: provider.seriesSlug,
           mode: 'provider-sync',
           status: 'failed',
-          error: String(error),
+          error: errorMessage,
           startedAt: new Date(),
           finishedAt: new Date(),
         });
@@ -80,12 +92,13 @@ export class ProviderSyncService {
 
     const lastPoint = await this.repository.findLatestPointForSeries(series.id);
 
-    let currentStartDate = lastPoint
-      ? addMonths(parseISO(lastPoint.date), 1)
-      : parseISO(`${startYear}-01-01`);
+    // Re-fetch the latest calendar month on every run. Market providers have no
+    // observations on weekends and holidays, and an in-progress month can gain
+    // further trading days after the first successful sync.
+    let currentStartDate = lastPoint ? parseISO(lastPoint.date) : parseISO(`${startYear}-01-01`);
 
     currentStartDate = startOfMonth(currentStartDate);
-    const today = startOfMonth(new Date());
+    const today = new Date();
     const startDateStr = format(currentStartDate, 'yyyy-MM-dd');
     const endDateStr = format(today, 'yyyy-MM-dd');
     const startedAt = new Date();

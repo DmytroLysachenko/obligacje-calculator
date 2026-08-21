@@ -3,9 +3,9 @@
 import React from 'react';
 
 import { useAppI18n } from '@/i18n/client';
-import { getIntlLocale } from '@/i18n/locale-utils';
-import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import type { BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
 import { ChartKeyInsight } from '@/shared/components/charts/ChartKeyInsight';
+import { LazyBondValueChart } from '@/shared/components/charts/LazyBondValueChart';
 import {
   AppLanguage,
   buildBondChartDisplayPoints,
@@ -13,6 +13,7 @@ import {
 } from '@/shared/lib/bond-display';
 import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
 import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
+import { createCurrencyFormatter } from '@/shared/lib/formatters';
 import { isFloatingNbpBondType } from '@/shared/lib/market-assumption-semantics';
 
 import { BondInputs, CalculationResult, ChartStep } from '../../bond-core/types';
@@ -45,7 +46,7 @@ export const BondChart: React.FC<BondChartProps> = ({
 
   const formatCurrency = React.useMemo(
     () => (value: number) =>
-      new Intl.NumberFormat(getIntlLocale(language), {
+      createCurrencyFormatter(language, {
         style: 'currency',
         currency: 'PLN',
         minimumFractionDigits: 2,
@@ -171,7 +172,7 @@ export const BondChart: React.FC<BondChartProps> = ({
           realEnd={Number(showRealValue ? lastPoint.primary : lastPoint.secondary)}
         />
       ) : null}
-      <BondValueChart
+      <LazyBondValueChart
         data={chartData}
         series={series}
         formatCurrency={formatCurrency}

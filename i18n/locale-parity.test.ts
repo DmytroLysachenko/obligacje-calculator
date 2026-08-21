@@ -30,6 +30,38 @@ function flattenMessageKeys(node: unknown, prefix = ''): string[] {
   return prefix ? [prefix] : [];
 }
 
+function flattenMessageValues(node: unknown, prefix = ''): Map<string, unknown> {
+  if (Array.isArray(node)) {
+    return node.reduce((values, item, index) => {
+      for (const [key, value] of flattenMessageValues(item, `${prefix}[${index}]`)) {
+        values.set(key, value);
+      }
+      return values;
+    }, new Map<string, unknown>());
+  }
+
+  if (node && typeof node === 'object') {
+    return Object.entries(node as Record<string, unknown>).reduce((values, [key, value]) => {
+      for (const [nestedKey, nestedValue] of flattenMessageValues(
+        value,
+        prefix ? `${prefix}.${key}` : key,
+      )) {
+        values.set(nestedKey, nestedValue);
+      }
+      return values;
+    }, new Map<string, unknown>());
+  }
+
+  return new Map(prefix ? [[prefix, node]] : []);
+}
+
+function getPlaceholders(value: string) {
+  return Array.from(value.matchAll(/\{([A-Za-z][A-Za-z0-9_-]*)\}/g), ([, name]) => name).sort();
+}
+
+const POLISH_ASCII_FALLBACKS =
+  /\b(?:biezac|czesc|dlug|dostep|glown|koncow|lacz|miesiecz|najwaz|nastepn|niedostep|odswiez|pel(?:n|ny)|poczat|porown|przyszl|przywroc|roznic|sciez|slu(?:z|ż)|srodk|swiez|szczegol|uzy(?:t|w)|wartos|wczesniejs|wlasn|wplat|wyjsc|wyplat|wyzs|zaloz|zapadalnos|zastep|zglos|zrod)\w*\b/i;
+
 function collectKeysContainingDots(node: unknown): string[] {
   if (!node || typeof node !== 'object' || Array.isArray(node)) {
     return [];
@@ -88,11 +120,37 @@ describe('locale parity for touched bond and economic helper namespaces', () => 
     expect(collectKeysContainingDots(plMessages)).toEqual([]);
   });
 
-  it('keeps full English key coverage available in Polish', () => {
+  it('keeps English and Polish message keys identical', () => {
     const englishKeys = flattenMessageKeys(enMessages).map(normalizeArrayIndexes).sort();
-    const polishKeys = new Set(flattenMessageKeys(plMessages).map(normalizeArrayIndexes));
+    const polishKeys = flattenMessageKeys(plMessages).map(normalizeArrayIndexes).sort();
 
-    expect(englishKeys.filter((key) => !polishKeys.has(key))).toEqual([]);
+    expect(polishKeys).toEqual(englishKeys);
+  });
+
+  it('keeps leaf values non-empty, type-compatible, and placeholder-compatible', () => {
+    const englishValues = flattenMessageValues(enMessages);
+    const polishValues = flattenMessageValues(plMessages);
+
+    expect(polishValues.size).toBe(englishValues.size);
+
+    for (const [key, englishValue] of englishValues) {
+      const polishValue = polishValues.get(key);
+      expect(typeof polishValue, key).toBe(typeof englishValue);
+
+      if (typeof englishValue === 'string' && typeof polishValue === 'string') {
+        expect(polishValue.trim(), key).not.toBe('');
+        expect(getPlaceholders(polishValue), key).toEqual(getPlaceholders(englishValue));
+      }
+    }
+  });
+
+  it('does not regress to common ASCII substitutes for Polish diacritics', () => {
+    const polishValues = flattenMessageValues(plMessages);
+    const offenders = Array.from(polishValues.entries()).filter(
+      ([, value]) => typeof value === 'string' && POLISH_ASCII_FALLBACKS.test(value),
+    );
+
+    expect(offenders).toEqual([]);
   });
 
   it('resolves the chart data table date heading in both locales', () => {

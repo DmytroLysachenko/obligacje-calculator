@@ -1,4 +1,4 @@
-export type FieldValidationSeverity = 'error' | 'warning';
+type FieldValidationSeverity = 'error' | 'warning';
 
 export interface FieldValidationIssue {
   code: string;

@@ -1,8 +1,9 @@
 import React from 'react';
 
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
-export interface ParameterSummaryItem {
+interface ParameterSummaryItem {
   label: React.ReactNode;
   value: React.ReactNode;
   help?: React.ReactNode;
@@ -31,11 +32,7 @@ export function ParameterSummary({
         className,
       )}
     >
-      {title ? (
-        <p className="mb-2 text-xs font-semibold text-foreground">
-          {title}
-        </p>
-      ) : null}
+      {title ? <p className="mb-2 text-xs font-semibold text-foreground">{title}</p> : null}
       <dl className={cn(inline ? 'grid gap-3 sm:grid-cols-2' : 'divide-y divide-border/70')}>
         {items.map((item, index) => (
           <div
@@ -45,7 +42,10 @@ export function ParameterSummary({
               inline ? 'space-y-1' : 'flex items-start justify-between py-2 first:pt-0 last:pb-0',
             )}
           >
-            <dt className="min-w-0 text-xs leading-5 text-muted-foreground">{item.label}</dt>
+            <dt className="flex min-w-0 items-center gap-1 text-xs leading-5 text-muted-foreground">
+              <span>{item.label}</span>
+              {item.help ? <InfoTooltip content={item.help} /> : null}
+            </dt>
             <dd
               className={cn(
                 'financial-number min-w-0 text-sm font-semibold text-foreground',
@@ -53,11 +53,6 @@ export function ParameterSummary({
               )}
             >
               {item.value}
-              {item.help ? (
-                <span className="mt-1 block text-xs font-normal leading-5 text-muted-foreground">
-                  {item.help}
-                </span>
-              ) : null}
             </dd>
           </div>
         ))}

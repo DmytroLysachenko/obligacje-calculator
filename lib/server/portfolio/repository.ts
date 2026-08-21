@@ -37,20 +37,10 @@ export function ensureGuestPortfolioOwner(ownerId: string) {
     .onConflictDoNothing();
 }
 
-export function findPortfolioById(portfolioId: string) {
-  return db.query.userPortfolios.findFirst({
-    where: eq(userPortfolios.id, portfolioId),
-  });
-}
-
 export function findPortfolioByShareId(shareId: string) {
   return db.query.userPortfolios.findFirst({
     where: eq(userPortfolios.shareId, shareId),
   });
-}
-
-export function deletePortfolioById(portfolioId: string) {
-  return db.delete(userPortfolios).where(eq(userPortfolios.id, portfolioId)).returning();
 }
 
 export function deletePortfolioByOwner(ownerId: string, portfolioId: string) {
@@ -135,20 +125,27 @@ export function updateLotByOwner(ownerId: string, lotId: string, values: Record<
     .returning();
 }
 
-export function deleteLotById(lotId: string) {
-  return db.delete(userInvestmentLots).where(eq(userInvestmentLots.id, lotId)).returning();
-}
-
 export function deleteLotByOwner(ownerId: string, lotId: string) {
   const ownedPortfolioIds = db
     .select({ id: userPortfolios.id })
     .from(userPortfolios)
     .where(eq(userPortfolios.userId, ownerId));
 
-  return db.delete(userInvestmentLots).where(and(eq(userInvestmentLots.id, lotId), inArray(userInvestmentLots.portfolioId, ownedPortfolioIds))).returning();
+  return db
+    .delete(userInvestmentLots)
+    .where(
+      and(
+        eq(userInvestmentLots.id, lotId),
+        inArray(userInvestmentLots.portfolioId, ownedPortfolioIds),
+      ),
+    )
+    .returning();
 }
 
-export type PreparedPortfolioImportLot = Omit<typeof userInvestmentLots.$inferInsert, 'portfolioId'>;
+export type PreparedPortfolioImportLot = Omit<
+  typeof userInvestmentLots.$inferInsert,
+  'portfolioId'
+>;
 
 /** One transaction owns imported portfolio, lots, and rollback semantics. */
 export async function importPortfolioAtomically(

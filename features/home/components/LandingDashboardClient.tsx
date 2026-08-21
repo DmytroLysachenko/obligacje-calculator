@@ -10,7 +10,7 @@ import {
   secondaryHomeTools,
 } from '@/features/home/constants/dashboard';
 import { useAppI18n } from '@/i18n/client';
-import { SectionHeading } from '@/shared/components/page/ToolCard';
+import { SectionHeading } from '@/shared/components/page/SectionHeading';
 
 import { HomeDecisionSlip } from './HomeDecisionSlip';
 import { HomeOfferProvenance } from './HomeOfferProvenance';

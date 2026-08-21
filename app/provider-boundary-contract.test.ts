@@ -7,8 +7,13 @@ import {
 } from '@/tests/contracts/test-utils/source-contract';
 
 const routeFiles = [
-  'app/single-calculator/page.tsx',
+  'app/compare/page.tsx',
+  'app/economic-data/page.tsx',
   'app/education/page.tsx',
+  'app/ladder/page.tsx',
+  'app/notebook/page.tsx',
+  'app/regular-investment/page.tsx',
+  'app/single-calculator/page.tsx',
   'app/shared-scenarios/[shareId]/page.tsx',
 ] as const;
 
@@ -26,16 +31,16 @@ const providerConsumers = [
 ] as const;
 
 describe('provider boundary contract', () => {
-  it('keeps bond definitions provider at the app layout boundary only', () => {
+  it('loads bond definitions only on routes with interactive offer consumers', () => {
     const layout = readSource('app/layout.tsx');
 
-    expectContains(layout, '<BondDefinitionsProvider>');
+    expectNotContains(layout, 'BondDefinitionsProvider');
     for (const routeFile of routeFiles) {
-      expectNotContains(readSource(routeFile), 'BondDefinitionsProvider');
+      expectContains(readSource(routeFile), '<BondDefinitionsBoundary>');
     }
   });
 
-  it('keeps every UI caller behind the root definition provider seam', () => {
+  it('keeps every UI caller behind the scoped definition provider seam', () => {
     for (const consumer of providerConsumers) {
       const source = readSource(consumer);
       expectContains(source, "from '@/shared/context/BondDefinitionsContext'");
@@ -45,10 +50,12 @@ describe('provider boundary contract', () => {
 
   it('keeps resource loading internal to the provider implementation', () => {
     const provider = readSource('shared/context/BondDefinitionsContext.tsx');
+    const boundary = readSource('shared/components/providers/BondDefinitionsBoundary.tsx');
     const resourceHook = readSource('shared/hooks/useBondDefinitions.ts');
 
     expectContains(provider, 'useBondDefinitions as useBondDefinitionsHook');
     expectContains(provider, 'BondDefinitionsProvider');
+    expectContains(boundary, '<BondDefinitionsProvider>');
     expectContains(resourceHook, 'new ClientResource');
     expectContains(resourceHook, "'/api/bond-definitions'");
   });

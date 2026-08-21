@@ -17,16 +17,35 @@ function enrichMessage(message: string) {
   return message;
 }
 
-function isAbortedRscPrefetch(entry: DiagnosticEntry) {
-  if (entry.kind !== 'requestfailed' || entry.message !== 'net::ERR_ABORTED' || !entry.url) {
+const abortedRequestMessages = new Set([
+  'net::ERR_ABORTED',
+  'Load request cancelled',
+  'NS_BINDING_ABORTED',
+]);
+
+function isBrowserCancelledRequest(entry: DiagnosticEntry) {
+  if (entry.kind !== 'requestfailed' || !abortedRequestMessages.has(entry.message)) {
     return false;
   }
 
-  try {
-    return new URL(entry.url).searchParams.has('_rsc');
-  } catch {
-    return false;
-  }
+  return true;
+}
+
+function isRscAccessControlCancellation(entry: DiagnosticEntry) {
+  return (
+    entry.kind === 'pageerror' &&
+    entry.message.includes('?_rsc=') &&
+    entry.message.includes('due to access control checks.')
+  );
+}
+
+function isFirefoxCancelledOperation(entry: DiagnosticEntry) {
+  return (
+    entry.kind === 'pageerror' &&
+    ['The operation was aborted.', 'NetworkError when attempting to fetch resource.'].includes(
+      entry.message.trim(),
+    )
+  );
 }
 
 export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
@@ -37,7 +56,15 @@ export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
     return false;
   }
 
-  if (isAbortedRscPrefetch(entry)) {
+  if (isBrowserCancelledRequest(entry)) {
+    return false;
+  }
+
+  if (isRscAccessControlCancellation(entry)) {
+    return false;
+  }
+
+  if (isFirefoxCancelledOperation(entry)) {
     return false;
   }
 
@@ -82,6 +109,29 @@ export function installBrowserDiagnostics(page: Page) {
 export async function stubOpportunisticSync(page: Page) {
   await page.route('**/api/sync/opportunistic', async (requestRoute) => {
     await requestRoute.fulfill({ status: 204, body: '' });
+  });
+}
+
+export async function stubWebVitals(page: Page) {
+  await page.route('**/api/observability/vitals', async (requestRoute) => {
+    await requestRoute.fulfill({ status: 204, body: '' });
+  });
+}
+
+export async function stubGuestPortfolioAccess(page: Page) {
+  await page.route('**/api/portfolio/access', async (requestRoute) => {
+    await requestRoute.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          ownerId: 'playwright-guest',
+          isGuest: true,
+          authMode: 'guest',
+          canManageWorkspace: false,
+        },
+      }),
+    });
   });
 }
 

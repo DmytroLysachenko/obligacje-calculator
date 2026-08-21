@@ -1,5 +1,7 @@
 import { ApiResponse } from '../types/api';
 
+import { CalculationWorkerControllerRegistry } from './calculation-worker-controller-registry';
+
 type WorkerRequestMessage = {
   id: string;
   url: string;
@@ -22,22 +24,27 @@ type WorkerErrorMessage = {
   details?: unknown;
 };
 
-const activeControllers = new Map<string, AbortController>();
+const activeControllers = new CalculationWorkerControllerRegistry();
 
 self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
   const { id, url, payload, type } = event.data;
 
   if (type === 'abort') {
-    const controller = activeControllers.get(id);
-    if (controller) {
-      controller.abort();
-      activeControllers.delete(id);
-    }
+    activeControllers.abort(id);
     return;
   }
 
-  const controller = new AbortController();
-  activeControllers.set(id, controller);
+  const controller = activeControllers.start(id);
+  if (!controller) {
+    const errorMessage: WorkerErrorMessage = {
+      id,
+      ok: false,
+      error: 'Calculation worker is at capacity. Please retry.',
+      code: 'CALCULATION_CAPACITY_EXCEEDED',
+    };
+    self.postMessage(errorMessage);
+    return;
+  }
 
   try {
     const response = await fetch(url, {
@@ -79,6 +86,6 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
     };
     self.postMessage(errorMessage);
   } finally {
-    activeControllers.delete(id);
+    activeControllers.finish(id);
   }
 };

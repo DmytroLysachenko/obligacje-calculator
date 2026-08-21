@@ -10,18 +10,17 @@ function read(relativePath: string) {
 }
 
 describe('portfolio service boundary', () => {
-  it('keeps route handlers pointed at command and query facades', () => {
+  it('keeps route handlers pointed at one portfolio application interface', () => {
     const route = read('app/api/portfolio/route.ts');
     const lotsRoute = read('app/api/portfolio/lots/route.ts');
     const shareRoute = read('app/api/portfolio/share/route.ts');
     const simulateRoute = read('app/api/portfolio/simulate/route.ts');
 
-    expect(route).toContain("from '@/lib/server/portfolio/queries'");
-    expect(route).toContain("from '@/lib/server/portfolio/commands'");
-    expect(lotsRoute).toContain("from '@/lib/server/portfolio/queries'");
-    expect(lotsRoute).toContain("from '@/lib/server/portfolio/commands'");
-    expect(shareRoute).toContain("from '@/lib/server/portfolio/commands'");
-    expect(simulateRoute).toContain("from '@/lib/server/portfolio/queries'");
+    for (const source of [route, lotsRoute, shareRoute, simulateRoute]) {
+      expect(source).toContain("from '@/lib/server/portfolio/application'");
+      expect(source).not.toContain("from '@/lib/server/portfolio/commands'");
+      expect(source).not.toContain("from '@/lib/server/portfolio/queries'");
+    }
   });
 
   it('keeps portfolio ownership reads available through the repository boundary', () => {

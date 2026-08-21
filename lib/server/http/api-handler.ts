@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { isDatabaseConfigured } from '@/db';
 import { createServerLogger } from '@/lib/server/logging';
 
 import { getClientIdentity } from './client-identity';
@@ -14,13 +13,17 @@ import {
   type RateLimitPolicy,
   SharedStoreRateLimiter,
 } from './rate-limiter';
-import { addRequestIdToProblem, getRequestId, withRequestId } from './request-context';
+import {
+  addRequestIdToProblem,
+  getRequestId,
+  withCorrelatedRequestId,
+} from './request-context';
 
 const logger = createServerLogger('ApiHandler');
 const rateLimiter =
   process.env.PLAYWRIGHT_SMOKE === '1'
     ? new AllowAllRateLimiter()
-    : isDatabaseConfigured && process.env.NODE_ENV === 'production'
+    : process.env.NODE_ENV === 'production'
       ? new SharedStoreRateLimiter(postgresRateLimitStore)
       : new BoundedMemoryRateLimiter();
 
@@ -66,13 +69,14 @@ export function createApiHandler({
       const rateLimit = await configuredRateLimiter.consume(getIdentity(req), rateLimitPolicy);
 
       if (!rateLimit.allowed) {
-        return withRequestId(
+        return withCorrelatedRequestId(
           NextResponse.json(
             {
               type: 'https://api.obligacje.pl/errors/rate-limit-exceeded',
               title: 'Too Many Requests',
               status: 429,
               detail: 'Rate limit exceeded. Please try again in a minute.',
+              code: 'RATE_LIMIT_EXCEEDED',
             },
             {
               status: 429,
@@ -89,7 +93,7 @@ export function createApiHandler({
       }
 
       try {
-        return withRequestId(await handler(req, context), requestId);
+        return withCorrelatedRequestId(await handler(req, context), requestId);
       } catch (error) {
         const problem = addRequestIdToProblem(
           mapApiErrorToProblemDetails(error, {
@@ -99,20 +103,11 @@ export function createApiHandler({
         );
         logger.error(`${req.method} ${req.nextUrl.pathname}`, error);
 
-        return withRequestId(NextResponse.json(problem, { status: problem.status }), requestId);
+        return withCorrelatedRequestId(
+          NextResponse.json(problem, { status: problem.status }),
+          requestId,
+        );
       }
     };
   };
-}
-
-/** Wraps a route whose authorization failure has a deliberate public status. */
-export function protectedApiHandler<TContext = { params: Promise<Record<string, never>> }>(
-  authorize: (request: NextRequest) => Promise<void>,
-  handler: ApiHandler<TContext>,
-  options: { rateLimitPolicy?: RateLimitPolicy } = {},
-) {
-  return apiHandler<TContext>(async (request, context) => {
-    await authorize(request);
-    return handler(request, context);
-  }, options);
 }

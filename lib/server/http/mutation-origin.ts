@@ -7,10 +7,15 @@ import { NextRequest } from 'next/server';
  */
 export function isTrustedMutationOrigin(request: NextRequest): boolean {
   const fetchSite = request.headers.get('sec-fetch-site');
-  if (fetchSite === 'cross-site') return false;
+  // `Sec-Fetch-Site` is browser supplied and gives a useful early rejection.
+  // Origin remains the authority whenever browsers send it: same-site is not
+  // enough because sibling subdomains can be separately controlled.
+  if (fetchSite === 'cross-site' || fetchSite === 'none') return false;
 
   const origin = request.headers.get('origin');
-  if (!origin) return true; // non-browser clients are authenticated separately.
+  // Browsers send Origin for CORS-relevant mutations. Some non-browser service
+  // clients do not; their authentication is a separate server-side boundary.
+  if (!origin) return fetchSite === null || fetchSite === 'same-origin';
 
   try {
     return new URL(origin).origin === request.nextUrl.origin;

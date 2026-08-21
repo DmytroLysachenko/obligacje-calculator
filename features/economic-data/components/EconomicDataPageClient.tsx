@@ -1,6 +1,7 @@
 'use client';
 
 import { Activity, Database, Info } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { usePathname, useSearchParams } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
 
@@ -10,8 +11,6 @@ import {
   ReferenceStatusPanel,
   UsageGuidePanel,
 } from '@/features/economic-data/components/EconomicDashboardSections';
-import { InflationChart } from '@/features/economic-data/components/InflationChart';
-import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import {
   type ChartSeriesEnvelope,
   type EconomicSeriesPoint,
@@ -33,6 +32,29 @@ import { ReferenceDashboardHero } from '@/shared/components/reference/ReferenceD
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+
+const ChartLoading = () => (
+  <div
+    className="h-[470px] w-full animate-pulse rounded-lg bg-muted"
+    role="status"
+    aria-label="Loading chart"
+  />
+);
+
+const InflationChart = dynamic(
+  () =>
+    import('@/features/economic-data/components/InflationChart').then(
+      (module) => module.InflationChart,
+    ),
+  { loading: ChartLoading },
+);
+const NBPRateChart = dynamic(
+  () =>
+    import('@/features/economic-data/components/NBPRateChart').then(
+      (module) => module.NBPRateChart,
+    ),
+  { loading: ChartLoading },
+);
 
 export function EconomicDataPageClient() {
   const { t, locale: language } = useAppI18n();

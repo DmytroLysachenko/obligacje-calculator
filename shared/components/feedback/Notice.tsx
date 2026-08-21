@@ -3,7 +3,7 @@ import React from 'react';
 
 import { cn } from '@/lib/utils';
 
-export type NoticeTone = 'info' | 'warning' | 'success' | 'locked';
+type NoticeTone = 'info' | 'warning' | 'success' | 'locked';
 
 interface NoticeProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
   tone?: NoticeTone;

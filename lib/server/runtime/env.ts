@@ -10,6 +10,7 @@ export interface RuntimeEnv {
   SYNC_SECRET?: string;
   ADMIN_EMAIL_ALLOWLIST?: string;
   NEXT_PUBLIC_APP_URL?: string;
+  NEXT_PUBLIC_DEPLOYMENT_TIER?: 'preview' | 'production';
 }
 
 export type OAuthProviderName = 'google' | 'facebook';
@@ -69,4 +70,8 @@ export function getConfiguredOAuthProviders(
 
 export function hasOAuthProvider(env: RuntimeEnv = readRuntimeEnv()) {
   return getConfiguredOAuthProviders(env).length > 0;
+}
+
+export function isOAuthOptionalPreview(env: RuntimeEnv = readRuntimeEnv()) {
+  return env.NEXT_PUBLIC_DEPLOYMENT_TIER === 'preview';
 }

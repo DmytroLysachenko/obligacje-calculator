@@ -1,9 +1,10 @@
-import { startTransition, useCallback, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { BondSeriesMetadata } from '@/shared/lib/bond-series-client';
+import { CalculatorSessionWorkflow } from '@/shared/lib/calculator-session-workflow';
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { BondInputs, BondType } from '../../bond-core/types';
@@ -47,22 +48,37 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
 
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
+  const [calculationWorkflow] = useState(
+    () =>
+      new CalculatorSessionWorkflow<
+        BondInputs,
+        { envelope: SingleBondCalculationEnvelope; finalInputs: BondInputs }
+      >({
+        transitions: {
+          start: () => setIsDirty(false),
+          succeed: (_inputs, result) => {
+            // Result rendering is non-urgent, but only this workflow may commit it.
+            startTransition(() => {
+              setEnvelope(result.envelope);
+              setLastCommittedInputs(result.finalInputs);
+            });
+          },
+          fail: () => undefined,
+          cancel: () => undefined,
+        },
+        isCancellation: isCalculationAbort,
+      }),
+  );
+
+  useEffect(() => () => calculationWorkflow.invalidate(), [calculationWorkflow]);
+
   const calculate = useCallback(
     async (currentInputs: BondInputs) => {
       try {
-        await Promise.resolve(); // Defer state updates to avoid synchronous setState in effect
-        setIsDirty(false);
         clearError();
-        const { envelope: nextEnvelope, finalInputs } = await runSingleBondCalculation({
-          inputs: currentInputs,
-          post,
-        });
-        // The API work has finished. Commit the heavier chart/timeline tree as
-        // non-urgent so the button can paint its feedback before results mount.
-        startTransition(() => {
-          setEnvelope(nextEnvelope);
-          setLastCommittedInputs(finalInputs);
-        });
+        await calculationWorkflow.run(currentInputs, (inputsAtStart) =>
+          runSingleBondCalculation({ inputs: inputsAtStart, post }),
+        );
       } catch (error) {
         if (isCalculationAbort(error)) {
           return;
@@ -70,7 +86,7 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
         logClientError('Calculation error:', error);
       }
     },
-    [clearError, post],
+    [calculationWorkflow, clearError, post],
   );
 
   useBondCalculatorEffects({

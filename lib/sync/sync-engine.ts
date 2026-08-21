@@ -106,7 +106,12 @@ export class SyncEngine {
     historical: ProviderSyncResult[],
     bondOfferStatus: 'success' | 'partial',
   ) {
-    if (!macro || bondOfferStatus === 'partial' || historical.some((result) => result.status === 'failed')) {
+    if (
+      !macro ||
+      macro.status === 'partial' ||
+      bondOfferStatus === 'partial' ||
+      historical.some((result) => result.status === 'failed')
+    ) {
       return 'partial';
     }
 

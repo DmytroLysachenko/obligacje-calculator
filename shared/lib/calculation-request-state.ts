@@ -1,4 +1,4 @@
-export type CalculationRequestPhase = 'idle' | 'running' | 'succeeded' | 'failed' | 'cancelled';
+type CalculationRequestPhase = 'idle' | 'running' | 'succeeded' | 'failed' | 'cancelled';
 
 export interface CalculationRequestState {
   activeRequestId: number | null;

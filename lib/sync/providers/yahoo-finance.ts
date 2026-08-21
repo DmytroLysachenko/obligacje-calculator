@@ -65,7 +65,9 @@ export class YahooFinanceSyncProvider implements SyncProvider {
       result?.indicators?.adjclose?.[0]?.adjclose ?? result?.indicators?.quote?.[0]?.close ?? [];
 
     if (timestamps.length === 0 || values.length === 0) {
-      throw new Error(`Yahoo Finance returned no chart data for ${this.symbol}`);
+      // Empty successful responses are normal for a market-closed window. The
+      // provider service records this as no-new-data instead of a failure.
+      return [];
     }
 
     const recordsByMonth = new Map<string, SyncRecord>();

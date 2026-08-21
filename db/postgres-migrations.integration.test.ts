@@ -5,6 +5,8 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import postgres, { type Sql } from 'postgres';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { REQUIRED_MIGRATION_HASHES } from '@/lib/server/readiness/service';
+
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const integration = databaseUrl ? describe : describe.skip;
 
@@ -37,6 +39,9 @@ integration('reviewed PostgreSQL migrations', () => {
   });
 
   it('applies the complete reviewed journal and exposes required operational tables', async () => {
+    const migrations = await sql<{ hash: string }[]>`
+      select hash from drizzle.__drizzle_migrations order by created_at asc, id asc
+    `;
     const tables = await sql<{ table_name: string }[]>`
       select table_name from information_schema.tables
       where table_schema = 'public'
@@ -49,6 +54,7 @@ integration('reviewed PostgreSQL migrations', () => {
       'rate_limit_windows',
       'web_vital_aggregates',
     ]);
+    expect(migrations.map((migration) => migration.hash)).toEqual(REQUIRED_MIGRATION_HASHES);
   });
 
   it('enforces aggregate-only vital keys and accepts a migrated aggregate', async () => {

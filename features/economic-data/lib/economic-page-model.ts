@@ -2,8 +2,6 @@ import type { BondRateContextCopy } from '@/shared/lib/bond-rate-context';
 
 type TranslateFn = (key: string) => string;
 
-export type EconomicPageLabels = ReturnType<typeof buildEconomicPageLabels>;
-
 export function buildEconomicPageLabels(t: TranslateFn) {
   return {
     panel: t('economic.reference_panel'),
@@ -31,14 +29,5 @@ export function buildEconomicUsageGuide(t: TranslateFn, floatingRateContext: Bon
     t('economic.usage_guide_2'),
     floatingRateContext.narrative,
     t('economic.usage_guide_4'),
-  ];
-}
-
-export function buildEconomicHeroMetrics(labels: EconomicPageLabels) {
-  return [
-    { label: labels.series, value: '2' },
-    { label: labels.purpose, value: labels.context },
-    { label: labels.mode, value: labels.reference },
-    { label: labels.goal, value: labels.readableContext },
   ];
 }

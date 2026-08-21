@@ -1,71 +1,90 @@
-[
-  {
-    "name": "EDO (10y) - Standard Long Term",
-    "inputs": {
-      "bondType": "EDO",
-      "initialInvestment": 10000,
-      "firstYearRate": 6.25,
-      "margin": 1.25,
-      "expectedInflation": 3.0,
-      "duration": 10,
-      "earlyWithdrawalFee": 2.0,
-      "isCapitalized": true,
-      "taxRate": 19,
-      "taxStrategy": "STANDARD",
-      "purchaseDate": "2024-01-01",
-      "withdrawalDate": "2034-01-01",
-      "rollover": false
+{
+  "modelVersion": "2.9.0-issuer-terms-authoritative",
+  "rounding": "Exact IEEE-754 engine outputs are asserted; presentation rounding is not part of this fixture.",
+  "scenarios": [
+    {
+      "name": "EDO (10y) - Standard Long Term",
+      "inputs": {
+        "bondType": "EDO",
+        "initialInvestment": 10000,
+        "firstYearRate": 6.25,
+        "margin": 1.25,
+        "expectedInflation": 3.0,
+        "duration": 10,
+        "earlyWithdrawalFee": 2.0,
+        "isCapitalized": true,
+        "taxRate": 19,
+        "taxStrategy": "STANDARD",
+        "purchaseDate": "2024-01-01",
+        "withdrawalDate": "2034-01-01",
+        "rollover": false
+      },
+      "expected": {
+        "totalProfit": "4417.025154047603",
+        "totalTax": "1036",
+        "netPayoutValue": "14417.025154047602",
+        "finalNominalValue": "15453.025154047602",
+        "finalRealValue": "10684.396933289374",
+        "maturityCalendarDate": "2034-01-01",
+        "isEarlyWithdrawal": false,
+        "timelineLength": 11
+      }
     },
-    "expected": {
-      "totalProfit": 4417.03,
-      "totalTax": 1036,
-      "netPayoutValue": 14417.03
-    }
-  },
-  {
-    "name": "COI (4y) - Inflation Linked",
-    "inputs": {
-      "bondType": "COI",
-      "initialInvestment": 10000,
-      "firstYearRate": 5.75,
-      "margin": 1.0,
-      "expectedInflation": 2.5,
-      "duration": 4,
-      "earlyWithdrawalFee": 0.7,
-      "isCapitalized": false,
-      "taxRate": 19,
-      "taxStrategy": "STANDARD",
-      "purchaseDate": "2024-01-01",
-      "withdrawalDate": "2028-01-01",
-      "rollover": false
+    {
+      "name": "COI (4y) - Inflation Linked",
+      "inputs": {
+        "bondType": "COI",
+        "initialInvestment": 10000,
+        "firstYearRate": 5.75,
+        "margin": 1.0,
+        "expectedInflation": 2.5,
+        "duration": 4,
+        "earlyWithdrawalFee": 0.7,
+        "isCapitalized": false,
+        "taxRate": 19,
+        "taxStrategy": "STANDARD",
+        "purchaseDate": "2024-01-01",
+        "withdrawalDate": "2028-01-01",
+        "rollover": false
+      },
+      "expected": {
+        "totalProfit": "1315",
+        "totalTax": "310",
+        "netPayoutValue": "11315",
+        "finalNominalValue": "11625",
+        "finalRealValue": "10239.301203201117",
+        "maturityCalendarDate": "2028-01-01",
+        "isEarlyWithdrawal": false,
+        "timelineLength": 5
+      }
     },
-    "expected": {
-      "totalProfit": 1315,
-      "totalTax": 310,
-      "netPayoutValue": 11315
+    {
+      "name": "OTS (3m) - Short Term",
+      "inputs": {
+        "bondType": "OTS",
+        "initialInvestment": 10000,
+        "firstYearRate": 3.0,
+        "margin": 0,
+        "expectedInflation": 2.0,
+        "duration": 0.25,
+        "earlyWithdrawalFee": 0,
+        "isCapitalized": false,
+        "taxRate": 19,
+        "taxStrategy": "STANDARD",
+        "purchaseDate": "2024-01-01",
+        "withdrawalDate": "2024-04-01",
+        "rollover": false
+      },
+      "expected": {
+        "totalProfit": "61",
+        "totalTax": "14",
+        "netPayoutValue": "10061",
+        "finalNominalValue": "10075",
+        "finalRealValue": "10011.135329117405",
+        "maturityCalendarDate": "2024-04-01",
+        "isEarlyWithdrawal": false,
+        "timelineLength": 2
+      }
     }
-  },
-  {
-    "name": "OTS (3m) - Short Term",
-    "inputs": {
-      "bondType": "OTS",
-      "initialInvestment": 10000,
-      "firstYearRate": 3.0,
-      "margin": 0,
-      "expectedInflation": 2.0,
-      "duration": 0.25,
-      "earlyWithdrawalFee": 0,
-      "isCapitalized": false,
-      "taxRate": 19,
-      "taxStrategy": "STANDARD",
-      "purchaseDate": "2024-01-01",
-      "withdrawalDate": "2024-04-01",
-      "rollover": false
-    },
-    "expected": {
-      "totalProfit": 61,
-      "totalTax": 14,
-      "netPayoutValue": 10061
-    }
-  }
-]
+  ]
+}

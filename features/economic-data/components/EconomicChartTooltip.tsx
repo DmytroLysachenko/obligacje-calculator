@@ -1,5 +1,7 @@
 'use client';
 
+import { chartColorClass } from '@/shared/components/charts/chart-color-class';
+
 interface EconomicChartTooltipPayloadEntry {
   value: number;
   color: string;
@@ -29,7 +31,7 @@ export function EconomicChartTooltip({
         {payload.map((entry, index) => (
           <div key={index} className="ui-chart-tooltip-row">
             <span className="ui-chart-tooltip-label">
-              <span className="ui-chart-tooltip-dot" style={{ backgroundColor: entry.color }} />
+              <span className={`ui-chart-tooltip-dot ${chartColorClass(entry.color)}`} />
               {metricLabel}:
             </span>
             <span className="ui-chart-tooltip-value">{entry.value}%</span>

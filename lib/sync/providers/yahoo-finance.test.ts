@@ -72,4 +72,26 @@ describe('YahooFinanceSyncProvider', () => {
       'Yahoo Finance error for GC=F: No data found',
     );
   });
+
+  it('returns no records for a successful market-closed window', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        Response.json({
+          chart: {
+            result: [{ timestamp: [], indicators: { quote: [{ close: [] }] } }],
+            error: null,
+          },
+        }),
+      ),
+    );
+
+    const provider = new YahooFinanceSyncProvider({
+      name: 'Yahoo Finance Gold Futures',
+      symbol: 'GC=F',
+      seriesSlug: 'gold-usd',
+    });
+
+    await expect(provider.fetchData('2026-08-01', '2026-08-01')).resolves.toEqual([]);
+  });
 });

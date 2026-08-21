@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
+import { useCalculatorWorkflow } from '@/shared/hooks/useCalculatorWorkflow';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { createCalculationEnvelopeVersionValidator } from '@/shared/lib/calculation-envelope-version';
@@ -38,25 +37,20 @@ export function useRegularInvestmentCalculator() {
     [],
   );
   const hasTouchedMacroAssumptions = useRef(false);
-  const {
-    isCalculating,
-    isError: requestIsError,
-    post,
-    clearError: clearRequestError,
-  } = useCalculationRequest();
-  const session = useCalculatorSession<
+  const session = useCalculatorWorkflow<
     RegularInvestmentInputs,
     RegularInvestmentCalculationEnvelope
   >({
     initialInputs: fallbackInputs,
     storageKey: STORAGE_KEY,
     isCommittedResultValid,
+    modelVersion: MODEL_VERSION,
   });
   const {
     draftInputs: inputs,
     committedResult: envelope,
     setDraftInputs,
-    runCalculation,
+    runRemoteCalculation,
   } = session;
 
   const updateDraft = useCallback(
@@ -82,19 +76,15 @@ export function useRegularInvestmentCalculator() {
   }, [macroDefaults, session.isPersistenceReady, updateDraft]);
 
   const calculate = useCallback(async () => {
-    clearRequestError();
     try {
-      await runCalculation(async (draftInputs) => {
-        return post<RegularInvestmentCalculationEnvelope>(
-          getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
-          stripDisplayOnlyInputs(draftInputs) ?? draftInputs,
-          { preferWorker: true },
-        );
-      });
+      await runRemoteCalculation(
+        getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
+        (draftInputs) => stripDisplayOnlyInputs(draftInputs) ?? draftInputs,
+      );
     } catch (error) {
       logClientError('Calculation error:', error);
     }
-  }, [clearRequestError, post, runCalculation]);
+  }, [runRemoteCalculation]);
 
   const updateInput = useCallback(
     (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
@@ -125,8 +115,8 @@ export function useRegularInvestmentCalculator() {
     warnings: envelope?.warnings ?? [],
     assumptions: envelope?.assumptions ?? [],
     dataFreshness: envelope?.dataFreshness,
-    isCalculating,
-    isError: requestIsError || session.phase === 'failed',
+    isCalculating: session.isCalculating,
+    isError: session.isError,
     isDirty: session.isDirty,
     calculate,
     updateInput,

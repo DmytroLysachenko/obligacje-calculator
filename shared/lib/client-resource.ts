@@ -1,6 +1,6 @@
 'use client';
 
-export type ClientResourceStatus = 'idle' | 'loading' | 'ready' | 'stale' | 'error';
+type ClientResourceStatus = 'idle' | 'loading' | 'ready' | 'stale' | 'error';
 
 export interface ClientResourceSnapshot<T> {
   data: T | null;

@@ -1,19 +1,23 @@
 'use client';
-import { HelpCircle } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondInputs, BondType } from '@/features/bond-core/types';
+import {
+  bondQuantityFromInvestment,
+  investmentFromBondQuantity,
+  MAX_BOND_QUANTITY,
+} from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
-import { getIntlLocale } from '@/i18n/locale-utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { createDateFormatter, createNumberFormatter } from '@/shared/lib/formatters';
 interface BondSeries {
   id: string;
   seriesCode: string;
@@ -42,20 +46,27 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
     );
     const formatDurationLabel = (type: BondType) =>
       `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.duration_months')}`;
-    const maxBondUnits = 1000;
-    const bondUnits = Math.max(1, Math.round(inputs.initialInvestment / 100));
-    const purchaseValueLabel = inputs.initialInvestment.toLocaleString(getIntlLocale(language));
+    const maxBondUnits = MAX_BOND_QUANTITY;
+    const bondUnits = bondQuantityFromInvestment(inputs.initialInvestment);
+    const purchaseValueLabel = createNumberFormatter(language).format(inputs.initialInvestment);
     const formatSeriesMonth = (value: string) =>
-      new Date(value).toLocaleDateString(getIntlLocale(language), {
+      createDateFormatter(language, {
         month: 'short',
         year: 'numeric',
-      });
+      }).format(new Date(value));
     const handleBondUnitsChange = (value: number) => {
       if (!Number.isFinite(value)) {
         return;
       }
-      const safeUnits = Math.min(maxBondUnits, Math.max(1, Math.trunc(value)));
-      onUpdate('initialInvestment', safeUnits * 100);
+      // Keep invalid zero in draft state so the form can announce and focus its
+      // domain-specific minimum-purchase feedback instead of silently restoring 1.
+      if (value === 0) {
+        onUpdate('initialInvestment', 0);
+        return;
+      }
+      const investment = investmentFromBondQuantity(value);
+      if (investment === null) return;
+      onUpdate('initialInvestment', investment);
     };
     return (
       <div className="space-y-6">
@@ -84,26 +95,31 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
               <Label className="flex items-center gap-2 text-sm font-semibold">
                 {t('bonds.target_goal_req')}
               </Label>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>{t('bonds.glossary.savings_goal')}</TooltipContent>
-              </Tooltip>
+              <InfoTooltip content={t('bonds.glossary.savings_goal')} />
             </div>
             <div className="relative">
               <Input
                 id="savingsGoal"
                 name="savingsGoal"
                 type="number"
+                min={0}
+                max={100_000_000_000}
+                step={1}
                 inputMode="decimal"
                 autoComplete="off"
                 placeholder={t('bonds.example_goal')}
                 className="pl-4 pr-12"
                 value={inputs.savingsGoal || ''}
-                onChange={(e) =>
-                  onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)
-                }
+                onChange={(event) => {
+                  if (!event.target.value) {
+                    onUpdate('savingsGoal', undefined);
+                    return;
+                  }
+                  const value = Number(event.target.value);
+                  if (Number.isFinite(value) && value >= 0 && value <= 100_000_000_000) {
+                    onUpdate('savingsGoal', value);
+                  }
+                }}
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
                 PLN
@@ -118,12 +134,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
               {t('bonds.bond.type')}
             </Label>
             {currentDef.isInflationIndexed && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>{t('bonds.glossary.inflation_indexed')}</TooltipContent>
-              </Tooltip>
+              <InfoTooltip content={t('bonds.glossary.inflation_indexed')} />
             )}
           </div>
           <FormSelect

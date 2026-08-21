@@ -54,9 +54,18 @@ export function RetirementInputsPanel({
           </Label>
           <Input
             type="number"
+            min={1}
+            max={100_000_000_000}
+            step={1}
+            inputMode="decimal"
             aria-label={labels.initialCapital}
             value={inputs.initialCapital}
-            onChange={(event) => onUpdateInput('initialCapital', Number(event.target.value))}
+            onChange={(event) => {
+              const value = Number(event.target.value);
+              if (Number.isFinite(value) && value >= 1 && value <= 100_000_000_000) {
+                onUpdateInput('initialCapital', value);
+              }
+            }}
             className="rounded-md font-semibold"
           />
         </div>

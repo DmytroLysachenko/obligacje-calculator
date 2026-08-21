@@ -8,6 +8,13 @@ import {
   isJsonSyntaxError,
   mapApiErrorToProblemDetails,
 } from './problem-details';
+import {
+  EmptyJsonBodyError,
+  InvalidContentLengthError,
+  InvalidJsonEncodingError,
+  RequestBodyTooLargeError,
+  UnsupportedJsonMediaTypeError,
+} from './read-json-body';
 
 describe('problem detail mapping', () => {
   it('creates stable RFC-style problem details', () => {
@@ -51,6 +58,68 @@ describe('problem detail mapping', () => {
       status: 400,
       code: 'MALFORMED_JSON',
       detail: 'The request body must be valid JSON.',
+    });
+  });
+
+  it('maps oversized input to a stable non-sensitive 413 response', () => {
+    expect(mapApiErrorToProblemDetails(new RequestBodyTooLargeError(65_536))).toEqual({
+      type: 'https://api.obligacje.pl/errors/payload-too-large',
+      title: 'Payload Too Large',
+      status: 413,
+      detail: "The request body exceeds this endpoint's size limit.",
+      code: 'PAYLOAD_TOO_LARGE',
+      errors: undefined,
+    });
+  });
+
+  it('does not disclose numeric body limit in oversized input response', () => {
+    const problem = mapApiErrorToProblemDetails(new RequestBodyTooLargeError(37));
+
+    expect(problem.detail).not.toContain('37');
+    expect(JSON.stringify(problem)).not.toContain('37');
+  });
+
+  it('maps unsupported media type without reflecting supplied header', () => {
+    const problem = mapApiErrorToProblemDetails(
+      new UnsupportedJsonMediaTypeError('text/plain; secret=value'),
+    );
+
+    expect(problem).toEqual({
+      type: 'https://api.obligacje.pl/errors/unsupported-media-type',
+      title: 'Unsupported Media Type',
+      status: 415,
+      detail: 'The request body must use application/json.',
+      code: 'UNSUPPORTED_MEDIA_TYPE',
+      errors: undefined,
+    });
+    expect(JSON.stringify(problem)).not.toContain('secret');
+  });
+
+  it.each([
+    new EmptyJsonBodyError(),
+    new InvalidContentLengthError(),
+    new InvalidJsonEncodingError(),
+  ])('maps invalid body transport %s to one safe 400 contract', (error) => {
+    expect(mapApiErrorToProblemDetails(error)).toEqual({
+      type: 'https://api.obligacje.pl/errors/invalid-request-body',
+      title: 'Bad Request',
+      status: 400,
+      detail: 'The request body is invalid.',
+      code: 'INVALID_REQUEST_BODY',
+      errors: undefined,
+    });
+  });
+
+  it('keeps validation errors more specific than generic command-body failure', () => {
+    const schema = z.object({ command: z.literal('sync') });
+    const parsed = schema.safeParse({ command: 'delete' });
+
+    if (parsed.success) throw new Error('Expected validation failure.');
+
+    expect(mapApiErrorToProblemDetails(parsed.error)).toMatchObject({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      errors: parsed.error.issues,
     });
   });
 

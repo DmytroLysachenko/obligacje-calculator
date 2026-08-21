@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 export interface MetricStripItem {
   label: string;
@@ -31,7 +32,10 @@ export const MetricStrip = React.memo(function MetricStrip({
             key={item.label}
             className="min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-5 md:first:border-l-0 md:first:pl-0"
           >
-            <p className="ui-meta font-semibold">{item.label}</p>
+            <div className="flex items-center gap-1">
+              <p className="ui-meta font-semibold">{item.label}</p>
+              {item.description ? <InfoTooltip content={item.description} /> : null}
+            </div>
             <p
               className={cn(
                 'financial-number min-w-0 whitespace-nowrap text-foreground',
@@ -41,9 +45,6 @@ export const MetricStrip = React.memo(function MetricStrip({
             >
               {item.value}
             </p>
-            {item.description ? (
-              <p className="ui-body text-muted-foreground">{item.description}</p>
-            ) : null}
           </div>
         ))}
       </div>

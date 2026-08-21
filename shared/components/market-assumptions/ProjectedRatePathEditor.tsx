@@ -8,11 +8,15 @@ import { Label } from '@/components/ui/label';
 export function ProjectedRatePathEditor({
   values,
   prefix,
+  min,
+  max,
   step,
   onChange,
 }: {
   values: number[];
   prefix: string;
+  min: number;
+  max: number;
   step: number;
   onChange: (values: number[]) => void;
 }) {
@@ -29,12 +33,16 @@ export function ProjectedRatePathEditor({
           </Label>
           <Input
             type="number"
+            min={min}
+            max={max}
             step={step}
             className="h-8 border-none bg-transparent px-1 text-sm font-semibold shadow-none"
             value={value}
             onChange={(event) => {
+              const nextValue = Number(event.target.value);
+              if (!Number.isFinite(nextValue) || nextValue < min || nextValue > max) return;
               const nextValues = [...values];
-              nextValues[index] = Number(event.target.value);
+              nextValues[index] = nextValue;
               onChange(nextValues);
             }}
           />

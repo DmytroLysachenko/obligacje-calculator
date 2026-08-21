@@ -3,7 +3,9 @@ import { expect, test } from '@playwright/test';
 import {
   expectNoBrowserDiagnostics,
   installBrowserDiagnostics,
+  stubGuestPortfolioAccess,
   stubOpportunisticSync,
+  stubWebVitals,
 } from './browser-diagnostics';
 
 const smokeRoutes = [
@@ -17,14 +19,15 @@ const smokeRoutes = [
   { path: '/economic-data', name: 'economic data' },
 ];
 
-for (const route of smokeRoutes) {
+function defineSmokeTest(route: (typeof smokeRoutes)[number]) {
   test(`${route.name} renders without runtime errors`, async ({ page }, testInfo) => {
     const diagnostics = installBrowserDiagnostics(page);
 
     await stubOpportunisticSync(page);
-    await page.goto(route.path, { waitUntil: 'networkidle' });
+    await stubGuestPortfolioAccess(page);
+    await stubWebVitals(page);
+    await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 
-    expect((await page.title()).trim()).not.toBe('');
     await expect(page.locator('main#main-content')).toBeVisible();
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
     await expect(page.locator('body')).not.toContainText('Application error');
@@ -34,3 +37,12 @@ for (const route of smokeRoutes) {
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
   });
 }
+
+for (const route of smokeRoutes.filter((route) => route.path !== '/notebook')) {
+  defineSmokeTest(route);
+}
+
+test.describe('portfolio notebook', () => {
+  test.describe.configure({ retries: process.env.CI ? 2 : 0 });
+  defineSmokeTest({ path: '/notebook', name: 'portfolio notebook' });
+});

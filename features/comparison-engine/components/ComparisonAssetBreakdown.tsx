@@ -1,11 +1,12 @@
 'use client';
 
-import { Activity, Info, TrendingUp } from 'lucide-react';
+import { Activity, TrendingUp } from 'lucide-react';
 import React from 'react';
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
+import { chartColorClass } from '@/shared/components/charts/chart-color-class';
 
 import { ComparisonAssetBreakdownProps } from '../types/multi-asset';
 
@@ -35,24 +36,12 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
             <div className="space-y-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <div
-                    className="w-2 h-6 rounded-full"
-                    style={{ backgroundColor: asset.metadata.color }}
-                  />
+                  <div className={`h-6 w-2 rounded-full ${chartColorClass(asset.metadata.color)}`} />
                   <p className="text-[10px] font-black uppercase tracking-widest">
                     {asset.metadata.name}
                   </p>
                 </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{asset.metadata.description[language]}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <InfoTooltip content={asset.metadata.description[language]} />
               </div>
 
               <div className="space-y-2">

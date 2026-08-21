@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 interface ScenarioFactsItem {
   label: string;
   value: string;
@@ -23,8 +25,10 @@ export function ScenarioFactsBlock({
     <section className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="ui-section-title">{title}</h3>
-          <p className="ui-body mt-1 max-w-3xl text-muted-foreground">{description}</p>
+          <div className="flex items-center gap-1">
+            <h3 className="ui-section-title">{title}</h3>
+            <InfoTooltip content={description} />
+          </div>
         </div>
         {actions}
       </div>

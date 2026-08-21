@@ -33,7 +33,7 @@ export function createSavedScenario(
       `${inputs.bondType} ${inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)}M`,
     description:
       overrides?.description ??
-      `Saved ${inputs.bondType} scenario for ${inputs.initialInvestment.toLocaleString('en-US')} PLN.`,
+      `Saved ${inputs.bondType} scenario for ${inputs.initialInvestment} PLN.`,
     tags: overrides?.tags ?? [inputs.bondType, inputs.taxStrategy],
     createdAt: now,
     updatedAt: now,

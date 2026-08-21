@@ -5,6 +5,7 @@ process.env.NEXT_PUBLIC_PLAYWRIGHT_SMOKE = process.env.NEXT_PUBLIC_PLAYWRIGHT_SM
 
 export default defineConfig({
   testDir: './tests/browser',
+  globalTeardown: './tests/browser/global-teardown.ts',
   timeout: 30_000,
   expect: {
     timeout: 5_000,
@@ -34,6 +35,10 @@ export default defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'firefox-csp',
+      use: { ...devices['Desktop Firefox'], bypassCSP: false },
     },
     {
       name: 'webkit',

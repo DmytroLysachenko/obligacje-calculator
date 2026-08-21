@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 
+import { CalculationCancelled } from '@/shared/lib/calculation-cancelled';
 import {
   type CalculationClientErrorPayload,
   postCalculation,
@@ -18,12 +19,7 @@ interface CalculationRequestOptions {
   preferWorker?: boolean;
 }
 
-export class CalculationCancelled extends Error {
-  constructor() {
-    super('Calculation cancelled');
-    this.name = 'CalculationCancelled';
-  }
-}
+export { CalculationCancelled };
 
 export function useCalculationRequest() {
   const [state, dispatch] = useReducer(
@@ -38,6 +34,13 @@ export function useCalculationRequest() {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
     }
+  }, []);
+
+  const cancel = useCallback(() => {
+    if (!abortControllerRef.current) return;
+    abortControllerRef.current.abort();
+    abortControllerRef.current = null;
+    dispatch({ type: 'cancel', requestId: requestIdRef.current });
   }, []);
 
   useEffect(() => {
@@ -57,11 +60,18 @@ export function useCalculationRequest() {
 
       try {
         const result = await request(controller.signal);
+        // A fetch adapter is not required to observe AbortSignal. Do not let a
+        // late resolution leak through to a caller that would commit it.
+        if (controller.signal.aborted || requestIdRef.current !== requestId) {
+          throw new CalculationCancelled();
+        }
         dispatch({ type: 'succeed', requestId });
         return result;
       } catch (error) {
-        if (isAbortError(error)) {
-          dispatch({ type: 'cancel', requestId });
+        if (isAbortError(error) || error instanceof CalculationCancelled) {
+          if (requestIdRef.current === requestId) {
+            dispatch({ type: 'cancel', requestId });
+          }
           throw new CalculationCancelled();
         }
         dispatch({
@@ -89,6 +99,7 @@ export function useCalculationRequest() {
     requestState: state,
     requestMessage: getCalculationRequestMessage(state),
     run,
+    cancel,
     clearError,
     post: useCallback(
       async <T>(

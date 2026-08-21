@@ -17,13 +17,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
@@ -39,13 +39,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
@@ -62,6 +62,9 @@ jobs:
       - name: Release tests
         run: pnpm test:release
 
+      - name: Measured coverage threshold
+        run: pnpm test:coverage
+
       - name: Quality summary
         if: always()
         run: |
@@ -71,6 +74,7 @@ jobs:
             echo "- TypeScript: \`pnpm check:types\`"
             echo "- Lint: \`pnpm lint\`"
             echo "- Release tests: \`pnpm test:release\`"
+            echo "- Coverage: \`pnpm test:coverage\` (70% per aggregate metric)"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   build:
@@ -78,13 +82,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
@@ -94,6 +98,16 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Report route bundles
+        run: pnpm analyze:bundles
+
+      - name: Retain route bundle report
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        with:
+          name: route-bundle-report
+          path: artifacts/route-bundle-report.json
+          if-no-files-found: error
 
       - name: Build summary
         if: always()
@@ -124,13 +138,13 @@ jobs:
       TEST_DATABASE_URL: postgresql://obligacje:obligacje@127.0.0.1:5432/obligacje_test
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
@@ -142,20 +156,28 @@ jobs:
         run: PGPASSWORD=obligacje psql -h 127.0.0.1 -U obligacje -d obligacje_test -c 'CREATE EXTENSION IF NOT EXISTS pgcrypto;'
 
       - name: Verify migrated PostgreSQL constraints and rollback
-        run: pnpm test:db
+        run: pnpm test:db --reporter=json --outputFile=test-results/database-integration.json
+
+      - name: Upload database integration result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: database-integration-result
+          path: test-results/database-integration.json
+          if-no-files-found: error
 
   docker-build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
@@ -164,10 +186,10 @@ jobs:
         run: HUSKY=0 pnpm install --frozen-lockfile
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
 
       - name: Build production image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
         with:
           context: .
           push: false
@@ -175,6 +197,16 @@ jobs:
           tags: obligacje-calculator:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Scan production image
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: obligacje-calculator:ci
+          format: table
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
 
       - name: Start production image
         run: |
@@ -206,6 +238,7 @@ jobs:
             echo "### Docker build"
             echo ""
             echo "- Production image: \`docker/build-push-action\`"
+            echo "- Image scan: Trivy fails on fixable high/critical OS or library vulnerabilities"
             echo "- Production smoke: \`pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type\`"
             echo "- Push: disabled"
           } >> "${GITHUB_STEP_SUMMARY}"
@@ -220,13 +253,13 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://127.0.0.1:3100
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Enable Corepack
         run: corepack enable
 
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
@@ -244,14 +277,14 @@ jobs:
         run: pnpm build
 
       - name: Browser smoke, accessibility, and web vitals
-        run: pnpm test:browser:ci && pnpm test:a11y
+        run: pnpm test:browser:ci && pnpm test:a11y && pnpm test:browser:visual
 
       - name: Lighthouse quality gate
         run: pnpm test:lighthouse
 
       - name: Upload browser reports
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: browser-smoke-report
           path: |
@@ -268,11 +301,11 @@ jobs:
       NEXT_PUBLIC_PLAYWRIGHT_SMOKE: '1'
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Enable Corepack
         run: corepack enable
       - name: Setup Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: 24
           cache: pnpm
@@ -285,6 +318,9 @@ jobs:
       - name: Cross-browser smoke and accessibility
         run: pnpm test:browser:matrix
 
+      - name: Firefox strict-CSP calculator regression
+        run: pnpm test:browser:firefox-csp
+
       - name: Browser smoke summary
         if: always()
         run: |
@@ -295,5 +331,5 @@ jobs:
             echo "- Checks: title, main landmark, navigation label, axe WCAG 2.2 AA, console/page errors, failed requests, 5xx responses"
             echo "- Lighthouse: accessibility, best practices, SEO, LCP, and CLS"
             echo "- Diagnostics: browser-diagnostics attachment and Playwright trace on failure"
-            echo "- Browser gate: \`pnpm test:browser:ci\`"
+            echo "- Browser gate: \`pnpm test:browser:ci\` plus committed Chromium visual baselines"
           } >> "${GITHUB_STEP_SUMMARY}"

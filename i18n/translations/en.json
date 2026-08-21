@@ -7,6 +7,9 @@
     "theme": "Theme",
     "calculate": "Calculate",
     "plan": "Plan",
+    "scenario_plan": "Scenario plan",
+    "edit_plan": "Edit plan",
+    "close_plan": "Close plan",
     "summary": "Summary",
     "details": "Details",
     "section_navigation": "Calculator sections",
@@ -1824,7 +1827,7 @@
     "growth_chart_label": "Comparison growth chart",
     "drawdown_chart_label": "Comparison drawdown chart",
     "chart_accessible_summary_empty": "The comparison chart has no visible asset data yet.",
-    "chart_accessible_summary": "The chart contains {count} sampled points. Scenario A moves from {startA} to {endA}; Scenario B moves from {startB} to {endB}.",
+    "chart_accessible_summary": "The chart contains {count} sampled points. {leader} leads at {leaderValue}; {trailing} is at {trailingValue}.",
     "drawdown_accessible_summary_empty": "The drawdown chart has no visible risk data yet.",
     "drawdown_accessible_summary": "The drawdown chart contains {count} sampled points. The deepest current drawdown is {drawdown}% for {asset}.",
     "table_row_fallback": "Row {row}",
@@ -2034,18 +2037,22 @@
     "format": {
       "month_forms": {
         "one": "month",
+        "few": "months",
         "many": "months"
       },
       "year_forms": {
         "one": "year",
+        "few": "years",
         "many": "years"
       },
       "duration_month_forms": {
         "one": "month",
+        "few": "months",
         "many": "months"
       },
       "duration_year_forms": {
         "one": "year",
+        "few": "years",
         "many": "years"
       },
       "horizon_months": "{count, plural, one {# month} other {# months}}",

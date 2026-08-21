@@ -9,6 +9,7 @@ import { BondType } from '@/features/bond-core/types';
 import { educationOfferGroups } from '@/features/education/constants/education-content';
 import { useAppI18n } from '@/i18n/client';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { createNumberFormatter } from '@/shared/lib/formatters';
 
 function rateBasis(bond: BondDefinition, t: ReturnType<typeof useAppI18n>['t']) {
   if (bond.isInflationIndexed) return t('education.comparison.inflation_indexed');
@@ -22,6 +23,7 @@ export function EducationOfferComparison({
   definitions: Record<string, BondDefinition>;
 }) {
   const { t, locale } = useAppI18n();
+  const numberFormatter = createNumberFormatter(locale);
   const [selected, setSelected] = useState<BondType[]>([]);
   const bonds = educationOfferGroups.flatMap((group) =>
     group.bondTypes
@@ -92,7 +94,7 @@ export function EducationOfferComparison({
                       {bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}
                     </td>
                     <td className="px-3 py-3 font-mono tabular-nums text-muted-foreground">
-                      {bond.earlyWithdrawalFee.toLocaleString(locale)} PLN
+                      {numberFormatter.format(bond.earlyWithdrawalFee)} PLN
                     </td>
                   </tr>
                 );

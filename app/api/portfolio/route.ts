@@ -4,18 +4,17 @@ import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
-import { createOwnerPortfolio, deleteOwnerPortfolio } from '@/lib/server/portfolio/commands';
+import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
   getPortfolioRouteContext,
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
   withPortfolioOwnerResponse,
 } from '@/lib/server/portfolio/http';
-import { listOwnerPortfolios } from '@/lib/server/portfolio/queries';
 
 export const GET = apiHandler(async () => {
   const { owner } = await getPortfolioRouteContext();
-  const portfolios = await listOwnerPortfolios(owner.ownerId);
+  const portfolios = await portfolioApplication.listPortfolios(owner.ownerId);
 
   return withPortfolioOwnerResponse(okJson(portfolios), owner);
 });
@@ -23,7 +22,7 @@ export const GET = apiHandler(async () => {
 export const POST = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const validated = await readJsonBody(req, PortfolioSchema);
-    const newPortfolio = await createOwnerPortfolio(owner.ownerId, validated);
+    const newPortfolio = await portfolioApplication.createPortfolio(owner.ownerId, validated);
 
     return okJson(newPortfolio);
   });
@@ -39,7 +38,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     }
 
     try {
-      const deletedPortfolio = await deleteOwnerPortfolio(owner.ownerId, id);
+      const deletedPortfolio = await portfolioApplication.deletePortfolio(owner.ownerId, id);
 
       return okJson(deletedPortfolio);
     } catch (error) {

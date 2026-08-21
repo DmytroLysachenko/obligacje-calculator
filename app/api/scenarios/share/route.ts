@@ -1,16 +1,11 @@
 import { NextRequest } from 'next/server';
-import { z } from 'zod';
 
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { shareCreationRateLimitPolicy } from '@/lib/server/http/rate-limiter';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { okJson } from '@/lib/server/http/responses';
+import { SharedScenarioPayloadSchema } from '@/lib/server/shared-scenarios/input-schema';
 import { createSharedSingleScenario } from '@/lib/server/shared-scenarios/service';
-
-const SharedScenarioPayloadSchema = z.object({
-  inputs: z.record(z.string(), z.unknown()),
-  description: z.string().optional(),
-});
 
 export const POST = apiHandler(
   async (req: NextRequest) => {

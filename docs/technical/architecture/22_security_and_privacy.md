@@ -13,10 +13,13 @@ MIME-sniffing protection, HSTS, or the strict referrer policy.
 ## Mutation boundary
 
 Cookie-authenticated portfolio mutations are same-origin only. The server rejects
-cross-site `Sec-Fetch-Site` requests and foreign or malformed `Origin` headers.
-The API does not expose permissive CORS. A future trusted cross-origin client
-requires a dedicated CSRF-token design and a documented allowlist rather than a
-relaxation of the default policy.
+cross-site or opaque `Sec-Fetch-Site` requests and foreign or malformed `Origin`
+headers. A sibling subdomain is not accepted merely because it is same-site. An
+absent `Origin` is permitted only for a non-browser request or an explicitly
+same-origin fetch; service callers remain behind their own server-side
+authentication boundary. The API does not expose permissive CORS. A future
+trusted cross-origin client requires a dedicated CSRF-token design and a
+documented allowlist rather than a relaxation of the default policy.
 
 ## Data classification and operator handling
 
@@ -42,8 +45,12 @@ claims are made.
 Auth.js sessions establish the application identity. Administrative status and
 synchronization require a server-side allowlist decision; the browser receives
 only capability/status information. Guest portfolio ownership is represented by
-an HttpOnly cookie, marked `Secure` in production, and is not an administrator
-credential. Logout removes the session according to the Auth.js provider flow.
+an HttpOnly, `SameSite=Lax`, path-scoped cookie with a one-year maximum age. It
+is marked `Secure` in production and is not an administrator credential. Guest
+portfolio writes are not permitted: signing in is required before every
+workspace mutation. Logout removes the Auth.js session according to the provider
+flow; it does not transfer guest-owned data into an account or delete the guest
+cookie automatically. Users should clear site data to discard a guest notebook.
 
 Account deletion, token revocation, backup retention, and restore access are
 operational controls. Their current owner, retention duration, and quarterly
@@ -60,6 +67,39 @@ redacted evidence, and document remediation in the release record. Dependency,
 secret, static-analysis, and container scanning are required CI controls once
 the operations evidence gate has enabled them.
 
+## OAuth token inventory and lifecycle
+
+The Auth.js database adapter persists provider-issued account fields only in the
+`account` table: `access_token`, `refresh_token`, `id_token`, `expires_at`,
+`token_type`, `scope`, and `session_state`. The application does not read those
+values in browser code, API responses, analytics, or application logs. Google
+and Facebook providers are configured with their provider defaults; no
+application-specific scope is requested. A provider change must document its
+exact scopes before it ships.
+
+Database and managed-backup encryption are the deployment platform's
+responsibility. This repository does not implement application-level envelope
+encryption for Auth.js account-token columns. Operators must therefore limit
+production database and backup access to approved break-glass roles, record
+that access, and use the evidence gate before claiming stronger protection.
+
+Tokens are retained only while their Auth.js account row remains. Account
+deletion must delete the user and cascading account/session rows, then revoke
+the provider grant where that provider supports revocation. Backups may retain
+deleted rows until their configured expiry; the deployed retention interval and
+restore access are external evidence, not a repository claim.
+
+### Token incident and revocation runbook
+
+1. Disable affected provider credentials and rotate the provider client secret.
+2. Revoke affected provider grants/tokens from the provider console.
+3. Delete affected `account` rows and sessions, or delete the user for an
+   account compromise; force re-authentication.
+4. Review redacted correlation IDs and operator-access records. Never paste a
+   token, authorization header, or callback payload into a ticket or log.
+5. Record date, operator, provider, affected-account count, revocation result,
+   and follow-up in the redacted operations evidence record.
+
 ## Verification cadence
 
 ## Public sharing boundary
@@ -75,8 +115,10 @@ quota. Shared scenarios have a documented expiry and cleanup process. A public
 share may expose only the serialized scenario selected for publication, never a
 portfolio, owner identifier, session state, raw telemetry, or private notes.
 
-Abuse reports identify the share reference and correlation ID. The report path
-does not reveal whether an identifier exists to an unauthenticated caller.
+Abuse reports use `POST /api/scenarios/share/report` with only an opaque share
+reference and a bounded reason code; they identify the share reference and
+correlation ID in redacted operator logs. The report path does not resolve or
+reveal whether an identifier exists to an unauthenticated caller.
 Deletion/expiry takes precedence over cache display. Search engines must not
 receive user-generated share pages as public landing content unless a future
 product policy explicitly permits it.
@@ -145,33 +187,3 @@ Operational controls are reviewed after a deployment and quarterly thereafter:
 - CSP reports are sampled, redacted, and never used as a channel for user data.
 
 Financial data is highly sensitive. Even though we are a simulation platform, we adhere to high security standards.
-
-## 1. Data Minimization
-
-- **No Data Collection:** The platform should be fully functional without an account.
-- **Local-First:** User investment data (Notebook) is stored in the browser's `IndexedDB` by default.
-- **No PII:** We do not ask for names, bank account numbers, or real identities.
-
-## 2. Security Best Practices
-
-- **HTTPS Only:** All traffic encrypted via TLS.
-- **Content Security Policy (CSP):** Strict policy to prevent XSS (Cross-Site Scripting).
-- **Input Sanitization:** All user-provided numbers and strings are validated before being used in calculations or stored.
-- **Dependency Auditing:** Monthly `npm audit` to check for vulnerabilities in libraries like `Decimal.js` or `Next.js`.
-
-## 3. Calculation Integrity
-
-- **Tamper-proof Engine:** The calculation core is versioned. Results include a "Version ID" so users can verify which logic was used.
-- **No Client-Side Overrides:** While the engine runs on the client, the "Rules" (Margins, Tax rates) are fetched from the secure server-side database.
-
-## 4. Privacy Policy (Summary)
-
-- We do not sell user data.
-- Analytics are anonymized (e.g., using Plausible instead of Google Analytics) to respect user privacy.
-- If a user creates an account for syncing, their data is encrypted before storage.
-
-## 5. Security for Account Features (Future)
-
-- **Auth:** Use a trusted provider like Supabase Auth or Clerk.
-- **Encryption:** Use Web Crypto API to encrypt the "Notebook" using a user-derived key before it ever leaves the browser.
-- **MFA:** Support for Multi-Factor Authentication for any account-based features.

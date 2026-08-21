@@ -23,6 +23,7 @@ import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { ReferenceGuideRail } from '@/shared/components/reference/ReferenceGuideRail';
 import { ReferenceNoteCard } from '@/shared/components/reference/ReferenceNoteCard';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 import { EconomicSeriesStatusCard } from './EconomicSeriesStatusCard';
 
@@ -141,8 +142,8 @@ export function RangeActions({
             ))}
           </div>
         ) : null}
+        <InfoTooltip content={hint} />
       </div>
-      <p className="text-xs leading-5 text-muted-foreground">{hint}</p>
     </div>
   );
 }

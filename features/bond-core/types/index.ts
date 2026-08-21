@@ -23,11 +23,6 @@ export enum TaxStrategy {
 
 export type HistoricalDataMap = Record<string, { inflation?: number; nbpRate?: number }>;
 
-export interface HistoricalEntry {
-  inflation?: number;
-  nbpRate?: number;
-}
-
 export type RateSource =
   | 'initial_principal'
   | 'fixed_rate'

@@ -7,7 +7,7 @@ export const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#2563eb',
     description: {
       en: 'US equities benchmark with high growth and high volatility.',
-      pl: 'Benchmark akcji z USA o wysokim wzroscie i wysokiej zmiennosci.',
+      pl: 'Benchmark akcji z USA o wysokim wzroście i wysokiej zmienności.',
     },
   },
   gold: {
@@ -16,7 +16,7 @@ export const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#db2777',
     description: {
       en: 'Gold priced through historical market data.',
-      pl: 'Zloto liczone na podstawie danych historycznych.',
+      pl: 'Złoto liczone na podstawie danych historycznych.',
     },
   },
   bonds: {
@@ -25,7 +25,7 @@ export const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#d97706',
     description: {
       en: 'Ten-year inflation-indexed treasury bond scenario.',
-      pl: 'Scenariusz dla dziesiecioletnich obligacji EDO.',
+      pl: 'Scenariusz dla dziesięcioletnich obligacji EDO.',
     },
   },
   savings: {
@@ -34,7 +34,7 @@ export const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#64748b',
     description: {
       en: 'Savings account scenario linked to historical NBP rates.',
-      pl: 'Scenariusz konta oszczednosciowego powiazanego ze stopami NBP.',
+      pl: 'Scenariusz konta oszczędnościowego powiązanego ze stopami NBP.',
     },
   },
 };

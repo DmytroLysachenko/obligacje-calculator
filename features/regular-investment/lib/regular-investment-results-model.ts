@@ -42,29 +42,6 @@ export function buildRegularInvestmentPrimaryStats({
   ];
 }
 
-export function buildRegularInvestmentSupportingStats({
-  results,
-  formatCurrency,
-  t,
-}: {
-  results: RegularInvestmentResult;
-  formatCurrency: (value: number) => string;
-  t: TranslateFn;
-}): RegularInvestmentSummaryStat[] {
-  return [
-    {
-      label: t('bonds.real_cagr'),
-      value: `${results.realAnnualizedReturn.toFixed(2)}%`,
-      helper: t('regular_summary.real_cagr_helper'),
-    },
-    {
-      label: t('bonds.tax'),
-      value: formatCurrency(results.totalTax),
-      helper: t('regular_summary.tax_helper'),
-    },
-  ];
-}
-
 export function buildRegularInvestmentFinancialInsights({
   results,
   dataQualityFlags,

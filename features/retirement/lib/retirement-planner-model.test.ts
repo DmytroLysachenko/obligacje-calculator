@@ -40,6 +40,7 @@ const resultEnvelope: RetirementPlannerCalculationEnvelope = {
   calculationNotes: [],
   dataQualityFlags: [],
   dataFreshness: { status: 'fresh', usedFallback: false },
+  calculationVersion: 'test-model',
 };
 
 describe('retirement planner model', () => {

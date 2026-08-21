@@ -8,13 +8,15 @@ import { createServerLogger } from '@/lib/server/logging';
 import { BondDefinition } from './constants/bond-definitions';
 import {
   CalculationDataFreshness,
-  CalculationEnvelope,
+  CalculationEnvelopeForKind,
   CalculationScenarioRequest,
   ScenarioKind,
 } from './types/scenarios';
 import { parseCalculationScenarioRequest } from './types/schemas';
 import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
+import { CalculationCachePolicy } from './calculation-cache-policy';
+import { CalculationContextProvider } from './calculation-context';
 import { HandlerFactory, MODEL_VERSION, ScenarioHandler } from './handlers';
 import { BondType } from './types';
 
@@ -44,7 +46,9 @@ export class CalculationApplicationService {
   /**
    * Main entry point for all calculation requests.
    */
-  async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
+  async calculate<TRequest extends CalculationScenarioRequest>(
+    request: TRequest,
+  ): Promise<CalculationEnvelopeForKind<TRequest['kind']>> {
     // 1. Validate before any normalization so invalid scenarios are rejected,
     // not silently clamped into a different calculation.
     const validatedRequest = parseCalculationScenarioRequest(request) as CalculationScenarioRequest;
@@ -56,34 +60,29 @@ export class CalculationApplicationService {
       payload: sanitizedPayload,
     } as unknown as CalculationScenarioRequest;
 
-    // Context revisions are part of financial correctness: an identical request
-    // must not reuse a result calculated against an older offer/data snapshot.
-    const [dataFreshness, dbDefinitions, taxRulesRevision] = await Promise.all([
-      this.dependencies.getDataFreshness(),
-      this.dependencies.getDefinitions(),
-      this.dependencies.getTaxRulesRevision(),
-    ]);
-
-    // 2. Check cache with sanitized inputs and authoritative freshness metadata.
-    const cacheKey = this.dependencies.cache.generateKey({
-      modelVersion: MODEL_VERSION,
-      request: sanitizedRequest,
-      dataRevision: JSON.stringify({ dataFreshness, taxRulesRevision }),
-    });
-    const cachedResult = this.dependencies.cache.get(cacheKey);
-    if (cachedResult) {
-      return cachedResult as CalculationEnvelope<unknown>;
-    }
-
     try {
-      const handler = this.dependencies.getHandler(sanitizedRequest.kind);
-      const response = await handler.handle(sanitizedRequest.payload, {
-        dataFreshness,
-        dbDefinitions,
-      });
+      // Context revisions are part of financial correctness: an identical request
+      // must not reuse a result calculated against an older offer/data snapshot.
+      // Keep acquisition in this boundary so failures are correlated and logged
+      // exactly like handler failures.
+      const context = await new CalculationContextProvider(this.dependencies).load();
 
-      this.dependencies.cache.set(cacheKey, response);
-      return response;
+      // 2. Check cache with sanitized inputs and authoritative freshness metadata.
+      const cachePolicy = new CalculationCachePolicy({
+        cache: this.dependencies.cache,
+        modelVersion: MODEL_VERSION,
+      });
+      return (await cachePolicy.getOrCalculate({
+        request: sanitizedRequest,
+        dataRevision: context.cacheRevision,
+        calculate: async () => {
+          const handler = this.dependencies.getHandler(sanitizedRequest.kind);
+          return handler.handle(sanitizedRequest.payload, {
+            dataFreshness: context.dataFreshness,
+            dbDefinitions: context.dbDefinitions,
+          });
+        },
+      })) as CalculationEnvelopeForKind<TRequest['kind']>;
     } catch (error) {
       logger.error(`FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
@@ -91,7 +90,10 @@ export class CalculationApplicationService {
   }
 
   invalidateAuthoritativeData(namespace = '') {
-    this.dependencies.cache.invalidateNamespace(namespace);
+    new CalculationCachePolicy({
+      cache: this.dependencies.cache,
+      modelVersion: MODEL_VERSION,
+    }).invalidate(namespace);
   }
 }
 

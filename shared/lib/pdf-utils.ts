@@ -1,15 +1,15 @@
 import jsPDF from 'jspdf';
 
 import { BondInputs, CalculationResult } from '@/features/bond-core/types';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { translateMessage } from '@/i18n/translate';
+import { createCurrencyFormatter, createDateFormatter } from '@/shared/lib/formatters';
 
 type ReportLanguage = 'pl' | 'en';
 
 const page = { width: 210, height: 297, margin: 18, bottom: 278 };
 
 function formatCurrency(value: number, language: ReportLanguage) {
-  return new Intl.NumberFormat(getIntlLocale(language), {
+  return createCurrencyFormatter(language, {
     style: 'currency',
     currency: 'PLN',
   }).format(value);
@@ -19,7 +19,7 @@ function formatDate(value: string, language: ReportLanguage) {
   const date = new Date(`${value}T12:00:00Z`);
   return Number.isNaN(date.getTime())
     ? value
-    : new Intl.DateTimeFormat(getIntlLocale(language), { dateStyle: 'long' }).format(date);
+    : createDateFormatter(language, { dateStyle: 'long' }).format(date);
 }
 
 function buildReportRows(results: CalculationResult, inputs: BondInputs, language: ReportLanguage) {

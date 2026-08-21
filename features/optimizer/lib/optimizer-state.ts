@@ -41,6 +41,13 @@ export function applyOptimizerMacroDefaults(
     return inputs;
   }
 
+  if (
+    inputs.expectedInflation === defaults.expectedInflation &&
+    inputs.expectedNbpRate === defaults.expectedNbpRate
+  ) {
+    return inputs;
+  }
+
   return {
     ...inputs,
     expectedInflation: defaults.expectedInflation,

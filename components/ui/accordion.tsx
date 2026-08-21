@@ -1,6 +1,6 @@
 'use client';
 
-import { CaretDownIcon, CaretUpIcon } from '@phosphor-icons/react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Accordion as AccordionPrimitive } from 'radix-ui';
 import * as React from 'react';
 
@@ -45,11 +45,11 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <CaretDownIcon
+        <ChevronDown
           data-slot="accordion-trigger-icon"
           className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden"
         />
-        <CaretUpIcon
+        <ChevronUp
           data-slot="accordion-trigger-icon"
           className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline"
         />

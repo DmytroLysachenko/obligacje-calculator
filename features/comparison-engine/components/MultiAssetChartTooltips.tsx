@@ -1,6 +1,7 @@
 'use client';
 
 import { useAppI18n } from '@/i18n/client';
+import { chartColorClass } from '@/shared/components/charts/chart-color-class';
 
 import { MultiAssetDrawdownTooltipProps, MultiAssetGrowthTooltipProps } from '../types/multi-asset';
 
@@ -32,11 +33,7 @@ export function MultiAssetGrowthTooltip({
             .map((entry, index) => (
               <div key={index} className="ui-chart-tooltip-row">
                 <span className="ui-chart-tooltip-label">
-                  <span
-                    className="ui-chart-tooltip-dot"
-                    style={{ backgroundColor: entry.color }}
-                    aria-hidden="true"
-                  />
+                  <span className={`ui-chart-tooltip-dot ${chartColorClass(entry.color)}`} aria-hidden="true" />
                   {entry.name}:
                 </span>
                 <span className="ui-chart-tooltip-value">
@@ -94,7 +91,7 @@ export function MultiAssetDrawdownTooltip({
         {payload.map((entry, index) => (
           <div key={index} className="ui-chart-tooltip-row">
             <span className="ui-chart-tooltip-label">
-              <span className="ui-chart-tooltip-dot" style={{ backgroundColor: entry.color }} />
+              <span className={`ui-chart-tooltip-dot ${chartColorClass(entry.color)}`} />
               {entry.name}:
             </span>
             <span className="ui-chart-tooltip-value text-destructive">

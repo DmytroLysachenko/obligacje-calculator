@@ -58,7 +58,7 @@ function SidebarFooter({
           <SidebarWorkspaceUtility pathname={pathname} canManageWorkspace={canManageWorkspace} />
         </SidebarUtilityGroup>
       ) : null}
-      <details className="group border-t border-border pt-3">
+      <details suppressHydrationWarning className="group border-t border-border pt-3">
         <summary className="ui-focus-ring flex min-h-11 items-center rounded-sm px-0.5 ui-kicker">
           {t('common.settings')}
         </summary>

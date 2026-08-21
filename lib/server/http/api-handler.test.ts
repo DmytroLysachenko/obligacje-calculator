@@ -40,7 +40,7 @@ describe('apiHandler endpoint policy boundary', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('x-request-id')).toBe('request-test-0001');
-    expect(await response.json()).toEqual({ ok: true });
+    await expect(response.json()).resolves.toEqual({ ok: true, requestId: 'request-test-0001' });
     expect(limiter.consume).toHaveBeenCalledWith('test-client', policy);
   });
 
@@ -92,6 +92,10 @@ describe('apiHandler endpoint policy boundary', () => {
     expect(response.headers.get('RateLimit-Reset')).toBe(Math.ceil(resetAt / 1000).toString());
     expect(response.headers.get('Retry-After')).toMatch(/^20$/);
     expect(response.headers.get('x-request-id')).toBe('request-test-0001');
+    await expect(response.json()).resolves.toMatchObject({
+      code: 'RATE_LIMIT_EXCEEDED',
+      requestId: 'request-test-0001',
+    });
     expect(handler).not.toHaveBeenCalled();
   });
 });

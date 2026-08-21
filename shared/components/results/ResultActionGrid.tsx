@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
-export type ResultActionKind = 'primary' | 'secondary' | 'csv' | 'pdf';
+type ResultActionKind = 'primary' | 'secondary' | 'csv' | 'pdf';
 
 export interface ResultAction {
   label: string;

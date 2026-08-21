@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { NextRequest } from 'next/server';
 
 const mocks = vi.hoisted(() => ({
   assertAdminSessionAuthorization: vi.fn(),
@@ -21,10 +22,12 @@ describe('admin sync route', () => {
     mocks.enqueueFinancialDataSync.mockResolvedValue({ ids: ['evt_123'] });
 
     const response = await POST(
-      new Request('https://app.example.test/api/admin/sync', {
+      new NextRequest('https://app.example.test/api/admin/sync', {
         method: 'POST',
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ mode: 'market-history-sync' }),
-      }) as never,
+      }),
+      {} as never,
     );
 
     expect(response.status).toBe(202);

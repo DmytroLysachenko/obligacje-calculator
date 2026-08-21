@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { MODEL_VERSION } from '@/features/bond-core/model-version';
+
 import {
   createPersistedCalculatorSession,
   restoreCalculatorSession,
@@ -7,17 +9,17 @@ import {
 
 describe('versioned calculator session persistence', () => {
   const draft = { amount: 100, term: 12 };
-  const result = { total: 105, modelVersion: '2026.07' };
+  const result = { total: 105, modelVersion: MODEL_VERSION };
 
   it('restores a current envelope while preserving an edited draft', () => {
     const persisted = createPersistedCalculatorSession(
       draft,
       { amount: 90, term: 12 },
       result,
-      '2026.07',
+      MODEL_VERSION,
     );
     expect(
-      restoreCalculatorSession(persisted, { amount: 1, term: 1 }, () => true, '2026.07'),
+      restoreCalculatorSession(persisted, { amount: 1, term: 1 }, () => true, MODEL_VERSION),
     ).toEqual({
       draftInputs: draft,
       committedInputs: { amount: 90, term: 12 },
@@ -29,7 +31,7 @@ describe('versioned calculator session persistence', () => {
   it('drops only an outdated committed envelope and keeps the user draft', () => {
     const persisted = createPersistedCalculatorSession(draft, draft, result, 'old-model');
     expect(
-      restoreCalculatorSession(persisted, { amount: 1, term: 1 }, () => true, '2026.07'),
+      restoreCalculatorSession(persisted, { amount: 1, term: 1 }, () => true, MODEL_VERSION),
     ).toEqual({
       draftInputs: draft,
       committedInputs: null,
@@ -44,7 +46,7 @@ describe('versioned calculator session persistence', () => {
       persisted,
       { amount: 1, term: 1 },
       () => false,
-      '2026.07',
+      MODEL_VERSION,
     );
     expect(restored.draftInputs).toEqual(draft);
     expect(restored.committedInputs).toBeNull();
@@ -55,6 +57,19 @@ describe('versioned calculator session persistence', () => {
     const legacy = { draftInputs: draft, committedInputs: draft, committedResult: result };
     expect(restoreCalculatorSession(legacy, { amount: 1, term: 1 })).toMatchObject({
       committedResult: result,
+      restoredFromPersistence: true,
+    });
+  });
+
+  it('requires an exact model version and never restores a historic result as current', () => {
+    const persisted = createPersistedCalculatorSession(draft, draft, result, '2.9.0');
+
+    expect(
+      restoreCalculatorSession(persisted, { amount: 1, term: 1 }, () => true, MODEL_VERSION),
+    ).toMatchObject({
+      draftInputs: draft,
+      committedInputs: null,
+      committedResult: null,
       restoredFromPersistence: true,
     });
   });
