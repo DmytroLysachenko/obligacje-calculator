@@ -1070,6 +1070,36 @@ Each runbook needs containment, evidence preservation, rotation/revocation, cust
 
 ## 13. Remediation Program
 
+### 13.1 Current completion ledger
+
+This table reconciles the security findings below with the delivery ledger in
+[09. Comprehensive Codebase Quality, Security, and Refactor Plan](./09_comprehensive_codebase_quality_security_refactor_plan.md).
+`Done` means repository implementation and its focused checks are recorded;
+it does not replace any required deployed evidence. `In progress` means a
+foundation exists but this finding's acceptance criteria are not met.
+
+| Finding | Status  | Current position                                                                                                             |
+| ------- | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| SR-01   | Done    | Fail-closed service secret validation and server-side admin sessions replaced browser bearer access.                         |
+| SR-02   | Done    | Migration-only schema authority and reconciled migration history recorded under DATA-01.                                     |
+| SR-03   | Done    | Shared safe problem responses plus bounded, structured, secret-redacted server logging implemented.                          |
+| SR-04   | Done    | Trusted-proxy identity, named policies, shared production limiter, and 429 headers implemented.                              |
+| SR-05   | Done    | Bounded local adapter and shared production counters implemented; deployed multi-instance receipt remains external evidence. |
+| SR-06   | Done    | Shared bounded JSON reader now enforces media type/bytes before parsing; settings and telemetry use strict bounded schemas.  |
+| SR-07   | Done    | Browser-stored secret and bearer transport removed; admin UI uses server-side allowlist/session authorization.               |
+| SR-08   | Done    | Mutation-origin, guest-cookie, session, and fallback contract completed and documented.                                      |
+| SR-09   | Done    | Transactional, bounded portfolio import and rollback coverage completed.                                                     |
+| SR-10   | Blocked | Durable admin Inngest enqueue exists; signed delivery, retry, dead-letter, and replay proof need operator access.            |
+| SR-11   | Done    | Rollback workflow hardened as part of CI/CD security controls.                                                               |
+| SR-12   | Done    | Deployment now uses Secret Manager references; plaintext runtime-secret YAML path removed.                                   |
+| SR-13   | Done    | Workflow actions SHA-pinned; CodeQL, Dependabot, image scanning, SBOM, and provenance controls added.                        |
+| SR-14   | Done    | Client share path no longer bundles Zod; strict-CSP Firefox calculator regression runs in CI without `unsafe-eval`.          |
+| SR-15   | Done    | Playwright server supplies trusted Auth.js environment and fails on captured `UntrustedHost`/Auth.js stderr diagnostics.     |
+| SR-16   | Done    | Synchronization gateway enforces HTTPS allowlist, redirect denial, response byte limits, JSON media type, sanitized errors.  |
+| SR-17   | Done    | Share/telemetry quotas, retention, cleanup, and reporting controls completed.                                                |
+| SR-18   | Done    | Canonical share URLs and safe export filename/content-disposition adapters completed.                                        |
+| SR-19   | Done    | OAuth-token lifecycle, revocation, retention, and review runbook completed; deployed review stays external.                  |
+
 ### Phase A — 24-hour containment
 
 - SR-01 fail-closed admin authorization.
