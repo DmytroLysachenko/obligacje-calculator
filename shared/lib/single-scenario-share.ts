@@ -1,5 +1,4 @@
 import { BondInputs } from '@/features/bond-core/types';
-import { BondInputsSchema } from '@/features/bond-core/types/schemas';
 
 export interface SharedSingleScenarioPayload {
   title: string;
@@ -11,10 +10,12 @@ function normalizeSharedSingleScenarioInputs(inputs: BondInputs): BondInputs {
   const rest = { ...inputs };
   delete rest.historicalData;
 
-  return BondInputsSchema.parse({
+  // Client-side share construction only removes private historical context.
+  // The API validates this untrusted payload before storage.
+  return {
     ...rest,
     historicalData: undefined,
-  });
+  };
 }
 
 export function buildSharedSingleScenarioPayload(
@@ -36,13 +37,4 @@ export function buildSharedSingleScenarioPayload(
 
 export function serializeSharedSingleScenario(payload: SharedSingleScenarioPayload) {
   return JSON.stringify(payload);
-}
-
-export function parseSharedSingleScenarioPayload(raw: string): SharedSingleScenarioPayload {
-  const parsed = JSON.parse(raw) as SharedSingleScenarioPayload;
-  return {
-    title: parsed.title,
-    description: parsed.description,
-    inputs: normalizeSharedSingleScenarioInputs(parsed.inputs),
-  };
 }

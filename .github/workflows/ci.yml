@@ -318,6 +318,9 @@ jobs:
       - name: Cross-browser smoke and accessibility
         run: pnpm test:browser:matrix
 
+      - name: Firefox strict-CSP calculator regression
+        run: pnpm test:browser:firefox-csp
+
       - name: Browser smoke summary
         if: always()
         run: |

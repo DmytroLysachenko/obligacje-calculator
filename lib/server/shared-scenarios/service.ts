@@ -2,7 +2,6 @@ import { BondInputsSchema } from '@/features/bond-core/types/schemas';
 import { getCanonicalUrl } from '@/lib/site-url';
 import {
   buildSharedSingleScenarioPayload,
-  parseSharedSingleScenarioPayload,
   serializeSharedSingleScenario,
 } from '@/shared/lib/single-scenario-share';
 
@@ -10,6 +9,11 @@ import { SharedScenarioPayloadSchema } from './input-schema';
 import { createSharedSingleScenarioRecord, findSharedSingleScenarioRecord } from './repository';
 
 const SHARED_SCENARIO_RETENTION_MS = 30 * 24 * 60 * 60_000;
+
+function parseStoredSingleScenarioInputs(raw: string) {
+  const parsed = JSON.parse(raw) as { inputs: unknown };
+  return BondInputsSchema.parse(parsed.inputs);
+}
 
 export async function createSharedSingleScenario(body: unknown, now = new Date()) {
   const { inputs, description } = SharedScenarioPayloadSchema.parse(body);
@@ -50,10 +54,10 @@ export async function getSharedSingleScenarioPageData(shareId: string) {
     return null;
   }
 
-  const parsed = parseSharedSingleScenarioPayload(scenario.payloadJson);
+  const inputs = parseStoredSingleScenarioInputs(scenario.payloadJson);
 
   return {
     title: scenario.title,
-    inputs: parsed.inputs,
+    inputs,
   };
 }
