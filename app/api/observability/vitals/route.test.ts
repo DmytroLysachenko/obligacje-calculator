@@ -1,3 +1,4 @@
+import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { error, info, recordVitalAggregate, shouldSampleVital } = vi.hoisted(() => ({
@@ -27,8 +28,9 @@ describe('web vitals endpoint', () => {
 
   it('logs only validated anonymous metric fields', async () => {
     const response = await POST(
-      new Request('http://localhost/api/observability/vitals', {
+      new NextRequest('http://localhost/api/observability/vitals', {
         method: 'POST',
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ name: 'LCP', value: 1240, rating: 'good', path: '/education' }),
       }) as never,
       {} as never,
@@ -49,8 +51,9 @@ describe('web vitals endpoint', () => {
     recordVitalAggregate.mockResolvedValue({ persisted: true });
 
     const response = await POST(
-      new Request('http://localhost/api/observability/vitals', {
+      new NextRequest('http://localhost/api/observability/vitals', {
         method: 'POST',
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ name: 'INP', value: 120, rating: 'good', path: '/compare' }),
       }) as never,
       {} as never,
@@ -73,8 +76,9 @@ describe('web vitals endpoint', () => {
     );
 
     const response = await POST(
-      new Request('http://localhost/api/observability/vitals', {
+      new NextRequest('http://localhost/api/observability/vitals', {
         method: 'POST',
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ name: 'CLS', value: 1, rating: 'poor', path: '/ladder' }),
       }) as never,
       {} as never,
@@ -92,8 +96,9 @@ describe('web vitals endpoint', () => {
 
   it('rejects query strings and arbitrary user data', async () => {
     const response = await POST(
-      new Request('http://localhost/api/observability/vitals', {
+      new NextRequest('http://localhost/api/observability/vitals', {
         method: 'POST',
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           name: 'LCP',
           value: 1,
@@ -109,15 +114,15 @@ describe('web vitals endpoint', () => {
 
   it('rejects oversized telemetry before decoding it', async () => {
     const response = await POST(
-      new Request('http://localhost/api/observability/vitals', {
+      new NextRequest('http://localhost/api/observability/vitals', {
         method: 'POST',
-        headers: { 'content-length': '2049' },
+        headers: { 'content-type': 'application/json', 'content-length': '2049' },
         body: '{}',
       }) as never,
       {} as never,
     );
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(413);
     expect(info).not.toHaveBeenCalled();
   });
 });
