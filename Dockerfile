@@ -23,6 +23,10 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV PORT=8080
 
+# The standalone server is launched directly with Node. Removing npm keeps its
+# bundled development-only dependency tree out of the production image.
+RUN rm -rf /usr/local/lib/node_modules/npm
+
 COPY --from=builder --chown=node:node /app/public ./public
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
