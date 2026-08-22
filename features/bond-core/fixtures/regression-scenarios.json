@@ -25,7 +25,7 @@
         "netPayoutValue": "14417.025154047602",
         "finalNominalValue": "15453.025154047602",
         "finalRealValue": "10684.396933289374",
-        "maturityDate": "2033-12-31T23:00:00.000Z",
+        "maturityCalendarDate": "2034-01-01",
         "isEarlyWithdrawal": false,
         "timelineLength": 11
       }
@@ -53,7 +53,7 @@
         "netPayoutValue": "11315",
         "finalNominalValue": "11625",
         "finalRealValue": "10239.301203201117",
-        "maturityDate": "2027-12-31T23:00:00.000Z",
+        "maturityCalendarDate": "2028-01-01",
         "isEarlyWithdrawal": false,
         "timelineLength": 5
       }
@@ -81,7 +81,7 @@
         "netPayoutValue": "10061",
         "finalNominalValue": "10075",
         "finalRealValue": "10011.135329117405",
-        "maturityDate": "2024-03-31T22:00:00.000Z",
+        "maturityCalendarDate": "2024-04-01",
         "isEarlyWithdrawal": false,
         "timelineLength": 2
       }
