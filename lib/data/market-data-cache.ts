@@ -1,6 +1,9 @@
 import { parseISO } from 'date-fns';
 
-const macroCache = new Map<string, { data: unknown; timestamp: number }>();
+const macroCache = new Map<
+  string,
+  { data: unknown; expirationTimer: ReturnType<typeof setTimeout> }
+>();
 const CACHE_TTL = 1000 * 60 * 5;
 
 export const CPI_SLUGS = ['pl-cpi', 'inflation-pl'];
@@ -10,20 +13,31 @@ export const GOLD_SLUGS = ['gold-usd', 'gold'];
 
 export function getCached<T>(key: string): T | null {
   const cached = macroCache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data as T;
-  }
-  return null;
+  return (cached?.data as T | undefined) ?? null;
 }
 
 export function setCache(key: string, data: unknown) {
-  macroCache.set(key, { data, timestamp: Date.now() });
+  const existing = macroCache.get(key);
+  if (existing) {
+    clearTimeout(existing.expirationTimer);
+  }
+
+  const expirationTimer = setTimeout(() => {
+    macroCache.delete(key);
+  }, CACHE_TTL);
+  expirationTimer.unref?.();
+
+  macroCache.set(key, { data, expirationTimer });
 }
 
 /** Clears a coherent data namespace after an authoritative synchronization. */
 export function invalidateCached(prefix = '') {
   for (const key of macroCache.keys()) {
     if (key.startsWith(prefix)) {
+      const cached = macroCache.get(key);
+      if (cached) {
+        clearTimeout(cached.expirationTimer);
+      }
       macroCache.delete(key);
     }
   }

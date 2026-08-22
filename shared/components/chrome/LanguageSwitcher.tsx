@@ -13,7 +13,7 @@ export function LanguageSwitcher() {
 
   return (
     <div
-      className="inline-flex w-full max-w-[104px] items-center rounded-md border border-border bg-card p-1"
+      className="inline-flex w-[88px] items-center rounded-md border border-border bg-card p-0.5"
       role="group"
       aria-label={t('common.language')}
     >
@@ -27,7 +27,7 @@ export function LanguageSwitcher() {
             onClick={() => setLanguage(item.code)}
             aria-pressed={active}
             aria-label={item.name}
-            className="min-h-11 min-w-11 flex-1 rounded-sm px-2 text-xs font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+            className="min-h-9 min-w-9 flex-1 rounded-sm px-1.5 text-xs font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 [@media(pointer:coarse)]:min-h-11"
           >
             {item.label}
           </Button>

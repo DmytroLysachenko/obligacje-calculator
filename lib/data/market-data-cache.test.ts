@@ -1,9 +1,23 @@
 import { format } from 'date-fns';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { getSeriesReferenceDate } from './market-data-cache';
+import { getCached, getSeriesReferenceDate, invalidateCached, setCache } from './market-data-cache';
 
 describe('market data cache helpers', () => {
+  it('does not read the current time when returning a cached value', () => {
+    const key = 'test-cache-hit';
+    setCache(key, { cached: true });
+    const now = vi.spyOn(Date, 'now');
+
+    try {
+      expect(getCached<{ cached: boolean }>(key)).toEqual({ cached: true });
+      expect(now).not.toHaveBeenCalled();
+    } finally {
+      now.mockRestore();
+      invalidateCached(key);
+    }
+  });
+
   it('uses the latest data point date as the reference date for NBP series', () => {
     const referenceDate = getSeriesReferenceDate({
       slug: 'nbp-ref-rate',
