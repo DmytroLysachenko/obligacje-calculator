@@ -17,12 +17,26 @@ describe('browser diagnostics filtering', () => {
       },
       {
         kind: 'requestfailed',
+        message: 'Load request cancelled',
+        url: 'http://127.0.0.1:3100/single-calculator?_rsc=1jae6',
+      },
+      {
+        kind: 'requestfailed',
         message: 'net::ERR_CONNECTION_REFUSED',
         url: 'http://127.0.0.1:3100/single-calculator?_rsc=1jae6',
       },
     ];
 
-    expect(entries.filter(isActionableDiagnosticEntry)).toEqual([entries[1], entries[2]]);
+    expect(entries.filter(isActionableDiagnosticEntry)).toEqual([entries[1], entries[3]]);
+  });
+
+  it('ignores browser-specific page errors caused by cancelled RSC navigation', () => {
+    expect(
+      isActionableDiagnosticEntry({
+        kind: 'pageerror',
+        message: '/127.0.0.1:3100/ladder?_rsc=1jae6 due to access control checks.',
+      }),
+    ).toBe(false);
   });
 
   it('keeps React hydration errors actionable with their enriched page error payload', () => {

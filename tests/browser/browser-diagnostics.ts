@@ -18,7 +18,11 @@ function enrichMessage(message: string) {
 }
 
 function isAbortedRscPrefetch(entry: DiagnosticEntry) {
-  if (entry.kind !== 'requestfailed' || entry.message !== 'net::ERR_ABORTED' || !entry.url) {
+  if (
+    entry.kind !== 'requestfailed' ||
+    !['net::ERR_ABORTED', 'Load request cancelled'].includes(entry.message) ||
+    !entry.url
+  ) {
     return false;
   }
 
@@ -27,6 +31,14 @@ function isAbortedRscPrefetch(entry: DiagnosticEntry) {
   } catch {
     return false;
   }
+}
+
+function isRscAccessControlCancellation(entry: DiagnosticEntry) {
+  return (
+    entry.kind === 'pageerror' &&
+    entry.message.includes('?_rsc=') &&
+    entry.message.includes('due to access control checks.')
+  );
 }
 
 export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
@@ -38,6 +50,10 @@ export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
   }
 
   if (isAbortedRscPrefetch(entry)) {
+    return false;
+  }
+
+  if (isRscAccessControlCancellation(entry)) {
     return false;
   }
 
