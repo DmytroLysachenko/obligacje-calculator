@@ -34,7 +34,7 @@ test('home primary action opens the single-bond calculator', async ({ page }, te
   await stubOpportunisticSync(page);
   await page.goto('/', { waitUntil: 'networkidle' });
 
-  const primaryAction = page.getByRole('link', { name: 'Zasymuluj obligacje' });
+  const primaryAction = page.getByRole('link', { name: 'Otwórz kalkulator' });
   await expect(primaryAction).toBeVisible();
   await primaryAction.click();
   await expect(page).toHaveURL(/\/single-calculator$/);
@@ -50,7 +50,7 @@ test('home keeps the primary action and decision guide in the first viewport', a
   await page.goto('/', { waitUntil: 'networkidle' });
 
   const [primaryAction, decisionSlip] = await Promise.all([
-    page.getByRole('link', { name: 'Zasymuluj obligacje' }).boundingBox(),
+    page.getByRole('link', { name: 'Otwórz kalkulator' }).boundingBox(),
     page.getByTestId('home-decision-slip').first().boundingBox(),
   ]);
 
