@@ -2037,18 +2037,22 @@
     "format": {
       "month_forms": {
         "one": "month",
+        "few": "months",
         "many": "months"
       },
       "year_forms": {
         "one": "year",
+        "few": "years",
         "many": "years"
       },
       "duration_month_forms": {
         "one": "month",
+        "few": "months",
         "many": "months"
       },
       "duration_year_forms": {
         "one": "year",
+        "few": "years",
         "many": "years"
       },
       "horizon_months": "{count, plural, one {# month} other {# months}}",

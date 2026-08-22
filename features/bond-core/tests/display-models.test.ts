@@ -56,7 +56,7 @@ describe('bond display models', () => {
 
   it('maps event labels for both locales', () => {
     expect(getSimulationEventDisplayLabel(SimulationEventType.PAYOUT, 'en')).toBe('Payout');
-    expect(getSimulationEventDisplayLabel(SimulationEventType.MATURITY, 'pl')).toBe('Zapadalnosc');
+    expect(getSimulationEventDisplayLabel(SimulationEventType.MATURITY, 'pl')).toBe('Zapadalność');
   });
 
   it('builds timeline display rows without raw engine labels', () => {
@@ -126,7 +126,7 @@ describe('bond display models', () => {
     expect(points[0].xLabel).toContain('2026');
     expect(points[0].low).toBe(10000);
     expect(points[0].high).toBe(10000);
-    expect(points[0].rateLabel).toContain('Kapital poczatkowy');
+    expect(points[0].rateLabel).toContain('Kapitał początkowy');
   });
 
   it('keeps chart aggregation as a display-only transform with the same terminal wealth', () => {

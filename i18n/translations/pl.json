@@ -1,7 +1,7 @@
 {
   "common": {
     "dismiss_notification": "Zamknij powiadomienie",
-    "title": "Obligacje Calculator",
+    "title": "Kalkulator obligacji",
     "description": "Profesjonalny kalkulator polskich obligacji skarbowych.",
     "settings": "Ustawienia",
     "theme": "Motyw",
@@ -44,7 +44,7 @@
     "notes": "Notatki obliczeń",
     "data_quality": "Jakość danych",
     "share": "Udostępnij",
-    "created": "Utworzono",
+    "created": "Utwórzono",
     "copied": "Skopiowano!",
     "results_up_to_date": "Wyniki aktualne",
     "export_pdf": "Eksport PDF",
@@ -56,15 +56,15 @@
     "retry": "Spróbuj ponownie",
     "version": "Wersja",
     "sync_data": "Synchronizacja",
-    "refresh": "Odswiez",
-    "theme_toggle_hint": "Przelaczaj miedzy jasnym i ciemnym trybem odczytu.",
+    "refresh": "Odśwież",
+    "theme_toggle_hint": "Przełączaj między jasnym i ciemnym trybem odczytu.",
     "light_mode": "Tryb jasny",
     "dark_mode": "Tryb ciemny",
-    "source": "Zrodlo",
+    "source": "Źródło",
     "as_of": "Stan na",
     "coverage": "Zakres",
-    "usage": "Uzycie",
-    "unavailable": "Niedostepne",
+    "usage": "Użycie",
+    "unavailable": "Niedostępne",
     "search": "Szukaj",
     "date": "Data",
     "all_events": "Wszystkie zdarzenia",
@@ -73,53 +73,53 @@
     "events": "Zdarzenia",
     "basis": "Podstawa",
     "advanced": "Zaawansowane",
-    "show_all": "Pokaz wszystko ({count})",
-    "show_less": "Pokaz mniej",
+    "show_all": "Pokaż wszystko ({count})",
+    "show_less": "Pokaż mniej",
     "rows_shown": "Widoczne wiersze",
-    "rows_per_page": "Wiersze na strone",
+    "rows_per_page": "Wiersze na stronę",
     "rows_visible": "widoczne",
     "previous": "Poprzednia",
-    "next": "Nastepna",
+    "next": "Następna",
     "page": "Strona",
     "no_data": "Brak danych",
-    "no_results_found": "Brak wynikow dla aktualnych filtrow.",
-    "portfolio_selector_label": "Biezacy portfel",
+    "no_results_found": "Brak wyników dla aktualnych filtrów.",
+    "portfolio_selector_label": "Bieżący portfel",
     "portfolio_selector_empty": "Brak wybranego portfela",
     "month_compact": "mies",
     "duration_months": "mies.",
-    "reset_filters": "Wyczysc filtry",
-    "skip_to_content": "Przejdz do glownej tresci",
-    "primary_navigation": "Nawigacja glowna",
-    "open_navigation": "Otworz nawigacje",
+    "reset_filters": "Wyczyść filtry",
+    "skip_to_content": "Przejdź do głównej treści",
+    "primary_navigation": "Nawigacja główna",
+    "open_navigation": "Otwórz nawigacje",
     "navigation_menu": "Menu nawigacji",
-    "calculation_in_progress": "Trwa obliczanie. Przeliczenie konczy sie dopiero po zamodelowaniu calego scenariusza.",
-    "initial_calculation_hint": "Uruchom scenariusz, aby zobaczyc pelny wynik.",
-    "recalculation_hint": "Dane sie zmienily. Przelicz dopiero, gdy scenariusz jest gotowy.",
+    "calculation_in_progress": "Trwa obliczanie. Przeliczenie kończy się dopiero po zamodelowaniu całego scenariusza.",
+    "initial_calculation_hint": "Uruchom scenariusz, aby zobaczyć pełny wynik.",
+    "recalculation_hint": "Dane się zmieniły. Przelicz dopiero, gdy scenariusz jest gotowy.",
     "more_information": "Więcej informacji"
   },
   "site": {
     "default_title_suffix": "Edukacyjny kalkulator obligacji",
-    "twitter_description": "Skupiony kalkulator i aplikacja referencyjna dla polskich obligacji skarbowych.",
+    "twitter_description": "Skupiony kalkulator i aplikacja referencyjną dla polskich obligacji skarbowych.",
     "footer_disclaimer": "Tylko do celow edukacyjnych.",
     "official_bonds_link_label": "Oficjalna strona obligacji skarbowych"
   },
   "login": {
-    "eyebrow": "Przestrzen portfela",
-    "title": "Zaloguj sie, aby zapisywac portfele obligacji",
-    "description": "Kalkulatory pozostaja dostepne bez konta. Zapisywanie partii, import portfeli, udostepnianie linkow i eksport danych notatnika wymagaja zalogowanej przestrzeni.",
-    "provider_title": "Wybierz zewnetrznego dostawce OAuth",
-    "oauth_only_note": "Tylko logowanie OAuth. Konta z haslem nie sa obslugiwane.",
+    "eyebrow": "Przestrzeń portfela",
+    "title": "Zaloguj się, aby zapisywać portfele obligacji",
+    "description": "Kalkulatory pozostają dostępne bez konta. Zapisywanie partii, import portfeli, udostępnianie linków i eksport danych notatnika wymagają zalogowanej przestrzeni.",
+    "provider_title": "Wybierz zewnętrznego dostawcę OAuth",
+    "oauth_only_note": "Tylko logowanie OAuth. Konta z haslem nie są obsługiwane.",
     "use_calculator": "Korzystaj z kalkulatora bez logowania",
     "unavailable_title": "Logowanie nie jest skonfigurowane",
-    "unavailable_description": "Dostawca OAuth musi zostac wlaczony, aby udostepnic przestrzen portfela.",
+    "unavailable_description": "Dostawca OAuth musi zostać włączony, aby udostępnić przestrzeń portfela.",
     "benefits": {
       "organize": {
         "title": "Trzymaj partie obligacji razem",
-        "description": "Zapisuj zakupy, ilosci i daty wykupu w jednej prywatnej przestrzeni."
+        "description": "Zapisuj zakupy, ilości i daty wykupu w jednej prywatnej przestrzeni."
       },
       "control": {
-        "title": "Udostepniaj i eksportuj na swoich zasadach",
-        "description": "Tworz linki do portfela i eksporty dopiero po zalogowaniu."
+        "title": "Udostępniaj i eksportuj na swoich zasadach",
+        "description": "Twórz linki do portfela i eksporty dopiero po zalogowaniu."
       }
     },
     "providers": {
@@ -130,11 +130,11 @@
   "single_calculator": {
     "saved_scenarios": {
       "title": "Zapisane scenariusze",
-      "description": "Wznow, skopiuj albo uporzadkuj ostatnie przebiegi planowania.",
-      "save_current": "Zapisz biezacy",
-      "empty": "Brak zapisanych scenariuszy. Zapisz biezace dane, aby budowac powtarzalne sciezki planowania.",
+      "description": "Wznów, skopiuj albo uporządkuj ostatnie przebiegi planowania.",
+      "save_current": "Zapisz bieżący",
+      "empty": "Brak zapisanych scenariuszy. Zapisz bieżące dane, aby budować powtarzalne ścieżki planowania.",
       "updated": "Zaktualizowano",
-      "open": "Otworz",
+      "open": "Otwórz",
       "copy": "Kopia",
       "delete": "Usun"
     }
@@ -144,7 +144,7 @@
     "edo_better_than_coi": "Przy Twoim horyzoncie (> 4 lata) i prognozowanej inflacji, EDO (10-letnie) mogą być korzystniejsze niż COI (4-letnie) dzięki wyższej marży i kapitalizacji odsetek.",
     "coi_better_than_edo_short": "Dla horyzontu poniżej 4 lat COI oferują lepszą płynność i niższe opłaty za wcześniejszy wykup niż EDO.",
     "tax_efficiency_ike": "Płacisz znaczący podatek Belki ({amount}). Rozważ skorzystanie z konta IKE lub IKZE, aby zatrzymać te środki dla siebie.",
-    "ots_repeated": "Często odnawiasz krótkie obligacje OTS? Przy obecnych stopach NBP, obligacje ROR (1-roczne) lub DOR (2-letnie) mogą oferować wyższą rentowność przy podobnej płynności.",
+    "ots_repeated": "Często odnawiasz krótkie obligacje OTS? Przy obecnych stopach NBP obligacje ROR (roczne) lub DOR (dwuletnie) mogą oferować wyższą rentowność przy podobnej płynności.",
     "diversification_hint": "Twoja inwestycja jest skoncentrowana w jednym typie obligacji. Rozważ dywersyfikację o obligacje indeksowane inflacją (COI/EDO), aby chronić siłę nabywczą.",
     "ike_limit_warning": "Twoja kwota inwestycji przekracza roczny limit IKE/IKZE. Nadwyżka zostanie opodatkowana standardową stawką 19%."
   },
@@ -162,39 +162,39 @@
   },
   "sidebar": {
     "continue_label": "Kontynuuj od ostatniego miejsca",
-    "workspace_title": "Przestrzen robocza",
+    "workspace_title": "Przestrzeń robocza",
     "workspace_desc": "Wybierz aktywny portfel przed zapisaniem nowych partii obligacji.",
-    "portfolio_selector_label": "Biezacy portfel",
+    "portfolio_selector_label": "Bieżący portfel",
     "portfolio_selector_empty": "Brak wybranego portfela",
     "portfolio_selector_active": "Aktywny: {name}",
-    "workspace_manage": "Zarzadzaj przestrzenia",
+    "workspace_manage": "Zarządzaj przestrzenią",
     "sections": {
       "core": "Narzędzia Główne",
       "conditional": "Strategie Inwestycyjne",
-      "recovery_lab": "Boczne laboratorium"
+      "recovery_lab": "Laboratorium odzyskiwania"
     },
-    "brand_tagline": "Najpierw glowny kalkulator. Reszta pozniej.",
+    "brand_tagline": "Najpierw główny kalkulator. Reszta później.",
     "recovery_lab_notice": "Te strony pozostają dostępne w trybie odzyskiwania, ale nie są głównymi powierzchniami kalkulatora.",
     "sync_unavailable": "Metadane synchronizacji niedostępne.",
-    "recovery_scope_title": "Glowny zakres",
+    "recovery_scope_title": "Główny zakres",
     "recovery_scope_desc": "Główny nacisk pozostaje na stronach: kalkulator pojedynczy, porównywarka, drabina, inwestycje regularne, notatnik i referencje danych.",
-    "open_recovery_lab": "Otwórz Recovery Lab",
+    "open_recovery_lab": "Otwórz laboratorium odzyskiwania",
     "freshness": {
       "fresh": "Aktualne",
-      "partial": "Czesciowe",
-      "caution": "Do przegladu",
-      "text_fresh": "Glowne strony korzystaja z aktualnych metadanych.",
-      "text_partial": "Czesc danych nadal moze byc zastepcza.",
-      "text_caution": "Sprawdz swiezosc danych referencyjnych przed wnioskami.",
+      "partial": "Częściowe",
+      "caution": "Do przeglądu",
+      "text_fresh": "Główne strony korzystaja z aktualnych metadanych.",
+      "text_partial": "Część danych nadal może być zastępcza.",
+      "text_caution": "Sprawdź świeżość danych referencyjnych przed wnioskami.",
       "coverage_label": "Zakres danych do",
       "reference_label": "Dane referencyjne",
       "last_checked": "Ostatnio sprawdzono",
-      "offer_source_label": "Biezaca oferta obligacji",
-      "offer_degraded_warning": "Potwierdzenie biezacej oferty jest ograniczone; sprawdz oprocentowanie przed uzyciem wyniku.",
+      "offer_source_label": "Bieżąca oferta obligacji",
+      "offer_degraded_warning": "Potwierdzenie bieżącej oferty jest ograniczone; sprawdź oprocentowanie przed użyciem wyniku.",
       "offer_sources": {
         "gov_pl": "Oficjalne gov.pl",
         "obligacjeskarbowe_pl": "Wtórne obligacjeskarbowe.pl",
-        "curated-fallback": "Kuratorowany fallback",
+        "curated-fallback": "Kuratorowane dane zastępcze",
         "unavailable": "Brak potwierdzenia oferty"
       },
       "no_date": "Brak daty",
@@ -204,64 +204,64 @@
   "metadata": {
     "pages": {
       "home": {
-        "title": "Strona glowna",
-        "description": "Spokojny punkt startowy do kalkulatora obligacji skarbowych i wspierajacych narzedzi."
+        "title": "Strona główna",
+        "description": "Spokojny punkt startowy do kalkulatora obligacji skarbowych i wspierajacych narzędzi."
       },
       "single_calculator": {
         "title": "Kalkulator pojedynczy",
-        "description": "Szczegolowa symulacja jednej obligacji skarbowej przez caly modelowany cykl."
+        "description": "Szczegółowa symulacja jednej obligacji skarbowej przez cały modelowany cykl."
       },
       "comparison": {
-        "title": "Porownanie",
-        "description": "Porownanie dwoch modelowanych wynikow obligacji skarbowych przy wspolnych zalozeniach."
+        "title": "Porównanie",
+        "description": "Porównanie dwóch modelowanych wyników obligacji skarbowych przy wspólnych założeniach."
       },
       "economic_data": {
         "title": "Dane ekonomiczne",
-        "description": "Strona referencyjna dla inflacji, stop NBP i makroekonomicznego kontekstu obliczen obligacji."
+        "description": "Strona referencyjną dla inflacji, stop NBP i makroekonomicznego kontekstu obliczeń obligacji."
       },
       "education": {
         "title": "Edukacja",
-        "description": "Poznaj zasady, mechanike i podatki zwiazane z polskimi obligacjami skarbowymi."
+        "description": "Poznaj zasady, mechanikę i podatki związane z polskimi obligacjami skarbowymi."
       },
       "notebook": {
         "title": "Notatnik portfela",
-        "description": "Zapisuj realne partie obligacji, sprawdzaj zapadalnosci i wracaj do kontekstu notatnika bez zmieniania go w dashboard planistyczny."
+        "description": "Zapisuj realne partie obligacji, sprawdzaj zapadalności i wracaj do kontekstu notatnika bez zmieniania go w dashboard planistyczny."
       },
       "login": {
         "title": "Logowanie",
-        "description": "Zaloguj sie przez zewnetrznego dostawce OAuth, aby zapisywac portfele, importowac partie i zarzadzac prywatnym notatnikiem."
+        "description": "Zaloguj się przez zewnętrznego dostawcę OAuth, aby zapisywać portfele, importować partie i zarządzać prywatnym notatnikiem."
       },
       "optimize": {
         "title": "Dobierz Obligacje",
-        "description": "Eksperymentalny sorter scenariuszy dla modelowanych wynikow obligacji skarbowych przy jawnych zalozeniach."
+        "description": "Eksperymentalny sorter scenariuszy dla modelowanych wyników obligacji skarbowych przy jawnych założeniach."
       },
       "regular_investment": {
         "title": "Regularne inwestowanie",
-        "description": "Modeluj powtarzalne zakupy obligacji i sprawdzaj, jak rozwija sie regularny plan inwestowania."
+        "description": "Modeluj powtarzalne zakupy obligacji i sprawdzaj, jak rozwija się regularny plan inwestowania."
       },
       "ladder": {
         "title": "Strategia drabiny",
-        "description": "Testuj rozklad zapadalnosci, czas rolowania i ksztalt plynnosci dla jednego ustawienia drabiny."
+        "description": "Testuj rozkład zapadalności, czas rolowania i kształt płynności dla jednego ustawienia drabiny."
       },
       "multi_asset": {
-        "title": "Gielda vs Obligacje",
-        "description": "Powierzchnia referencyjna do porownan obligacji z wezszym kontekstem historycznym innych aktywow."
+        "title": "Giełda vs Obligacje",
+        "description": "Strona referencyjna do porównań obligacji z węższym kontekstem historycznym innych aktywów."
       },
       "retirement": {
         "title": "Planer emerytalny",
-        "description": "Ograniczone modelowanie wyplat dla wspieranych rodzin obligacji przy stalych zalozeniach."
+        "description": "Ograniczone modelowanie wypłat dla wspieranych rodzin obligacji przy stałych założeniach."
       },
       "recovery_lab": {
-        "title": "Recovery Lab",
-        "description": "Boczne wejscie do powierzchni waskich lub bardziej wrazliwych na zalozenia, oddzielonych od glownej sciezki produktu."
+        "title": "Laboratorium odzyskiwania",
+        "description": "Boczne wejście do powierzchni wąskich lub bardziej wrażliwych na założenia, oddzielonych od głównej ścieżki produktu."
       },
       "shared_scenario": {
-        "title": "Udostepniony scenariusz",
-        "description": "Odtworz zapisany scenariusz jednej obligacji wraz z zachowanymi zalozeniami."
+        "title": "Udostępniony scenariusz",
+        "description": "Odtwórz zapisany scenariusz jednej obligacji wraz z zachowanymi założeniami."
       },
       "shared_portfolio": {
-        "title": "Udostepniony portfel",
-        "description": "Zobacz publiczny podglad portfela z zapisanymi partiami obligacji i opisowym kontekstem notatnika."
+        "title": "Udostępniony portfel",
+        "description": "Zobacz publiczny podgląd portfela z zapisanymi partiami obligacji i opisowym kontekstem notatnika."
       }
     }
   },
@@ -274,11 +274,11 @@
     "decision_subtitle": "Ten przewodnik zawęża ofertę według Twojego celu. To punkt wyjścia do analizy, nie rekomendacja.",
     "concepts_title": "Podstawowe Pojęcia Finansowe",
     "concepts_subtitle": "Kluczowe terminy niezbędne do zrozumienia Twoich inwestycji.",
-    "starter_title": "Ktora obligacje sprawdzic najpierw?",
-    "starter_subtitle": "Uzyj tego jako szybkiej sciezki do kalkulatora. To punkt startowy analizy, nie rekomendacja.",
-    "starter_cta": "Otworz kalkulator",
+    "starter_title": "Która obligację sprawdzić najpierw?",
+    "starter_subtitle": "Użyj tego jako szybkiej ścieżki do kalkulatora. To punkt startowy analizy, nie rekomendacja.",
+    "starter_cta": "Otwórz kalkulator",
     "bond_types": "Aktualna Oferta Obligacji",
-    "bond_types_subtitle": "Porownaj oferte wedlug czasu trwania, mechanizmu oprocentowania, kapitalizacji i kosztu wczesniejszego wykupu przed uruchomieniem scenariusza.",
+    "bond_types_subtitle": "Porównaj ofertę według czasu trwania, mechanizmu oprocentowania, kapitalizacji i kosztu wcześniejszego wykupu przed uruchomieniem scenariusza.",
     "calculate_this_bond": "Policz {bond}",
     "more_concepts": "Zobacz podstawy podatku i wcześniejszego wykupu",
     "comparison": {
@@ -291,7 +291,7 @@
       "payout": "Obsługa odsetek",
       "exit_fee": "Opłata za wcześniejszy wykup",
       "fixed_rate": "Stałe oprocentowanie",
-      "reference_rate": "Stopa referencyjna NBP",
+      "reference_rate": "Stopa referencyjną NBP",
       "inflation_indexed": "Indeksowane inflacją",
       "select": "Wybierz",
       "selected_count": "Wybrano: {count}",
@@ -329,10 +329,10 @@
       },
       "family": {
         "label": "Masz prawo do obligacji rodzinnych",
-        "description": "Sprawdź obligacje rodzinne tylko wtedy, gdy spełniasz warunek uprawnienia do 800+."
+        "description": "Sprawdź obligacje rodzinne tylko wtedy, gdy spełniasz warunek uprawnienia do programu 800+."
       },
       "long_term": {
-        "label": "Oszczędzasz długoterminowo",
+        "label": "Oszczędzasz długoterminówo",
         "description": "Rozważ długi horyzont, gdy roczna kapitalizacja może mieć istotne znaczenie."
       }
     },
@@ -374,20 +374,20 @@
     },
     "starter": {
       "short_term": {
-        "label": "Krotki termin",
-        "description": "Zacznij tutaj, gdy plynnosc jest wazniejsza niz dlugie skladanie odsetek."
+        "label": "Krótki termin",
+        "description": "Zacznij tutaj, gdy płynność jest ważniejsza niż długie składanie odsetek."
       },
       "inflation": {
-        "label": "Ochrona przed inflacja",
-        "description": "Uzyj ich, gdy najwazniejsze jest porownanie sily nabywczej."
+        "label": "Ochrona przed inflacją",
+        "description": "Użyj ich, gdy najważniejsze jest porównanie siły nabywczej."
       },
       "family": {
         "label": "Obligacje rodzinne",
-        "description": "Sprawdzaj tylko wtedy, gdy warunek uprawnienia do obligacji rodzinnych ma zastosowanie."
+        "description": "Sprawdzaj tylko wtedy, gdy warunek uprawnieńia do obligacji rodzinnych ma zastosowanie."
       },
       "long_term": {
-        "label": "Dlugoterminowe oszczedzanie",
-        "description": "Uzyj ich, gdy horyzont jest wystarczajaco dlugi, aby kapitalizacja miala znaczenie."
+        "label": "Długoterminówe oszczędzanie",
+        "description": "Użyj ich, gdy horyzont jest wystarczająco długi, aby kapitalizacja miała znaczenie."
       }
     },
     "disclaimer": "Uwaga: Warunki obligacji mogą się zmieniać. Zawsze weryfikuj aktualne parametry na oficjalnej stronie polskich obligacji skarbowych (obligacjeskarbowe.pl)."
@@ -397,12 +397,12 @@
     "previous_offer_reference": "Ta zatwierdzona kalkulacja korzysta z poprzedniej oferty obligacji. Przelicz ją ponownie, aby użyć aktualnej oferty.",
     "recalculate_current_offer": "Użyj aktualnej oferty",
     "glossary": {
-      "savings_goal": "Kwota, ktora chcesz zgromadzic na koniec inwestycji. Kalkulator pomoze wyliczyc, ile musisz wplacic dzisiaj, aby osiagnac ten cel.",
-      "capitalization": "Proces dopisywania wypracowanych odsetek do kapitalu, dzieki czemu w kolejnym okresie odsetki naliczane sa od wiekszej kwoty (procent skladany).",
-      "inflation_indexed": "Obligacje, ktorych oprocentowanie zmienia sie co roku w oparciu o wskaznik inflacji powiekszony o stala marze (np. COI, EDO).",
-      "real_value": "Wartosc Twojego kapitalu skorygowana o inflacje (sila nabywcza). Pokazuje, ile dzisiejszych towarow bedziesz mogl kupic za te pieniadze w przyszlosci.",
-      "early_withdrawal": "Oplata za wczesniejsze wycofanie srodkow przed terminem zapadalnosci. Jest odejmowana od naroslych odsetek, nigdy od kapitalu glownego.",
-      "tax_wrapper": "Specjalne konta emerytalne pozwalajace na unikniecie podatku Belki przy zachowaniu okreslonych warunkow (np. wiek 60 lat dla IKE)."
+      "savings_goal": "Kwota, którą chcesz zgromadzić na koniec inwestycji. Kalkulator pomoże wyliczyć, ile musisz wpłacić dzisiaj, aby osiągnąć ten cel.",
+      "capitalization": "Proces dopisywania wypracowanych odsetek do kapitału, dzięki czemu w kolejnym okresie odsetki naliczane są od większej kwoty (procent składany).",
+      "inflation_indexed": "Obligacje, których oprocentowanie zmienia się co roku w oparciu o wskaźnik inflacji powiększony o stała marże (np. COI, EDO).",
+      "real_value": "Wartość Twojego kapitału skorygowana o inflację (siła nabywcza). Pokazuje, ile dzisiejszych towarów będziesz mógł kupić za te pieniądze w przyszłości.",
+      "early_withdrawal": "Opłata za wcześniejsze wycofanie środków przed terminem zapadalności. Jest odejmowana od naroslych odsetek, nigdy od kapitału głównego.",
+      "tax_wrapper": "Specjalne konta emerytalne pozwalajace na unikniecie podatku Belki przy zachowaniu określonych warunków (np. wiek 60 lat dla IKE)."
     },
     "bond": {
       "type": "Rodzaj Obligacji",
@@ -413,7 +413,7 @@
     },
     "initial_investment": "Kwota Zakupu",
     "bond_quantity": "Liczba obligacji",
-    "bond_unit_price": "100 PLN za obligacje",
+    "bond_unit_price": "100 PLN za obligację",
     "bond_quantity_limit": "1 - {max} obligacji",
     "units": "sztuk",
     "purchase_date": "Data Zakupu",
@@ -426,9 +426,9 @@
       "indexed": "Indeksowane inflacją",
       "scenarios": {
         "label": "Scenariusze zakresu inflacji",
-        "low": "Niska inflacja",
+        "low": "Niska inflacją",
         "base": "Scenariusz bazowy",
-        "high": "Wysoka inflacja"
+        "high": "Wysoka inflacją"
       }
     },
     "margin": "Marża",
@@ -447,7 +447,7 @@
     "interest_payment": "Wypłata odsetek",
     "fees_and_tax": "Opłaty i Podatki",
     "net_profit_desc": "Twój całkowity zysk netto po odliczeniu podatku Belki oraz ewentualnych opłat za wcześniejszy wykup. To rzeczywisty przyrost Twojego kapitału.",
-    "real_cagr_desc": "Średnioroczna realna stopa zwrotu z Twojej inwestycji po uwzględnieniu utraty siły nabywczej pieniądza spowodowanej inflacją.",
+    "real_cagr_desc": "Średnioroczna realną stopa zwrotu z Twojej inwestycji po uwzględnieniu utraty siły nabywczej pieniądza spowodowanej inflacją.",
     "calculation_breakdown": "Szczegółowy Harmonogram",
     "breakdown_desc": "Zestawienie rok po roku uwzględniające narastanie kapitału i podatki.",
     "nominal_before": "Nominał (Początek)",
@@ -457,7 +457,7 @@
     "tax": "Podatek",
     "withdrawal": "WYPŁATA",
     "maturity": "Zapadalność",
-    "error_100_pln": "Musi być wielokrotnością 100 PLN",
+    "error_100_pln": "Musi być wielokrótnością 100 PLN",
     "error_future_date": "Data nie może być z przyszłości",
     "regular_calculator": "Inwestycje Miesięczne",
     "regular_calc_desc": "Symulacja budowania portfela poprzez regularne zakupy.",
@@ -475,9 +475,9 @@
         "general": "Ogólny (Lata)",
         "exact": "Dokładne Daty"
       },
-      "rollover_title": "Rolowanie obslugiwane automatycznie",
-      "rollover_auto": "Horyzont przekracza natywny termin tej obligacji, wiec kalkulator automatycznie laczy kolejne cykle zamiast wymagac osobnego przelacznika.",
-      "single_cycle": "Horyzont miesci sie w jednym cyklu, wiec wynik pokazuje pojedynczy zakup i ewentualny koszt wczesniejszego wykupu."
+      "rollover_title": "Rolowanie obsługiwane automatycznie",
+      "rollover_auto": "Horyzont przekracza natywny termin tej obligacji, więc kalkulator automatycznie łączy kolejne cykle zamiast wymagać osobnego przełącznika.",
+      "single_cycle": "Horyzont mieści się w jednym cyklu, więc wynik pokazuje pojedynczy zakup i ewentualny koszt wcześniejszego wykupu."
     },
     "investment_horizon": "Czas Inwestowania",
     "investment_lots": "Twoje Partie Obligacji",
@@ -490,7 +490,7 @@
     "matured": "Zapadła",
     "active": "W Toku",
     "status": "Status",
-    "regular_calc_info": "W tej symulacji każda kolejna partia obligacji jest kupowana tego samego dnia każdego miesiąca/kwartału. Obliczenia uwzględniają, że partie kupione pod koniec okresu będą miały mniej czasu na wypracowanie zysku.",
+    "regular_calc_info": "W tej symulacji każda kolejna partia obligacji jest kupowana tego samego dnia każdego miesiąca lub kwartału. Obliczenia uwzględniają, że partie kupione pod koniec okresu będą miały mniej czasu na wypracowanie zysku.",
     "investment_growth": "Wzrost Wartości Portfela",
     "capitalization": "TAK",
     "payout": "NIE",
@@ -506,10 +506,10 @@
     "projection_start": "Początek projekcji",
     "timeline": "Szczegółowy Harmonogram",
     "filter_events": "Filtruj zdarzenia",
-    "chart_value_note": "Linie nominalna i realna są głównym odczytem. Linie inflacji i NBP dostarczają jedynie kontekstu.",
-    "value_chart_label": "Wykres wartosci obligacji",
-    "chart_accessible_summary_empty": "Wykres wartosci nie ma jeszcze widocznych punktow danych.",
-    "chart_accessible_summary": "Wykres zawiera {count} probkowanych punktow. Wartosc nominalna zaczyna sie od {start}, konczy na {end}, a koncowa wartosc realna to {real}.",
+    "chart_value_note": "Linie wartości nominalnej i realnej są głównym odczytem. Linie inflacji i NBP dostarczają jedynie kontekstu.",
+    "value_chart_label": "Wykres wartości obligacji",
+    "chart_accessible_summary_empty": "Wykres wartości nie ma jeszcze widocznych punktów danych.",
+    "chart_accessible_summary": "Wykres zawiera {count} próbkowanych punktów. Wartość nominalna zaczyna się od {start}, kończy na {end}, a końcowa wartość realna wynosi {real}.",
     "explanation_inflation": "Obliczenia wykorzystują przewidywaną stopę inflacji do indeksacji. Wartość realna jest korygowana o skumulowaną inflację, pokazując dzisiejszą siłę nabywczą.",
     "explanation_tax": "Podatek Belki 19% jest naliczany od wypracowanych odsetek. W przypadku obligacji kapitalizowanych, jest pobierany na koniec lub przy wypłacie.",
     "total_invested": "Całkowita inwestycja",
@@ -536,7 +536,7 @@
     "advanced_inflation": "Użyj zaawansowanej inflacji rocznej",
     "advanced_nbp": "Użyj zaawansowanej rocznej ścieżki NBP",
     "latest_official": "Najnowszy oficjalny odczyt",
-    "nbp_target_hint": "Dlugoletni cel inflacyjny NBP to {target}, ale to pole powinno odzwierciedlac modelowana sciezke dla horyzontu scenariusza.",
+    "nbp_target_hint": "Długoletni cel inflacyjny NBP to {target}, ale to pole powinno odzwierciedlać modelowaną ścieżkę dla horyzontu scenariusza.",
     "historical_context": "Kontekst historyczny",
     "standard_payout": "Standard (Wypłata)",
     "reverse_target": "Odwrotny (Cel)",
@@ -547,16 +547,16 @@
     "example_goal": "np. 50000",
     "tax_strategy": "Typ konta (Strategia podatkowa)",
     "family_bond": "Obligacja rodzinna",
-    "family_bond_notice": "Scenariusze rodzinne maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego faktycznie obowiazuje.",
-    "shared_scenario_badge": "Udostepniony scenariusz",
-    "shared_scenario_snapshot": "To jest zapisany, odtwarzalny snapshot jednego obliczenia.",
+    "family_bond_notice": "Scenariusze rodzinne mają sens tylko wtedy, gdy warunek uprawnieńia gospodarstwa domowego faktycznie obowiązuje.",
+    "shared_scenario_badge": "Udostępniony scenariusz",
+    "shared_scenario_snapshot": "To jest zapisany, odtwarzalny zapis stanu jednego obliczenia.",
     "form": {
-      "main_path_desc": "Glowna sciezka wejsc. Zalozenia zaawansowane pozostaja zwiniete, dopoki nie sa potrzebne.",
-      "step_core_desc": "Wybierz jedna obligacje, ustaw kwote, a potem zdecyduj, czy liczysz standardowa wyplate czy cel.",
-      "step_timing_desc": "Ustal date zakupu, horyzont, tryb wyjscia i opakowanie podatkowe przed uruchomieniem obliczen.",
-      "advanced_desc": "Zalozenia inflacyjne, sciezka NBP, ustawienia wykresu i inne drugorzedne kontrolki.",
-      "display_summary_title": "Kontrolki wyswietlania",
-      "display_summary_desc": "Granulacja wykresu jest sterowana bezposrednio w pasku wykresu i nie zmienia wyniku obliczen.",
+      "main_path_desc": "Główna ścieżka wejść. Założenia zaawansowane pozostają zwiniete, dopóki nie są potrzebne.",
+      "step_core_desc": "Wybierz jedną obligację, ustaw kwotę, a potem zdecyduj, czy liczysz standardową wypłatę czy cel.",
+      "step_timing_desc": "Ustal datę zakupu, horyzont, tryb wyjścia i opakowanie podatkowe przed uruchomieniem obliczeń.",
+      "advanced_desc": "Założenia inflacyjne, ścieżka NBP, ustawienia wykresu i inne drugorzędne kontrolki.",
+      "display_summary_title": "Kontrolki wyświetlania",
+      "display_summary_desc": "Granulacja wykresu jest sterowana bezpośrednio w pasku wykresu i nie zmienia wyniku obliczeń.",
       "step_inflation_title": "3. Ustawienia inflacji",
       "step_inflation_desc": "Wybierz stałe ustawienie, prostą wartość inflacji albo roczną ścieżkę inflacji.",
       "step_nbp_title": "4. Ustawienia stopy NBP",
@@ -591,38 +591,38 @@
       "ready_steps_label": "Skonfiguruj scenariusz",
       "ready": "Gotowy na symulację?",
       "ready_title": "Jeden kalkulator. Jeden zatwierdzony przebieg.",
-      "ready_desc": "Najpierw domknij dane po lewej stronie, zostaw zalozenia zaawansowane jako drugorzedne, a potem uruchom jedno czyste obliczenie i zacznij od podsumowania.",
-      "action": "Dzialanie",
-      "results_stable": "Wyniki pozostaja stabilne, dopoki swiadomie nie uruchomisz nowego przeliczenia.",
-      "stale_results": "Dane zostaly zmienione. Wyniki ponizej nadal pokazuja poprzedni przebieg, dopoki nie uruchomisz obliczenia ponownie.",
-      "draft_saved": "Szkic zapisany na tym urzadzeniu",
-      "chart_key_insight": "Najwazniejszy wniosek z wykresu",
-      "chart_key_insight_copy": "Najpierw przeczytaj wartosci koncowe; ksztalt linii pokazuje przebieg, ale nie zastepuje dokladnych liczb.",
+      "ready_desc": "Najpierw domknij dane po lewej stronie, zostaw założenia zaawansowane jako drugorzędne, a potem uruchom jedno czyste obliczenie i zacznij od podsumowania.",
+      "action": "Działanie",
+      "results_stable": "Wyniki pozostają stabilne, dopóki świadomie nie uruchomisz nowego przeliczenia.",
+      "stale_results": "Dane zostały zmienione. Wyniki poniżej nadal pokazują poprzedni przebieg, dopóki nie uruchomisz obliczenia ponownie.",
+      "draft_saved": "Szkic zapisany na tym urządzeniu",
+      "chart_key_insight": "Najważniejszy wniosek z wykresu",
+      "chart_key_insight_copy": "Najpierw przeczytaj wartości końcowe; kształt linii pokazuje przebieg, ale nie zastępuje dokładnych liczb.",
       "decision_summary": "Podsumowanie decyzji",
       "decision_bond": "Obligacja",
       "decision_horizon": "Horyzont",
-      "decision_invested": "Wplata",
+      "decision_invested": "Wpłata",
       "decision_result_link": "Podsumowanie",
       "decision_details_link": "Wykres i harmonogram",
-      "draft_ready": "Biezacy scenariusz jest gotowy",
-      "draft_description": "Zmienione dane sa zapisywane lokalnie, dopoki ich nie wyczyscisz.",
-      "restore_draft": "Przywroc szkic",
-      "clear_draft": "Wyczysc szkic",
-      "fix_blocking": "Najpierw popraw blokujace dane, potem licz dalej.",
+      "draft_ready": "Bieżący scenariusz jest gotowy",
+      "draft_description": "Zmienione dane są zapisywane lokalnie, dopóki ich nie wyczyśćisz.",
+      "restore_draft": "Przywróć szkic",
+      "clear_draft": "Wyczyść szkic",
+      "fix_blocking": "Najpierw popraw blokujące dane, potem licz dalej.",
       "calculation_context": "Kontekst obliczenia",
-      "how_to_read_title": "Jak czytac ten wynik",
-      "how_to_read_desc": "Najpierw przeczytaj glowny wynik, potem spojrz na wykres, a dopiero na koncu wchodz w harmonogram i slad obliczen.",
+      "how_to_read_title": "Jak czytać ten wynik",
+      "how_to_read_desc": "Najpierw przeczytaj główny wynik, potem spójrz na wykres, a dopiero na końcu wchodź w harmonogram i ślad obliczeń.",
       "secondary_badge": "Pomocnicze",
-      "chart_section_desc": "Wykres pokazuje ogolny przebieg scenariusza bez koniecznosci wchodzenia od razu w harmonogram.",
-      "chart_help_title": "Jak czytac wykres",
-      "chart_help_desc": "Najpierw porownaj linie nominalna i realna. Linie inflacji oraz NBP sa tylko kontekstem pomocniczym i nie powinny dominowac nad wartoscia inwestycji.",
-      "timeline_section_desc": "Harmonogram pokazuje kolejne punkty kontrolne scenariusza: kiedy zmienia sie stopa, kiedy naliczane sa odsetki i jaka wartosc zostaje na danym etapie.",
-      "meta_desc": "Meta dane, zalozenia i flagi jakosci powinny byc widoczne, ale nie dominowac nad wynikiem.",
+      "chart_section_desc": "Wykres pokazuje ogólny przebieg scenariusza bez konieczności wchodzenia od razu w harmonogram.",
+      "chart_help_title": "Jak czytać wykres",
+      "chart_help_desc": "Najpierw porównaj linie wartości nominalnej i realnej. Linie inflacji oraz NBP są tylko kontekstem pomocniczym i nie powinny dominować nad wartością inwestycji.",
+      "timeline_section_desc": "Harmonogram pokazuje kolejne punkty kontrolne scenariusza: kiedy zmienia się stopa, kiedy naliczane są odsetki i jaka wartość zostaje na danym etapie.",
+      "meta_desc": "Meta dane, założenia i flagi jakości powinny być widoczne, ale nie dominować nad wynikiem.",
       "meta_badge": "Meta dane",
       "reading_guide": {
-        "summary_first": "Najpierw przeczytaj podsumowanie wyplaty netto i zysku.",
-        "chart_then_timeline": "Wykres ma pomoc w szybkim odczycie przebiegu inwestycji, a harmonogram sluzy do kontroli szczegolow.",
-        "stale_until_recalculated": "Jezeli zmienisz dane wejsciowe, stare wyniki pozostaja widoczne az do swiadomego przeliczenia."
+        "summary_first": "Najpierw przeczytaj podsumowanie wypłaty netto i zysku.",
+        "chart_then_timeline": "Wykres ma pomoc w szybkim odczycie przebiegu inwestycji, a harmonogram służy do kontroli szczegółów.",
+        "stale_until_recalculated": "Jeżeli zmienisz dane wejśćiowe, stare wyniki pozostają widoczne az do świadomego przeliczenia."
       },
       "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
       "growth": "Projekcja wzrostu inwestycji",
@@ -633,7 +633,7 @@
         },
         "timing": {
           "title": "Czas i podatek",
-          "desc": "Data zakupu, horyzont, wypłata i opakowanie podatkowe."
+          "desc": "Data zakupu, horyzont, wypłatą i opakowanie podatkowe."
         },
         "advanced": {
           "title": "Opcjonalne zaawansowane",
@@ -641,42 +641,42 @@
         }
       },
       "regular": {
-        "ready_title": "Zbuduj jeden plan regularny, a potem uruchom jedna zatwierdzona symulacje.",
-        "ready_desc": "Najpierw ustaw kwote wplaty, czestotliwosc, horyzont i typ obligacji. Zaawansowane zalozenia pozostaja drugorzedne, a w tle nie ma przeliczania podczas edycji.",
+        "ready_title": "Zbuduj jeden plan regularny, a potem uruchom jedną zatwierdzoną symulację.",
+        "ready_desc": "Najpierw ustaw kwotę wpłaty, częstotliwosc, horyzont i typ obligacji. Zaawansowane założenia pozostają drugorzędne, a w tle nie ma przeliczania podczas edycji.",
         "click": "Kliknij 'Oblicz', aby zobaczyć projekcję",
         "action": "Symulacja regularnych wpłat",
         "how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności.",
         "ready_steps": {
           "plan": {
-            "title": "Plan wplat",
-            "desc": "Kwota, czestotliwosc i typ obligacji."
+            "title": "Plan wpłat",
+            "desc": "Kwota, częstotliwosc i typ obligacji."
           },
           "timing": {
-            "title": "Sciezka czasu",
-            "desc": "Data zakupu, horyzont, tryb wyjscia i opakowanie podatkowe."
+            "title": "Ścieżka czasu",
+            "desc": "Data zakupu, horyzont, tryb wyjścia i opakowanie podatkowe."
           },
           "advanced": {
             "title": "Opcjonalne zaawansowane",
-            "desc": "Sciezka inflacji, rollover i widok wykresu tylko wtedy, gdy sa potrzebne."
+            "desc": "Ścieżka inflacji, rollover i widok wykresu tylko wtedy, gdy są potrzebne."
           }
         }
       }
     },
     "regular_simulation": {
-      "ready_title": "Zbuduj jeden plan regularny, a potem uruchom jedna zatwierdzona symulacje.",
-      "ready_desc": "Najpierw ustaw kwote, czestotliwosc, horyzont i typ obligacji. Zaawansowane zalozenia maja pozostac drugorzedne, dopoki nie sa potrzebne.",
+      "ready_title": "Zbuduj jeden plan regularny, a potem uruchom jedną zatwierdzoną symulację.",
+      "ready_desc": "Najpierw ustaw kwotę, częstotliwosc, horyzont i typ obligacji. Zaawansowane założenia mają pozostać drugorzędne, dopóki nie są potrzebne.",
       "ready_steps": {
         "plan": {
-          "title": "Plan wplat",
-          "desc": "Kwota, rytm wplat i typ obligacji dla calej sciezki."
+          "title": "Plan wpłat",
+          "desc": "Kwota, rytm wpłat i typ obligacji dla całej ścieżki."
         },
         "timing": {
-          "title": "Sciezka czasu",
-          "desc": "Data startu, horyzont, tryb wyjscia i opakowanie podatkowe."
+          "title": "Ścieżka czasu",
+          "desc": "Data startu, horyzont, tryb wyjścia i opakowanie podatkowe."
         },
         "advanced": {
           "title": "Opcjonalne zaawansowane",
-          "desc": "Inflacja, rollover i ustawienia wykresu tylko wtedy, gdy sa potrzebne."
+          "desc": "Inflacja, rollover i ustawienia wykresu tylko wtedy, gdy są potrzebne."
         }
       }
     },
@@ -686,30 +686,30 @@
     "wait_capitalization": "Poczekaj! Okazja do kapitalizacji",
     "wait_capitalization_desc": "Wycofujesz środki tuż przed dużą wypłatą odsetek lub kapitalizacją. Odczekanie kilku dni może zwiększyć Twój zysk netto nawet o {amount}.",
     "rate_context": {
-      "floating_style": "NBP + marza",
-      "indexed_style": "Inflacja + marza",
-      "fixed_style": "Stala stopa",
-      "first_month_offer": "Stopa oferty dla 1. miesiaca",
+      "floating_style": "NBP + marża",
+      "indexed_style": "Inflacja + marża",
+      "fixed_style": "Stała stopa",
+      "first_month_offer": "Stopa oferty dla 1. miesiąca",
       "first_year_offer": "Stopa oferty dla 1. roku",
-      "fixed_full_term": "Stopa oferty dla calego okresu",
+      "fixed_full_term": "Stopa oferty dla całego okresu",
       "fixed_schedule": "Stopa oferty w harmonogramie",
       "later_periods": "Kolejne okresy",
-      "later_nbp_rule": "Stopa referencyjna NBP {margin}",
+      "later_nbp_rule": "Stopa referencyjną NBP {margin}",
       "later_cpi_rule": "Inflacja CPI {margin}",
-      "floating_narrative": "Pierwszy miesiac korzysta ze stopy aktywnej serii emisyjnej. Dopiero kolejne miesiace przechodza na stope referencyjna NBP {margin}.",
-      "indexed_narrative": "Pierwszy rok korzysta ze stopy oferty danej serii. Dopiero kolejne lata przechodza na inflacje CPI {margin}.",
-      "fixed_narrative": "Ta obligacja zachowuje mechanike stopy z wybranej oferty i nie przechodzi na zewnetrzna stope referencyjna."
+      "floating_narrative": "Pierwszy miesiąc korzysta ze stopy aktywnej serii emisyjnej. Dopiero kolejne miesiące przechodzą na stopę referencyjną NBP {margin}.",
+      "indexed_narrative": "Pierwszy rok korzysta ze stopy oferty danej serii. Dopiero kolejne lata przechodzą na inflację CPI {margin}.",
+      "fixed_narrative": "Ta obligacja zachowuje mechanikę stopy z wybranej oferty i nie przechodzi na zewnętrzna stopę referencyjną."
     },
     "payout_calculation": "Wyliczenie wypłaty",
     "actual_cash_in_hand": "To rzeczywista kwota gotówki, którą otrzymujesz.",
     "composition": "Struktura wyniku",
     "tax_fee_breakdown": "Podatek: {tax} | Opłata: {fee}",
     "how_interest_works": "Jak liczymy odsetki:",
-    "interest_indexed_desc": "Indeksowane inflacją: stopa = inflacja + marża. Stosowane do wartości nominalnej.",
-    "capitalization_desc": "Capitalization: naliczone odsetki są dodawane do kapitału na kolejny okres.",
+    "interest_indexed_desc": "Indeksowane inflacją: stopa = inflacją + marża. Stosowane do wartości nominalnej.",
+    "capitalization_desc": "Kapitalizacja: naliczone odsetki są dodawane do kapitału na kolejny okres.",
     "belka_desc": "Podatek Belki: 19% jest potrącane od naliczonych odsetek w każdym okresie albo przy wypłacie dla obligacji kapitalizowanych.",
     "interest_formula": "Odsetki = Nominał × Stopa × (Dni w okresie / Dni w roku)",
-    "ref_inflation": "Ref. inflacja",
+    "ref_inflation": "Ref. inflacją",
     "nbp_rate_short": "Stopa NBP",
     "projected": "Prognozowane",
     "historical": "Historyczne",
@@ -717,7 +717,7 @@
     "first_month_rate": "Oprocentowanie 1. miesiąc",
     "offer": {
       "current": "Aktualna Oferta",
-      "current_description": "Uzyj aktualnej definicji oferty"
+      "current_description": "Użyj aktualnej definicji oferty"
     },
     "historical_offer": "Oferta Historyczna",
     "select_series": "Wybierz konkretną serię",
@@ -730,14 +730,14 @@
     "first_cycle_ends": "Koniec pierwszego cyklu",
     "early_exit_date": "Data wcześniejszego wyjścia",
     "explanation_title": "O tych wynikach",
-    "explanation_text": "Te projekcje opierają się na aktualnych warunkach obligacji i wybranych przez Ciebie założeniach makroekonomicznych.",
+    "explanation_text": "Te projekcję opierają się na aktualnych warunkach obligacji i wybranych przez Ciebie założeniach makroekonomicznych.",
     "step_by_step": "Obliczenie odsetek krok po kroku",
     "interest_example_title": "Obliczenia dla roku {year}",
     "base_value": "Kapitał na początku",
     "plus_interest": "Naliczone odsetki",
     "minus_tax": "Pobrany podatek Belki",
     "net_period_gain": "Zysk netto za okres",
-    "protection_visualizer": "Ochrona przed inflacją (Wartość realna)",
+    "protection_visualizer": "Ochrona przed inflacją (Wartość realną)",
     "nominal_gap": "Luka między wartością nominalną a realną",
     "chart": {
       "granularity": "Granulacja Wykresu",
@@ -795,14 +795,14 @@
     "results": {
       "summary_eyebrow": "Podsumowanie scenariusza",
       "scenario_save_success": "Scenariusz zapisany.",
-      "scenario_save_error": "Nie mozna zapisac scenariusza. Sprawdz pamiec przegladarki i sprobuj ponownie.",
-      "pdf_export_success": "Utworzono eksport PDF.",
-      "pdf_export_error": "Nie mozna utworzyc eksportu PDF. Sprobuj ponownie.",
-      "summary_description": "To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz glebiej tylko wtedy, gdy potrzebujesz szczegolow.",
-      "narrative_maturity": "Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.",
-      "narrative_early_exit": "Ten przebieg zaklada wczesniejszy wykup przed pelna zapadalnoscia, wiec oplaty lub utracona kapitalizacja moga obnizyc wynik.",
-      "wrapper_limit_title": "Limit opakowania podatkowego zostal osiagniety.",
-      "wrapper_limit_description": "{wrapperAmount} pozostalo w opakowaniu, a {standardAmount} przeszlo na konto standardowe.",
+      "scenario_save_error": "Nie można zapisać scenariusza. Sprawdź pamięć przeglądarki i spróbuj ponownie.",
+      "pdf_export_success": "Utwórzono eksport PDF.",
+      "pdf_export_error": "Nie można utwórzyc eksportu PDF. Spróbuj ponownie.",
+      "summary_description": "To jest końcowa wypłata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk poniżej, dopiero potem wchodź głębiej tylko wtedy, gdy potrzebujesz szczegółów.",
+      "narrative_maturity": "Ten przebieg utrzymuje obligację do modelowanej ścieżki zapadalności, więc wynik odzwierciedla pełny plan.",
+      "narrative_early_exit": "Ten przebieg zakłada wcześniejszy wykup przed pełna zapadalnością, więc opłaty lub utracona kapitalizacja mogą obniżyć wynik.",
+      "wrapper_limit_title": "Limit opakowania podatkowego został osiągniety.",
+      "wrapper_limit_description": "{wrapperAmount} pozostało w opakowaniu, a {standardAmount} przeszlo na konto standardowe.",
       "scenario_facts_title": "Fakty scenariusza",
       "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku.",
       "actions_label": "Działania dla wyniku",
@@ -813,17 +813,17 @@
       "bond_type": "Typ obligacji",
       "horizon": "Horyzont",
       "tax_strategy": "Strategia podatkowa",
-      "withdrawal_mode": "Tryb wyjscia"
+      "withdrawal_mode": "Tryb wyjścia"
     },
     "withdrawal_modes": {
-      "early_redemption": "Wczesniejszy wykup",
-      "at_maturity": "Do zapadalnosci"
+      "early_redemption": "Wcześniejszy wykup",
+      "at_maturity": "Do zapadalności"
     },
     "audit": {
       "eyebrow": "Szybki audyt okresu",
       "title": "Obliczenia dla okresu {period}",
-      "description": "To jest skondensowany podglad jednego okresu. Ma pomagac rozumiec skad bierze sie wynik bez zalewania tabela.",
-      "rate_source": "Zrodlo stopy",
+      "description": "To jest skondensowany podgląd jednego okresu. Ma pomagać rozumiec skad bierze się wynik bez zalewania tabelą.",
+      "rate_source": "Źródło stopy",
       "reference_basis": "Punkt odniesienia"
     },
     "timeline_display": {
@@ -832,133 +832,133 @@
         "historical": "Historia"
       },
       "cash_flow": {
-        "paid_out": "Wyplacona gotowka",
+        "paid_out": "Wypłacona gotówka",
         "retained": "Odsetki zatrzymane w obligacji"
       },
       "cadence": {
-        "scenario_entry": "Punkt wejscia do scenariusza",
-        "maturity_closeout": "Punkt zapadalnosci i zamkniecia cyklu",
-        "exit_payout": "Punkt wyjscia z inwestycji",
-        "payout_rollover": "Punkt wyplaty lub odnowienia",
+        "scenario_entry": "Punkt wejścia do scenariusza",
+        "maturity_closeout": "Punkt zapadalności i zamknięcia cyklu",
+        "exit_payout": "Punkt wyjścia z inwestycji",
+        "payout_rollover": "Punkt wypłaty lub odnowienia",
         "checkpoint": "Kontrolny punkt scenariusza"
       },
       "value_meaning": {
-        "withdrawal": "Ten wiersz pokazuje wartosc przy wyjsciu po oplatach i podatku dla tego punktu.",
-        "maturity": "Ten wiersz domyka pelny cykl obligacji.",
-        "paid_out_cash": "Ten punkt laczy wartosc obligacji z gotowka wyplacona juz po drodze.",
-        "retained_interest": "Ten punkt pokazuje odsetki zatrzymane wewnatrz obligacji. Zadna gotowka nie zostala jeszcze wyplacona.",
-        "default": "To jest punkt kontrolny pokazujacy wartosc po naliczeniu dla tego okresu."
+        "withdrawal": "Ten wiersz pokazuje wartość przy wyjściu po opłatach i podatku dla tego punktu.",
+        "maturity": "Ten wiersz domyka pełny cykl obligacji.",
+        "paid_out_cash": "Ten punkt łączy wartość obligacji z gotówka wypłacona już po drodze.",
+        "retained_interest": "Ten punkt pokazuje odsetki zatrzymane wewnątrz obligacji. Żadna gotówka nie została jeszcze wypłacona.",
+        "default": "To jest punkt kontrolny pokazujacy wartość po naliczeniu dla tego okresu."
       },
       "reference": {
         "base": "Baza {value}%",
-        "margin": "Marza {value}%"
+        "margin": "Marża {value}%"
       },
       "rate_source": {
-        "initial_principal": "Kontekst kapitalu poczatkowego",
-        "fixed_rate": "Stala stopa obligacji",
-        "first_year_fixed": "Stala stopa pierwszego roku",
-        "historical_cpi_lag": "Historyczny CPI + marza",
-        "projected_cpi": "Prognozowany CPI + marza",
-        "historical_nbp": "Historyczna stopa NBP + marza",
-        "projected_nbp": "Prognozowana stopa NBP + marza"
+        "initial_principal": "Kontekst kapitału początkowego",
+        "fixed_rate": "Stała stopa obligacji",
+        "first_year_fixed": "Stała stopa pierwszego roku",
+        "historical_cpi_lag": "Historyczny CPI + marża",
+        "projected_cpi": "Prognozowany CPI + marża",
+        "historical_nbp": "Historyczna stopa NBP + marża",
+        "projected_nbp": "Prognozowana stopa NBP + marża"
       },
       "event": {
         "purchase": "Zakup",
         "rate_reset": "Reset stopy",
         "interest_accrual": "Naliczenie odsetek",
-        "payout": "Wyplata",
+        "payout": "Wypłata",
         "tax_settlement": "Rozliczenie podatku",
-        "early_redemption_fee": "Oplata za wykup",
+        "early_redemption_fee": "Opłata za wykup",
         "rollover_purchase": "Zakup z odnowienia",
-        "maturity": "Zapadalnosc",
-        "withdrawal": "Wyjscie"
+        "maturity": "Zapadalność",
+        "withdrawal": "Wyjście"
       },
       "chart": {
         "start": "Start",
-        "initial_capital": "Kapital poczatkowy"
+        "initial_capital": "Kapitał początkowy"
       }
     },
     "schedule": {
       "rows_after_filters": "Wiersze po filtrach",
       "projected_points": "Punkty projekcji",
-      "exit_markers": "Znaczniki wyjscia",
+      "exit_markers": "Znaczniki wyjścia",
       "results_announcement": "Pokazano {visible} z {total} wierszy harmonogramu. Aktywne filtry: {filters}. Punkty prognozy: {projections}.",
-      "no_results_announcement": "Zadne wiersze harmonogramu nie odpowiadaja biezacym filtrom. Aktywne filtry: {filters}. Punkty prognozy: {projections}.",
+      "no_results_announcement": "Żadne wiersze harmonogramu nie odpowiadają bieżącym filtrom. Aktywne filtry: {filters}. Punkty prognozy: {projections}.",
       "active_filters": "Aktywne filtry harmonogramu",
-      "jump_to_rows": "Przejdz do pasujacych okresow",
-      "summary_note": "Kazdy wiersz to punkt kontrolny scenariusza, a nie osobny zakup. Czytaj od lewej do prawej, aby zobaczyc co sie dzieje, jaka baza zostala uzyta i jaka wartosc opuszcza obligacje w tym momencie.",
-      "mobile_sheet_title": "Szczegolowy harmonogram",
-      "mobile_sheet_description": "Otworz harmonogram punkt po punkcie w widoku przyjaznym dla telefonu.",
-      "mobile_sheet_trigger": "Otworz harmonogram",
+      "jump_to_rows": "Przejdź do pasujących okresow",
+      "summary_note": "Każdy wiersz to punkt kontrolny scenariusza, a nie osobny zakup. Czytaj od lewej do prawej, aby zobaczyć, co się dzieje, jaka baza została użyta i jaka wartość opuszcza obligację w tym momencie.",
+      "mobile_sheet_title": "Szczegółowy harmonogram",
+      "mobile_sheet_description": "Otwórz harmonogram punkt po punkcie w widoku przyjaznym dla telefonu.",
+      "mobile_sheet_trigger": "Otwórz harmonogram",
       "mobile_sheet_count_suffix": "wierszy",
       "rate_and_basis": "Stopa i baza",
-      "rate_source": "Zrodlo stopy",
+      "rate_source": "Źródło stopy",
       "checkpoint_meaning": "Znaczenie punktu",
-      "cash_flow": "Przeplyw gotowki"
+      "cash_flow": "Przepływ gotówki"
     },
     "market_assumptions": {
-      "simple_title": "Proste zalozenia rynkowe",
-      "advanced_desc": "Najpierw ustaw jedno CPI i jedno NBP. Roczne sciezki zaawansowane otwieraj tylko wtedy, gdy potrzebujesz wlasnej projekcji.",
-      "effect_title": "Jak te zalozenia dzialaja dla tej obligacji",
+      "simple_title": "Proste założenia rynkowe",
+      "advanced_desc": "Najpierw ustaw jedno CPI i jedno NBP. Roczne ścieżki zaawansowane otwieraj tylko wtedy, gdy potrzebujesz własnej projekcji.",
+      "effect_title": "Jak te założenia działają dla tej obligacji",
       "scenario_descriptions": {
-        "low": "Nizsze zalozenia CPI lagodza przyszle kupony indeksowane i poprawiaja kontekst wartosci realnej.",
-        "base": "Bazowe CPI utrzymuje standardowa projekcje kuponow indeksowanych po okresie otwarcia.",
-        "high": "Wy?sze zalozenia CPI podnosza przyszle kupony indeksowane, ale tez zwiekszaja presje inflacyjna na wartosc realna."
+        "low": "Niższe założenia CPI łagodzą przyszłe kupony indeksowane i poprawiają kontekst wartości realnej.",
+        "base": "Bazowe CPI utrzymuje standardową projekcję kuponów indeksowanych po okresie otwarcia.",
+        "high": "Wyższe założenia CPI podnoszą przyszłe kupony indeksowane, ale też zwiększają presję inflacyjną na wartość realną."
       },
-      "indexed_context": "Dla obligacji indeksowanych CPI zmienia prognozowane kupony po pierwszym okresie i jednoczesnie zmienia odczyty wartosci realnej.",
-      "floating_context": "Dla obligacji zmiennoprocentowych pierwszy okres pozostaje na warunkach emisji. Kolejne okresy podazaja za sciezka NBP powiekszona o marze obligacji.",
-      "floating_inflation_context": "Dla obligacji zmiennoprocentowych CPI nie zmienia bezposrednio kuponu. Wplywa glownie na wartosc realna i odczyt sily nabywczej.",
-      "real_value_context": "Dla obligacji o stalej stopie inflacja zmienia odczyty sily nabywczej, ale nie zmienia sciezki kuponu.",
+      "indexed_context": "Dla obligacji indeksowanych CPI zmienia prognozowane kupony po pierwszym okresie i jednocześnie zmienia odczyty wartości realnej.",
+      "floating_context": "Dla obligacji zmiennoprocentowych pierwszy okres pozostaje na warunkach emisji. Kolejne okresy podążają za ścieżką NBP powiększoną o marżę obligacji.",
+      "floating_inflation_context": "Dla obligacji zmiennoprocentowych CPI nie zmienia bezpośrednio kuponu. Wpływa głównie na wartość realną i odczyt siły nabywczej.",
+      "real_value_context": "Dla obligacji o stałej stopie inflacja zmienia odczyty siły nabywczej, ale nie zmienia ścieżki kuponu.",
       "post_year_one_label": "Scenariusz CPI po pierwszym roku",
-      "non_indexed_note": "Ta obligacja nie jest indeksowana CPI. Inflacja sluzy tu tylko do pokazania wartosci realnej, a nie do resetu kuponu.",
-      "nbp_note": "Ta prognozowana sciezka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakonczeniu pierwszej stopy z oferty.",
-      "nbp_context_only": "Ta obligacja nie resetuje kuponu wedlug stopy referencyjnej NBP, wiec NBP pozostaje tu kontekstem pomocniczym, a nie wejsciem kuponowym.",
+      "non_indexed_note": "Ta obligacja nie jest indeksowana CPI. Inflacja służy tu tylko do pokazania wartości realnej, a nie do resetu kuponu.",
+      "nbp_note": "Ta prognozowana ścieżka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakończeniu pierwszej stopy z oferty.",
+      "nbp_context_only": "Ta obligacja nie resetuje kuponu według stopy referencyjnej NBP, więc NBP pozostaje tu kontekstem pomocniczym, a nie wejśćiem kuponowym.",
       "mode_fixed": "Stale",
       "mode_simple": "Proste",
       "mode_advanced": "Zaawansowane",
-      "nbp_preset_current": "Biezaca",
+      "nbp_preset_current": "Bieżąca",
       "nbp_preset_high": "Wysoka",
       "nbp_preset_low": "Niska",
       "simple_mode_label": "Tryb prosty",
-      "advanced_mode_label": "Sciezka zaawansowana",
-      "inflation_simple_mode_note": "Uzyj jednej sredniej wartosci CPI, gdy chcesz utrzymac czysta projekcje dla calego horyzontu.",
-      "nbp_simple_mode_note": "Uzyj jednej stalej prognozy NBP, chyba ze scenariusz obligacji zmiennoprocentowej wymaga rocznych nadpisan.",
-      "inflation_path_title": "Zaawansowana roczna sciezka CPI",
-      "inflation_path_desc": "Uzyj jej tylko wtedy, gdy jedna srednia inflacja jest zbyt uproszczona dla calego horyzontu.",
-      "nbp_path_title": "Zaawansowana roczna sciezka NBP",
-      "nbp_path_desc": "Uzyj jej tylko wtedy, gdy plaska projekcja NBP nie wystarcza dla scenariusza zmiennoprocentowego.",
+      "advanced_mode_label": "Ścieżka zaawansowana",
+      "inflation_simple_mode_note": "Użyj jednej średniej wartości CPI, gdy chcesz utrzymać czysta projekcję dla całego horyzontu.",
+      "nbp_simple_mode_note": "Użyj jednej stałej prognozy NBP, chyba że scenariusz obligacji zmiennoprocentowej wymaga rocznych nadpisań.",
+      "inflation_path_title": "Zaawansowana roczna ścieżka CPI",
+      "inflation_path_desc": "Użyj jej tylko wtedy, gdy jedną średnia inflacją jest zbyt uproszczona dla całego horyzontu.",
+      "nbp_path_title": "Zaawansowana roczna ścieżka NBP",
+      "nbp_path_desc": "Użyj jej tylko wtedy, gdy plaska projekcja NBP nie wystarcza dla scenariusza zmiennoprocentowego.",
       "nbp_history_title": "Ostatni kontekst NBP",
-      "source_title": "Zsynchronizowane domysly rynkowe",
-      "source_description": "Te wartosci startowe pochodza z najnowszych zsynchronizowanych odczytow CPI i NBP. Nadpisuj je tylko wtedy, gdy scenariusz wymaga innej sciezki.",
-      "source_inflation_label": "Domyslne CPI",
-      "source_nbp_label": "Domyslne NBP",
-      "synced_as_of": "Synchronizacja na {date}",
+      "source_title": "Zsynchronizowane domysły rynkowe",
+      "source_description": "Te wartości startowe pochodzą z najnowszych zsynchronizowanych odczytów CPI i NBP. Nadpisuj je tylko wtedy, gdy scenariusz wymaga innej ścieżki.",
+      "source_inflation_label": "Domyślne CPI",
+      "source_nbp_label": "Domyślne NBP",
+      "synced_as_of": "Stan synchronizacji na {date}",
       "source_missing_date": "Brak daty synchronizacji",
       "source_up_to_date": "Aktualne",
-      "source_live_note": "Dostepne sa zsynchronizowane dane, wiec proste domysly startuja od najnowszych odczytow rynkowych.",
-      "source_fallback_note": "Aktywne sa wartosci zapasowe. Czytaj te dane otwarcia ostrozniej do czasu kolejnej udanej synchronizacji.",
+      "source_live_note": "Dostępne są zsynchronizowane dane, więc proste domysły startują od najnowszych odczytów rynkowych.",
+      "source_fallback_note": "Aktywne są wartości zapasowe. Czytaj te dane otwarcia ostrożniej do czasu kolejnej udanej synchronizacji.",
       "latest_nbp_label": "Najnowsza oficjalna stopa NBP",
-      "nbp_flat_default_note": "Domyslnie kalkulator utrzymuje najnowsza zsynchronizowana stope NBP bez zmian w przyszlym horyzoncie, dopoki jej nie nadpiszesz."
+      "nbp_flat_default_note": "Domyślnie kalkulator utrzymuje najnowszą zsynchronizowaną stopę NBP bez zmian w przyszłym horyzoncie, dopóki jej nie nadpiszesz."
     },
     "support": {
       "standard_label": "Standard",
-      "standard_description": "Standardowy przeplyw detalicznej obligacji skarbowej.",
-      "short_term_label": "Krotki termin",
-      "short_term_description": "Bardzo krotki czas trwania. Dobry do prostych testow wyplaty, slabszy do dlugiego modelowania.",
+      "standard_description": "Standardowy przepływ detalicznej obligacji skarbowej.",
+      "short_term_label": "Krótki termin",
+      "short_term_description": "Bardzo krótki czas trwania. Dobry do prostych testów wypłaty, słabszy do długiego modelowania.",
       "family_label": "Rodzinna",
-      "family_description": "Obligacja rodzinna. Uzywaj tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego rzeczywiscie ma zastosowanie."
+      "family_description": "Obligacja rodzinna. Używaj tylko wtedy, gdy warunek uprawnieńia gospodarstwa domowego rzeczywiście ma zastosowanie."
     },
     "engine_messages": {
-      "expected_inflation": "Przewidywana roczna inflacja: {value}%",
-      "expected_nbp_rate": "Przewidywana stopa referencyjna NBP: {value}%",
-      "custom_inflation": "Uzyto wlasnych nadpisan sciezki inflacji.",
-      "custom_nbp": "Uzyto wlasnych nadpisan sciezki NBP.",
-      "missing_inflation_history": "Brakuje historii inflacji; moga zostac uzyte zalozenia prognozowane.",
-      "missing_nbp_history": "Brakuje historii stopy NBP; moga zostac uzyte zalozenia prognozowane.",
-      "missing_history": "Dane historyczne byly niedostepne; moga zostac uzyte zalozenia prognozowane.",
-      "rollover_disabled": "Rollover jest wylaczony; symulacja konczy sie na pierwszym cyklu obligacji albo wybranej dacie wyjscia.",
-      "early_redemption_applied": "Zastosowano logike oplaty za wczesniejszy wykup przed naturalna zapadalnoscia.",
-      "rollover_cycles": "Symulacja objela {count} cykli obligacji w wybranym horyzoncie."
+      "expected_inflation": "Przewidywana roczna inflacją: {value}%",
+      "expected_nbp_rate": "Przewidywana stopa referencyjną NBP: {value}%",
+      "custom_inflation": "Użyto własnych nadpisań ścieżki inflacji.",
+      "custom_nbp": "Użyto własnych nadpisań ścieżki NBP.",
+      "missing_inflation_history": "Brakuje historii inflacji; mogą zostać użyte założenia prognozowane.",
+      "missing_nbp_history": "Brakuje historii stopy NBP; mogą zostać użyte założenia prognozowane.",
+      "missing_history": "Dane historyczne były niedostępne; mogą zostać użyte założenia prognozowane.",
+      "rollover_disabled": "Rollover jest wyłączony; symulacja kończy się na pierwszym cyklu obligacji albo wybranej dacie wyjścia.",
+      "early_redemption_applied": "Zastosowano logikę opłaty za wcześniejszy wykup przed naturalną zapadalnością.",
+      "rollover_cycles": "Symulacja objęła {count} cykli obligacji w wybranym horyzoncie."
     },
     "data_quality_flags": {
       "projected_rate_segment": "Odcinek stopy prognozowanej"
@@ -973,25 +973,25 @@
     "financial_tools": "Narzędzia Finansowe",
     "recovery_home": {
       "eyebrow": "Polskie obligacje skarbowe",
-      "title": "Sprawdz, co moze dac jedna decyzja o obligacji.",
-      "description": "Ustaw kwote, horyzont i typ obligacji. Zacznij od jednego jasnego scenariusza, a porownania dodaj dopiero wtedy, gdy ich potrzebujesz.",
-      "primary_cta": "Zasymuluj obligacje",
+      "title": "Sprawdź, co może dać jedna decyzja dotycząca obligacji.",
+      "description": "Ustaw kwotę, horyzont i typ obligacji. Zacznij od jednego jasnego scenariusza, a porównania dodaj dopiero wtedy, gdy ich potrzebujesz.",
+      "primary_cta": "Zasymuluj obligację",
       "secondary_cta": "Poznaj podstawy obligacji",
-      "status_trusted": "Zaufane powierzchnie glowne",
-      "status_explicit": "Jawny przeplyw obliczen",
+      "status_trusted": "Zaufane powierzchnie główne",
+      "status_explicit": "Jawny przepływ obliczeń",
       "status_reference": "Dane referencyjne jasno opisane",
-      "core_route_title": "Glowna sciezka",
-      "core_route_desc": "Glowna sciezka jest prosta: poznaj zasady obligacji, wykonaj jedno czyste obliczenie, a potem przejrzyj wyniki bez dodatkowego szumu dashboardu.",
-      "portfolio_empty_title": "Podglad portfela pojawi sie dopiero po dodaniu rzeczywistych partii.",
-      "portfolio_empty_desc": "Do tego czasu strona glowna powinna pozostac lekka, a praca scenariuszowa powinna odbywac sie w kalkulatorze pojedynczym. Notatnik nadal jest dostepny, ale nie powinien konkurowac z glownym przeplywem.",
-      "resume_saved": "Otworz kalkulator",
-      "secondary_tools_title": "Narzedzia drugorzedne",
-      "notebook_card": "Sledz rzeczywiste partie obligacji i wracaj do kontekstu portfela dopiero po zakonczeniu glownych symulacji."
+      "core_route_title": "Główna ścieżka",
+      "core_route_desc": "Główna ścieżka jest prosta: poznaj zasady obligacji, wykonaj jedno czyste obliczenie, a potem przejrzyj wyniki bez dodatkowego szumu dashboardu.",
+      "portfolio_empty_title": "Podgląd portfela pojawi się dopiero po dodaniu rzeczywistych partii.",
+      "portfolio_empty_desc": "Do tego czasu strona główna powinna pozostać lekka, a praca scenariuszowa powinna odbywać się w kalkulatorze pojedynczym. Notatnik nadal jest dostępny, ale nie powinien konkurować z głównym przepływem.",
+      "resume_saved": "Otwórz kalkulator",
+      "secondary_tools_title": "Narzędzia drugorzędne",
+      "notebook_card": "Śledź rzeczywiste partie obligacji i wracaj do kontekstu portfela dopiero po zakończeniu głównych symulacji."
     },
     "cards": {
       "single_calculator": "Przeprowadź szczegółową symulację dla poszczególnych polskich obligacji skarbowych w całym ich cyklu życia.",
       "comparison": "Porównaj wiele obligacji obok siebie, aby znaleźć najlepszą rentowność dla Twojego horyzontu czasowego.",
-      "regular_investment": "Symuluj miesięczne lub roczne wpłaty na obligacje i obserwuj, jak rośnie Twój majątek.",
+      "regular_investment": "Symuluj miesięczne lub roczne wpłaty w obligacje i obserwuj, jak rośnie Twój majątek.",
       "ladder": "Zbuduj strategię drabiny obligacyjnej, aby zapewnić stałą płynność i optymalne oprocentowanie.",
       "economic_data": "Śledź historyczną inflację i stopy procentowe NBP, które wpływają na obligacje o zmiennym oprocentowaniu.",
       "education": "Poznaj podstawy polskich obligacji skarbowych, opodatkowania i strategii inwestycyjnych."
@@ -1020,33 +1020,33 @@
       "title": "Ulubione Obligacje"
     },
     "recovery_lab": {
-      "title": "Boczne laboratorium",
+      "title": "Laboratorium odzyskiwania",
       "description": "Optymalizator, historia wielu aktywów oraz modelowanie wypłat emerytalnych pozostają dostępne w trybie odzyskiwania, ale są celowo oddzielone od głównej listy narzędzi.",
-      "usage_hint": "Otwieraj Recovery Lab tylko wtedy, gdy świadomie chcesz sprawdzić bardziej specyficzne lub wrażliwe na założenia strony.",
-      "cta": "Otwórz Recovery Lab"
+      "usage_hint": "Otwieraj laboratorium odzyskiwania tylko wtedy, gdy świadomie chcesz sprawdzić bardziej specyficzne lub wrażliwe na założenia strony.",
+      "cta": "Otwórz laboratorium odzyskiwania"
     },
     "route_labels": {
-      "primary": "Glowna trasa",
+      "primary": "Główna trasa",
       "reference": "Kontekst referencyjny",
       "next": "Kolejny krok"
     },
     "recent_work": {
       "label": "Ostatnia praca",
-      "title": "Wroc do jednego scenariusza.",
-      "description": "Zapisane scenariusze powinny byc szybkim punktem wznowienia, a nie osobnym dashboardem.",
-      "empty": "Brak lokalnie zapisanych scenariuszy. Strona startowa nie musi udawac centrum sterowania, gdy nie ma jeszcze zapisanej pracy."
+      "title": "Wróć do jednego scenariusza.",
+      "description": "Zapisane scenariusze powinny być szybkim punktem wznowienia, a nie osobnym dashboardem.",
+      "empty": "Brak lokalnie zapisanych scenariuszy. Strona startowa nie musi udawać centrum sterowania, gdy nie ma jeszcze zapisanej pracy."
     },
     "start_here": {
-      "title": "Prosta sciezka glowna",
-      "description": "Ta strona ma prowadzic do glownych narzedzi i zachowac prosty, spokojny pierwszy krok."
+      "title": "Prosta ścieżka główna",
+      "description": "Ta strona ma prowadzić do głównych narzędzi i zachować prosty, spokojny pierwszy krok."
     },
     "secondary_tools": {
-      "title": "Narzedzia drugiego kroku",
-      "description": "Te strony sa nadal dostepne, ale powinny byc odwiedzane dopiero po podstawowym scenariuszu."
+      "title": "Narzędzia drugiego kroku",
+      "description": "Te strony są nadal dostępne, ale powinny być odwiedzane dopiero po podstawowym scenariuszu."
     },
-    "hero_trust_note": "Najpierw jedno czyste obliczenie, dopiero potem porownania, notatnik i scenariusze poboczne.",
+    "hero_trust_note": "Najpierw jedno czyste obliczenie, dopiero potem porównania, notatnik i scenariusze poboczne.",
     "hero_trust_strip": {
-      "item_1": "Jedno glowne obliczenie naraz",
+      "item_1": "Jedno główne obliczenie naraz",
       "item_2": "Czytelny kontekst inflacji i NBP",
       "item_3": "Strategie dopiero po wyniku bazowym"
     },
@@ -1056,31 +1056,31 @@
     },
     "home_routes": {
       "primary_title": "Zacznij od jednego scenariusza obligacji",
-      "primary_description": "Podaj jedna kwote, horyzont i typ obligacji. Sprawdz wynik, zanim zaczniesz porownywac kolejne warianty.",
-      "primary_eyebrow": "Glowna sciezka",
-      "primary_action": "Otworz kalkulator",
+      "primary_description": "Podaj jedną kwotę, horyzont i typ obligacji. Sprawdź wynik, zanim zaczniesz porównywać kolejne warianty.",
+      "primary_eyebrow": "Główna ścieżka",
+      "primary_action": "Otwórz kalkulator",
       "supporting_title": "Przygotuj scenariusz",
-      "supporting_description": "Skorzystaj z tych materialow, gdy przed obliczeniem potrzebujesz kontekstu.",
-      "supporting_action": "Otworz material"
+      "supporting_description": "Skorzystaj z tych materiałów, gdy przed obliczeniem potrzebujesz kontekstu.",
+      "supporting_action": "Otwórz materiał"
     },
     "decision_slip": {
       "eyebrow": "Punkt startowy",
-      "title": "Wybierz, co juz wiesz",
-      "description": "Zacznij od najblizszego kroku. Scenariusz doprecyzujesz w kalkulatorze.",
+      "title": "Wybierz, co już wiesz",
+      "description": "Zacznij od najbliższego kroku. Scenariusz doprecyzujesz w kalkulatorze.",
       "options": {
         "simulate": {
-          "title": "Znam obligacje lub horyzont",
-          "description": "Uloz jeden scenariusz obligacji.",
+          "title": "Znam obligację lub horyzont",
+          "description": "Ułóż jeden scenariusz obligacji.",
           "detail": "ROR · DOR · COI · EDO"
         },
         "learn": {
-          "title": "Chce poznac zasady",
-          "description": "Sprawdz typy obligacji, podatek i indeksacje.",
+          "title": "Chcę poznać zasady",
+          "description": "Sprawdź typy obligacji, podatek i indeksację.",
           "detail": "TYP STOPY · PODATEK · INDEKSACJA"
         },
         "check-context": {
-          "title": "Chce sprawdzic kontekst stop",
-          "description": "Zobacz inflacje i dane referencyjne NBP.",
+          "title": "Chcę sprawdzić kontekst stop",
+          "description": "Zobacz inflację i dane referencyjne NBP.",
           "detail": "CPI · STOPA REFERENCYJNA NBP"
         }
       }
@@ -1088,329 +1088,329 @@
     "home_steps": {
       "learn-rules": {
         "title": "Poznaj zasady",
-        "description": "Zacznij od edukacji albo od razu od pojedynczego kalkulatora, jesli znasz typ obligacji i horyzont."
+        "description": "Zacznij od edukacji albo od razu od pojedynczego kalkulatora, jeśli znasz typ obligacji i horyzont."
       },
       "run-one": {
         "title": "Uruchom jedno obliczenie",
-        "description": "Wprowadz jeden zestaw danych, policz scenariusz i sprawdz wynik bez bocznych paneli ani rozpraszaczy."
+        "description": "Wprowadź jeden zestaw danych, policz scenariusz i sprawdź wynik bez bocznych paneli ani rozpraszaczy."
       },
       "expand-later": {
         "title": "Rozszerz dopiero potem",
-        "description": "Porownanie, regularne inwestowanie, drabina i notatnik maja byc drugim krokiem, nie pierwszym widokiem."
+        "description": "Porównanie, regularne inwestowanie, drabina i notatnik mają być drugim krokiem, nie pierwszym widokiem."
       }
     }
   },
   "admin": {
     "title": "Panel zdrowia synchronizacji",
-    "subtitle": "Monitor aktualnosci danych i statusu synchronizacji",
-    "access_required": "Wymagany dostep administratora",
-    "enter_secret": "Wpisz SYNC_SECRET, aby zobaczyc status systemu",
+    "subtitle": "Monitor aktualności danych i statusu synchronizacji",
+    "access_required": "Wymagany dostęp administratora",
+    "enter_secret": "Wpisz SYNC_SECRET, aby zobaczyć status systemu",
     "unlock": "Odblokuj status",
-    "refresh": "Odswiez status",
-    "manual_sync": "Uruchom synchronizacje reczna",
-    "status_error": "Nie udalo sie pobrac statusu administratora.",
-    "confirm_sync_title": "Uruchomic pelna synchronizacje?",
-    "confirm_sync_description": "To uruchomi caly potok synchronizacji dla danych makro, ofert obligacji i historycznych providerow. Operacja moze potrwac kilka minut.",
-    "sync_confirm": "Czy na pewno chcesz uruchomic {mode}? To moze potrwac kilka minut.",
-    "sync_progress": "Trwa reczna synchronizacja... nie zamykaj tego okna.",
-    "sync_success": "Synchronizacja zakonczona pomyslnie!",
+    "refresh": "Odśwież status",
+    "manual_sync": "Uruchom synchronizację ręczną",
+    "status_error": "Nie udało się pobrac statusu administratora.",
+    "confirm_sync_title": "Uruchomić pełna synchronizację?",
+    "confirm_sync_description": "To uruchomi cały potok synchronizacji dla danych makro, ofert obligacji i historycznych dostawców danych. Operacja może potrwać kilka minut.",
+    "sync_confirm": "Czy na pewno chcesz uruchomić {mode}? To może potrwać kilka minut.",
+    "sync_progress": "Trwa ręczną synchronizacja... nie zamykaj tego okna.",
+    "sync_success": "Synchronizacja zakończona pomyślnie!",
     "bond_offer_sync": {
-      "title": "Synchronizacja biezacej oferty obligacji",
-      "source": "Zrodlo",
+      "title": "Synchronizacja bieżącej oferty obligacji",
+      "source": "Źródło",
       "result": "Wynik",
-      "completed": "Zakonczono",
+      "completed": "Zakończono",
       "never_run": "Nigdy nie uruchomiono"
     },
     "metrics": {
-      "series_tracked": "Sledzone serie",
+      "series_tracked": "Śledzone serie",
       "series_desc": "Aktywne strumienie danych w bazie",
-      "data_points": "Laczna liczba punktow",
+      "data_points": "Łączna liczba punktów",
       "points_desc": "Wszystkie zapisane rekordy historyczne",
-      "environment": "Srodowisko",
+      "environment": "Środowisko",
       "env_desc": "Tryb uruchomienia serwera"
     },
     "inventory": {
       "title": "Inwentarz zdrowia danych",
-      "subtitle": "Szczegolowy status i aktualnosc serii finansowych",
+      "subtitle": "Szczegółowy status i aktualność serii finansowych",
       "cols": {
-        "name": "Nazwa serii i zrodlo",
-        "frequency": "Czestotliwosc",
+        "name": "Nazwa serii i źródło",
+        "frequency": "Częstotliwosc",
         "last_point": "Ostatni punkt",
         "records": "Rekordy",
-        "last_sync": "Ostatnia proba synchronizacji",
+        "last_sync": "Ostatnia próba synchronizacji",
         "health": "Status zdrowia"
       },
       "health": {
         "healthy": "Zdrowe",
-        "error": "Blad",
-        "initial": "Poczatkowy",
+        "error": "Błąd",
+        "initial": "Początkowy",
         "gap": "Wykryto luke",
         "missing": "Brak danych"
       },
       "never_synced": "Nigdy nie synchronizowano",
-      "empty": "Nie znaleziono serii danych. Kliknij \"Uruchom synchronizacje reczna\", aby zainicjalizowac baze."
+      "empty": "Nie znaleziono serii danych. Kliknij \"Uruchom synchronizację ręczną\", aby zainicjalizować bazę."
     }
   },
   "multi_asset_page": {
     "page_notice_eyebrow": "Kontekst historyczny",
-    "hero_title": "Kontekst historyczny po glownych kalkulatorach",
-    "hero_description": "Uzywaj tej powierzchni tylko wtedy, gdy potrzebujesz jednego waskiego przebiegu referencyjnego rynek-kontra-obligacje. Ma wspierac glowny przeplyw kalkulatorow, a nie zastepowac go teatralnym backtestingiem.",
-    "primary_cta": "Otworz kalkulator pojedynczy",
-    "secondary_cta": "Otworz porownanie",
-    "page_notice_title": "Porownanie referencyjne historii",
-    "page_notice_desc": "Ta powierzchnia nadal ma wezsze pokrycie danych historycznych i powinna byc traktowana jedynie jako porownanie referencyjne, a nie dojrzaly produkt do backtestow.",
+    "hero_title": "Kontekst historyczny po głównych kalkulatorach",
+    "hero_description": "Używaj tej strony tylko wtedy, gdy potrzebujesz wąskiego porównania referencyjnego rynku z obligacją. Ma wspierać główny przepływ kalkulatorów, a nie zastępować go efektownym testem historycznym.",
+    "primary_cta": "Otwórz kalkulator pojedynczy",
+    "secondary_cta": "Otwórz porównanie",
+    "page_notice_title": "Porównanie referencyjne historii",
+    "page_notice_desc": "Ta powierzchnia nadal ma węższe pokrycie danych historycznych i powinna być traktowana jedynie jako porównanie referencyjne, a nie dojrzały produkt do testów historycznych.",
     "series": {
-      "gold": "Zloto",
+      "gold": "Złoto",
       "inflation": "Inflacja"
     },
     "history_state": {
-      "reference_only_title": "Historia tylko referencyjna",
+      "reference_only_title": "Historia tylko referencyjną",
       "live_title": "Aktywne pokrycie historyczne",
-      "description": "Ta strona porownuje jeden zatwierdzony scenariusz historyczny naraz. To kalkulator referencyjny, a nie platforma do backtestow i nie silnik rekomendacji.",
+      "description": "Ta strona porównuje jeden zatwierdzony scenariusz historyczny naraz. To kalkulator referencyjny, a nie platforma do testów historycznych i nie silnik rekomendacji.",
       "coverage_label": "Pokrycie",
-      "source_label": "Zrodlo",
+      "source_label": "Źródło",
       "as_of_label": "Stan na",
-      "available_series_label": "Dostepne serie w tym zestawie:",
-      "fallback_warning": "Biezace zrodlo historii jest wezsze niz produkcyjny zestaw do backtestow. Trzymaj te strone w trybie referencyjnym."
+      "available_series_label": "Dostępne serie w tym zestawie:",
+      "fallback_warning": "Bieżące źródło historii jest węższe niż produkcyjny zestaw do testów historycznych. Trzymaj tę stronę w trybie referencyjnym."
     },
     "metrics": {
       "committed_start_label": "Zatwierdzony start",
-      "committed_start_detail": "Historyczny punkt wejscia dla biezacego przebiegu.",
-      "total_invested_label": "Lacznie zainwestowano",
-      "total_invested_detail": "Kwota poczatkowa plus zatwierdzone miesieczne doplaty.",
-      "leading_ending_value_label": "Najwyzsza wartosc koncowa",
-      "leading_ending_value_detail": "{value} w biezacym widoku {mode}."
+      "committed_start_detail": "Historyczny punkt wejścia dla bieżącego przebiegu.",
+      "total_invested_label": "Łącznie zainwestowano",
+      "total_invested_detail": "Kwota początkowa plus zatwierdzone miesięczne dopłaty.",
+      "leading_ending_value_label": "Najwyższa wartość końcowa",
+      "leading_ending_value_detail": "{value} w bieżącym widoku {mode}."
     },
-    "real_value_mode": "wartosci realnej",
+    "real_value_mode": "wartości realnej",
     "nominal_mode": "nominalnym",
-    "stale_results": "Dane sie zmienily. Wykresy i karty wynikow nadal pokazuja poprzedni zatwierdzony scenariusz. Przelicz, gdy chcesz odswiezyc przebieg historyczny.",
+    "stale_results": "Dane się zmieniły. Wykresy i karty wyników nadal pokazują poprzedni zatwierdzony scenariusz. Przelicz, gdy chcesz odświeżyć przebieg historyczny.",
     "ready": {
       "badge": "Przebieg referencyjny",
-      "title": "Gotowe do obejrzenia jednego przebiegu historycznego?",
-      "description": "Ustaw punkt startowy, kwote poczatkowa i miesieczna doplate. Potem przelicz jeden zatwierdzony scenariusz historyczny, zanim zaczniesz porownywac sciezki aktywow.",
-      "footer": "Plywajaca akcja pojawi sie, gdy scenariusz bedzie gotowy do pierwszego uruchomienia.",
+      "title": "Gotowe do obejrzęnia jednego przebiegu historycznego?",
+      "description": "Ustaw punkt startowy, kwotę początkową i miesięczną dopłatę. Potem przelicz jeden zatwierdzony scenariusz historyczny, zanim zaczniesz porównywać ścieżki aktywów.",
+      "footer": "Pływajaca akcja pojawi się, gdy scenariusz będzie gotowy do pierwszego uruchomienia.",
       "steps": {
         "entry_point": {
-          "title": "Wybierz jeden punkt wejscia",
-          "description": "Miesiac startu ma znaczenie. Trzymaj go jawnie zanim zaczniesz czytac zwyciezce."
+          "title": "Wybierz jeden punkt wejścia",
+          "description": "Miesiąc startu ma znaczenie. Trzymaj go jawnie zanim zaczniesz czytać zwycięzcę."
         },
         "cash_path": {
-          "title": "Zatwierdz jedna sciezke gotowki",
-          "description": "Uzyj jednej kwoty poczatkowej i jednej miesiecznej doplaty dla calego przebiegu."
+          "title": "Zatwierdź jedną ścieżkę gotówki",
+          "description": "Użyj jednej kwoty początkowej i jednej miesięcznej dopłaty dla całego przebiegu."
         },
         "context_only": {
           "title": "Czytaj to jako kontekst",
-          "description": "To historyczne porownanie referencyjne, a nie pelny zestaw do backtestow."
+          "description": "To historyczne porównanie referencyjne, a nie pełny zestaw do testów historycznych."
         }
       }
     },
     "scope_notes": {
       "title": "Notatki zakresu",
-      "description": "Otworz to, gdy chcesz zobaczyc guardraile stojace za historycznym porownaniem.",
+      "description": "Otwórz to, gdy chcesz zobaczyć guardraile stojące za historycznym porównaniem.",
       "badge": "Kontekst",
       "cards": {
-        "reference_run": "To jeden historyczny przebieg referencyjny, a nie szeroka powierzchnia badan rynkowych ani rekomendacji portfelowej.",
-        "start_month": "Zmiana miesiaca startu moze istotnie zmienic wynik, dlatego trzymaj zatwierdzony scenariusz widoczny podczas porownywania sciezek.",
-        "real_value": "Tryb wartosci realnej zmienia interpretacje wartosci koncowych, ale nie zmienia samej historycznej sciezki."
+        "reference_run": "To jeden historyczny przebieg referencyjny, a nie szeroka powierzchnia badań rynkowych ani rekomendacji portfelowej.",
+        "start_month": "Zmiana miesiąca startu może istotnie zmienić wynik, dlatego trzymaj zatwierdzony scenariusz widoczny podczas porównywania ścieżek.",
+        "real_value": "Tryb wartości realnej zmienia interpretację wartości końcowych, ale nie zmienia samej historycznej ścieżki."
       }
     },
     "guide_cards": {
-      "context_only": "Czytaj te strone jako pomocniczy test kontekstu historycznego, a nie jako dowod, ze jedna sciezka sie powtorzy.",
-      "start_month": "Miesiac startu moze zdominowac wynik. Trzymaj moment wejscia jawnie, zanim ocenisz zwyciezce.",
-      "after_core": "Uzywaj tej strony po glownych kalkulatorach obligacji, gdy potrzebujesz szerszego kontekstu, a nie jako pierwszej powierzchni decyzyjnej."
+      "context_only": "Czytaj tę stronę jako pomocniczy test kontekstu historycznego, a nie jako dowód, że jedna ścieżka się powtórzy.",
+      "start_month": "Miesiąc startu może zdominować wynik. Trzymaj moment wejścia jawnie, zanim ocenisz zwycięzcę.",
+      "after_core": "Używaj tej strony po głównych kalkulatorach obligacji, gdy potrzebujesz szerszego kontekstu, a nie jako pierwszej powierzchni decyzyjnej."
     }
   },
   "recovery_lab_page": {
     "title": "Boczne laboratorium",
-    "description": "Ograniczone i eksperymentalne powierzchnie kalkulatora pozostawione poza glowna sciezka produktu.",
-    "description_long": "Te strony pozostaja dostepne, ale nie naleza do glownej obietnicy kalkulatora. Kazda z nich jest wezsza, bardziej wrazliwa na zalozenia albo mocniej zalezy od kontekstu danych niz glowny przeplyw.",
+    "description": "Ograniczone i eksperymentalne powierzchnie kalkulatora pozostawione poza główna ścieżka produktu.",
+    "description_long": "Te strony pozostają dostępne, ale nie należą do głównej obietnicy kalkulatora. Każda z nich jest węższa, bardziej wrażliwa na założenia albo mocniej zależy od kontekstu danych niż główny przepływ.",
     "eyebrow": "Powierzchnie pomocnicze",
-    "back_to_core": "Wroc do kalkulatora pojedynczego",
-    "back_home": "Wroc na start",
-    "why_separated": "Dlaczego te narzedzia sa oddzielone",
-    "why_separated_desc": "Aplikacja ma najpierw akcentowac glowne kalkulatory i strony referencyjne. Boczne laboratorium pozostaje dostepne do sprawdzania i iteracyjnej walidacji, ale nie powinno konkurowac z glownym przeplywem, dopoki jego zakres i dowody zaufania nie beda mocniejsze.",
-    "card_support_notice": "Traktuj to jako analize pomocnicza, nie glowny przeplyw kalkulatora.",
-    "card_notice": "Otwieraj te strony tylko wtedy, gdy swiadomie chcesz sprawdzic bardziej waska albo slabsza powierzchnie scenariuszowa.",
-    "what_stays_core": "Co zostaje glowne",
-    "what_stays_core_desc": "Produkt pozostaje mocniejszy, gdy glowne strony sa prostsze i latwiejsze do zaufania.",
-    "core_emphasis": "Glowny nacisk pozostaje na edukacji, kalkulatorze pojedynczym, porownaniu, inwestowaniu regularnym, drabinie, notatniku i stronach referencyjnych.",
-    "core_improve_later": "Strony boczne nadal mozna poprawiac, ale nie definiuja jeszcze gotowosci produktu.",
+    "back_to_core": "Wróć do kalkulatora pojedynczego",
+    "back_home": "Wróć na start",
+    "why_separated": "Dlaczego te narzędzia są oddzielone",
+    "why_separated_desc": "Aplikacja ma najpierw akcentować główne kalkulatory i strony referencyjne. Boczne laboratorium pozostaje dostępne do sprawdzania i iteracyjnej walidacji, ale nie powinno konkurować z głównym przepływem, dopóki jego zakres i dowody zaufania nie będą mocniejsze.",
+    "card_support_notice": "Traktuj to jako analizę pomocniczą, nie główny przepływ kalkulatora.",
+    "card_notice": "Otwieraj te strony tylko wtedy, gdy świadomie chcesz sprawdzić bardziej wąska albo słabsza powierzchnie scenariuszowa.",
+    "what_stays_core": "Co zostaje główne",
+    "what_stays_core_desc": "Produkt pozostaje mocniejszy, gdy główne strony są prostsze i łatwiejsze do zaufania.",
+    "core_emphasis": "Główny nacisk pozostaje na edukacji, kalkulatorze pojedynczym, porównaniu, inwestowaniu regularnym, drabinie, notatniku i stronach referencyjnych.",
+    "core_improve_later": "Strony boczne nadal można poprawiac, ale nie definiują jeszcze gotowosci produktu.",
     "pages": {
       "optimize": {
         "title": "Ranking scenariuszy",
-        "description": "Sortowanie wyplat wrazliwe na zalozenia. Dobre jako widok pomocniczy, nie jako powierzchnia rekomendacyjna."
+        "description": "Sortowanie wypłat wrażliwe na założenia. Dobre jako widok pomocniczy, nie jako powierzchnia rekomendacyjna."
       },
       "multi_asset": {
-        "title": "Historyczne porownanie referencyjne",
-        "description": "Porownanie mieszanych serii o nizszym poziomie zaufania niz glowne kalkulatory obligacji. Traktuj je tylko jako referencje."
+        "title": "Historyczne porównanie referencyjne",
+        "description": "Porównanie mieszanych serii o niższym poziomie zaufania niż główne kalkulatory obligacji. Traktuj je tylko jako referencje."
       },
       "retirement": {
-        "title": "Model wyplat",
-        "description": "Ograniczony scenariusz stalej wyplaty. Wezszy niz zwykly planer emerytalny i celowo zawezony."
+        "title": "Model wypłat",
+        "description": "Ograniczony scenariusz stałej wypłaty. Węższzy niż zwykły planer emerytalny i celowo zawężony."
       }
     }
   },
   "ladder_page": {
-    "page_notice_eyebrow": "Strategia warunkowa",
-    "page_notice_title": "Strategia drabiny ma sens tylko wtedy, gdy rozklad terminow wyplat jest naprawde potrzebny.",
-    "page_notice_desc": "Uzywaj tej strony po jednym czystym przebiegu pojedynczej obligacji. Drabina ma wspierac konkretny plan plynnosci, a nie zastapic glowny kalkulator.",
-    "empty_state_title": "Zbuduj jeden harmonogram zapadalnosci, a potem sprawdz rozklad plynnosci.",
-    "empty_state_description": "Ta strona odpowiada na waskie pytanie: kiedy wraca kapital i jak mocno te okna zapadalnosci sie skupiaja. Ustaw plan, uruchom jedno celowe obliczenie i dopiero potem ocen rozklad drabinki.",
+    "page_notice_eyebrow": "Strategia warunkówa",
+    "page_notice_title": "Strategia drabiny ma sens tylko wtedy, gdy rozkład terminów wypłat jest naprawdę potrzebny.",
+    "page_notice_desc": "Używaj tej strony po jednym czystym przebiegu pojedynczej obligacji. Drabina ma wspierać konkretny plan płynności, a nie zastąpić główny kalkulator.",
+    "empty_state_title": "Zbuduj jeden harmonogram zapadalności, a potem sprawdź rozkład płynności.",
+    "empty_state_description": "Ta strona odpowiada na wąskie pytanie: kiedy wraca kapitał i jak mocno te okna zapadalności się skupiają. Ustaw plan, uruchom jedno celowe obliczenie i dopiero potem oceń rozkład drabinki.",
     "empty_cards": {
-      "plan_title": "Plan wplat",
-      "plan_description": "Typ obligacji, kwota, czestotliwosc i horyzont.",
+      "plan_title": "Plan wpłat",
+      "plan_description": "Typ obligacji, kwota, częstotliwosc i horyzont.",
       "committed_title": "Jawna drabinka",
       "committed_description": "Uruchom jeden konkretny harmonogram zamiast przeliczac podczas edycji.",
       "timing_title": "Odczyt czasu",
-      "timing_description": "Sprawdz skupienie miesiecy i koncentracje zwracanego kapitalu."
+      "timing_description": "Sprawdź skupienie miesięcy i koncentrację zwracanego kapitału."
     },
-    "empty_state_footer": "Wyniki pozostaja stabilne, dopoki celowo nie uruchomisz nowej konfiguracji drabinki.",
+    "empty_state_footer": "Wyniki pozostają stabilne, dopóki celowo nie uruchomisz nowej konfiguracji drabinki.",
     "reading_guide": {
-      "check_peak_month": "Najpierw znajdz miesiac szczytowy, aby wiedziec, gdzie skupia sie plynnosc.",
-      "check_clustering": "Uzyj metryk udzialu, aby ocenic, czy drabinka nie jest zbyt skupiona w jednym oknie."
+      "check_peak_month": "Najpierw znajdź miesiąc szczytowy, aby wiedzieć, gdzie skupia się płynność.",
+      "check_clustering": "Użyj metryk udziału, aby ocenic, czy drabinka nie jest zbyt skupiona w jednym oknie."
     },
-    "stale_results": "Dane sie zmienily. Drabinka zapadalnosci ponizej nadal pokazuje poprzednie obliczenie. Przelicz, gdy chcesz swiezy harmonogram.",
-    "how_to_read_title": "Jak czytac te drabinke",
-    "how_to_read_description": "Sprawdz miesiac szczytowy, skupienie i odstepy zapadalnosci przed podjeciem decyzji o plynnosci.",
+    "stale_results": "Dane się zmieniły. Drabinka zapadalności poniżej nadal pokazuje poprzednie obliczenie. Przelicz, gdy chcesz świeży harmonogram.",
+    "how_to_read_title": "Jak czytać te drabinke",
+    "how_to_read_description": "Sprawdź miesiąc szczytowy, skupienie i odstępy zapadalności przed podjęciem decyzji o płynności.",
     "how_to_read_badge": "Przewodnik czasu",
-    "calculation_context_description": "Ostrzezenia, zalozenia i swiezosc danych dla silnika drabinki.",
+    "calculation_context_description": "Ostrzeżenia, założenia i świeżość danych dla silnika drabinki.",
     "calculation_context_badge": "Meta",
     "timeline": {
-      "eyebrow": "Szczytowy miesiac zapadalnosci",
-      "no_peak_month": "Brak miesiaca zapadalnosci",
-      "description": "Ten widok pokazuje, kiedy drabinka oddaje kapital i jak mocno te miesiace sie skupiaja.",
-      "narrative": "Uzyj harmonogramu, aby ocenic, czy drabinka rozklada plynnosc rownomiernie, czy zbyt mocno skupia kapital w jednym oknie.",
-      "month_count": "Miesiace zapadalnosci",
-      "average_maturity_value": "Srednia wartosc miesiaca",
-      "average_maturity_value_description": "Typowa wartosc zapadalnosci wsrod aktywnych miesiecy drabinki.",
-      "spread_gap": "R??nica wzgledem skladki",
-      "spread_gap_description": "O ile typowy miesiac zapadalnosci rozni sie od jednej powtarzalnej skladki.",
-      "active_window": "Aktywne okno zapadalnosci",
-      "active_window_description": "Zakres od najwczesniejszego do najpozniejszego miesiaca zapadalnosci w tej drabince.",
+      "eyebrow": "Szczytowy miesiąc zapadalności",
+      "no_peak_month": "Brak miesiąca zapadalności",
+      "description": "Ten widok pokazuje, kiedy drabinka oddaje kapitał i jak mocno te miesiące się skupiają.",
+      "narrative": "Użyj harmonogramu, aby ocenic, czy drabinka rozklada płynność rownomiernie, czy zbyt mocno skupia kapitał w jednym oknie.",
+      "month_count": "Miesiące zapadalności",
+      "average_maturity_value": "Średnia wartość miesiąca",
+      "average_maturity_value_description": "Typowa wartość zapadalności wśród aktywnych miesięcy drabinki.",
+      "spread_gap": "Różnica względem składki",
+      "spread_gap_description": "O ile typowy miesiąc zapadalności rozni się od jednej powtarzalnej składki.",
+      "active_window": "Aktywne okno zapadalności",
+      "active_window_description": "Zakres od najwcześniejszego do najpóźniejszego miesiąca zapadalności w tej drabince.",
       "year_summary_title": "Roczne podsumowanie drabinki",
-      "year_summary_intro": "Najpierw sprawdz roczna koncentracje zwrotu kapitalu, a dopiero potem otwieraj miesieczne szczegoly.",
+      "year_summary_intro": "Najpierw sprawdź roczna koncentrację zwrotu kapitału, a dopiero potem otwieraj miesięczne szczegóły.",
       "year_summary_description": "{count} partii od {firstMonth} do {lastMonth}.",
-      "strongest_year": "Najwiekszy rok zapadalnosci",
-      "chart_title": "Koncentracja zapadalnosci",
-      "chart_description": "Kazdy slupek pokazuje, jaka wartosc netto wraca w danym miesiacu zapadalnosci.",
-      "yearly_chart_description": "Roczne wartosci zapadalnosci w drabince. Domyslny widok pozostaje czytelny, zanim sprawdzisz miesieczne szczegoly.",
-      "monthly_chart_description": "Miesieczne wartosci zapadalnosci w drabince. Uzyj tego widoku tylko wtedy, gdy potrzebujesz dokladnego terminu zapadalnosci.",
+      "strongest_year": "Największy rok zapadalności",
+      "chart_title": "Koncentracja zapadalności",
+      "chart_description": "Każdy słupek pokazuje, jaka wartość netto wraca w danym miesiącu zapadalności.",
+      "yearly_chart_description": "Roczne wartości zapadalności w drabince. Domyślny widok pozostaje czytelny, zanim sprawdzisz miesięczne szczegóły.",
+      "monthly_chart_description": "Miesięczne wartości zapadalności w drabince. Użyj tego widoku tylko wtedy, gdy potrzebujesz dokładnego terminu zapadalności.",
       "chart_modes": {
         "yearly": "Rocznie",
-        "monthly": "Miesiecznie"
+        "monthly": "Miesięcznie"
       },
-      "chart_note_title": "Jak czytac wykres drabinki",
-      "chart_note_description": "Zacznij od najwyzszego slupka, a potem sprawdz, czy sasiednie miesiace zostawiaja wystarczajacy odstep plynnosci.",
-      "tooltip_amount_label": "Kwota zapadalnosci",
-      "mobile_sheet_title": "Wiersze zapadalnosci drabinki",
-      "mobile_sheet_description": "Otworz miesiac po miesiacu harmonogram drabinki w widoku przyjaznym dla telefonu.",
-      "mobile_sheet_trigger": "Otworz tabele drabinki",
-      "mobile_sheet_count_suffix": "miesiecy",
+      "chart_note_title": "Jak czytać wykres drabinki",
+      "chart_note_description": "Zacznij od najwyższego słupka, a potem sprawdź, czy sąsiednie miesiące zostawiają wystarczający odstęp płynności.",
+      "tooltip_amount_label": "Kwota zapadalności",
+      "mobile_sheet_title": "Wiersze zapadalności drabinki",
+      "mobile_sheet_description": "Otwórz miesiąc po miesiącu harmonogram drabinki w widoku przyjaznym dla telefonu.",
+      "mobile_sheet_trigger": "Otwórz tabele drabinki",
+      "mobile_sheet_count_suffix": "miesięcy",
       "lots_count": "Liczba partii",
-      "mobile_share_of_lots": "Udzial partii",
+      "mobile_share_of_lots": "Udział partii",
       "mobile_amount": "Kwota",
-      "table_summary": "Kazdy wiersz pokazuje jeden miesiac zapadalnosci, liczbe konczacych sie tam partii i zwracana wartosc netto.",
+      "table_summary": "Każdy wiersz pokazuje jeden miesiąc zapadalności, liczbę kończących się tam partii i zwracana wartość netto.",
       "table_filters": {
-        "all": "Wszystkie miesiace zapadalnosci",
-        "peak": "Szczytowy miesiac zapadalnosci",
-        "clustered": "Skupione zapadalnosci"
+        "all": "Wszystkie miesiące zapadalności",
+        "peak": "Szczytowy miesiąc zapadalności",
+        "clustered": "Skupione zapadalności"
       },
-      "empty_filter": "Zaden miesiac zapadalnosci nie pasuje do tego widoku.",
-      "show_all_months": "Pokaz wszystkie miesiace zapadalnosci",
-      "cluster_threshold": "Co najmniej {count} partie zapadaja w tym samym miesiacu.",
-      "table_count_suffix": "miesiecy",
-      "table_month": "Miesiac",
+      "empty_filter": "Żaden miesiąc zapadalności nie pasuje do tego widoku.",
+      "show_all_months": "Pokaż wszystkie miesiące zapadalności",
+      "cluster_threshold": "Co najmniej {count} partie zapadają w tym samym miesiącu.",
+      "table_count_suffix": "miesięcy",
+      "table_month": "Miesiąc",
       "table_lots": "Partie",
-      "table_amount": "Wartosc netto",
-      "table_share": "Udzial",
-      "peak_month_title": "Miesiac szczytowy",
-      "peak_month_description": "Uzyj miesiaca szczytowego, aby zobaczyc, gdzie drabinka skupia najwiecej wracajacego kapitalu.",
+      "table_amount": "Wartość netto",
+      "table_share": "Udział",
+      "peak_month_title": "Miesiąc szczytowy",
+      "peak_month_description": "Użyj miesiąca szczytowego, aby zobaczyć, gdzie drabinka skupia najwięcej wracajacego kapitału.",
       "cluster_title": "Ryzyko skupienia",
       "cluster_value": "{percent}% partii zapada w {month}.",
-      "cluster_none": "Nie wykryto jeszcze skupienia zapadalnosci.",
-      "cluster_warning": "Ta drabinka jest dosc mocno skupiona w jednym oknie zapadalnosci.",
-      "cluster_ok": "Ta drabinka jest jeszcze sensownie rozlozona miedzy oknami zapadalnosci.",
+      "cluster_none": "Nie wykryto jeszcze skupienia zapadalności.",
+      "cluster_warning": "Ta drabinka jest dość mocno skupiona w jednym oknie zapadalności.",
+      "cluster_ok": "Ta drabinka jest jeszcze sensownie rozlozona między oknami zapadalności.",
       "interpretation_title": "Notatka interpretacyjna",
-      "interpretation_description": "Drabinka jest przydatna wtedy, gdy poprawia czas plynnosci, a nie tylko wtedy, gdy rosnie szybciej. Sprawdz rozklad zanim zaczniesz gonitwe za wyzsza suma."
+      "interpretation_description": "Drabinka jest przydatna wtedy, gdy poprawia czas płynności, a nie tylko wtedy, gdy rosnie szybciej. Sprawdź rozkład zanim zaczniesz gonitwę za wyższa suma."
     }
   },
   "optimizer_page": {
     "page_notice_eyebrow": "Pomocniczy sorter",
     "page_notice_title": "Eksperymentalny widok rankingu",
-    "page_notice_desc": "Ta strona jest bardzo wrazliwa na zalozenia i latwo ja nadinterpretowac. Traktuj ja jako pomocniczy sorter scenariuszy po glownych kalkulatorach, a nie podstawowa powierzchnie decyzji.",
+    "page_notice_desc": "Ta strona jest bardzo wrażliwa na założenia i łatwo ja nadinterpretować. Traktuj ją jako pomocniczy sorter scenariuszy po głównych kalkulatorach, a nie podstawowa powierzchnie decyzji.",
     "page_title": "Sorter scenariuszy obligacji",
-    "page_description": "Uruchom jeden zatwierdzony scenariusz wyplaty, sprawdz uporzadkowane wyniki i trzymaj ten widok w roli pomocniczego kontekstu.",
-    "input_title": "Glowne dane",
-    "input_description": "Ustaw jedna kwote, jeden horyzont i jedna date zakupu. Zaawansowane zalozenia makro i kwalifikacji maja pozostac drugorzedne.",
+    "page_description": "Uruchom jeden zatwierdzony scenariusz wypłaty, sprawdź uporządkowane wyniki i trzymaj ten widok w roli pomocniczego kontekstu.",
+    "input_title": "Główne dane",
+    "input_description": "Ustaw jedną kwotę, jeden horyzont i jedną datę zakupu. Zaawansowane założenia makro i kwalifikacji mają pozostać drugorzędne.",
     "amount_label": "Kwota inwestycji",
     "horizon_label": "Horyzont",
     "horizon_value": "{months}M / {years}L",
     "purchase_date_label": "Data zakupu",
-    "advanced_title": "Zalozenia zaawansowane",
+    "advanced_title": "Założenia zaawansowane",
     "advanced_description": "Opakowanie podatkowe, kwalifikacja obligacji rodzinnych i ustawienia makro.",
     "tax_strategy_label": "Strategia podatkowa",
     "select_strategy": "Wybierz strategie",
-    "family_bonds_title": "Uwzglednij obligacje rodzinne",
-    "family_bonds_description": "ROS i ROD maja sens tylko wtedy, gdy warunek obligacji rodzinnych jest naprawde spelniony.",
-    "family_bonds_note": "Po wlaczeniu ranking dodaje {bonds}. Nadal pozostaja oznaczone jako {support}, bo kwalifikacja nie jest uniwersalna.",
+    "family_bonds_title": "Uwzględnij obligacje rodzinne",
+    "family_bonds_description": "ROS i ROD mają sens tylko wtedy, gdy warunek obligacji rodzinnych jest naprawdę spełniony.",
+    "family_bonds_note": "Po włączeniu ranking dodaje {bonds}. Nadal pozostają oznaczone jako {support}, bo kwalifikacja nie jest uniwersalna.",
     "expected_inflation_label": "Oczekiwana inflacja",
     "expected_nbp_label": "Oczekiwana stopa NBP",
     "macro_scope": {
-      "indexed": "Obligacje indeksowane, takie jak COI lub EDO, uzywaja CPI do przyszlych resetow kuponu po okresie otwarcia oraz do pokazywania presji na wartosc realna.",
-      "floating": "Obligacje zmiennoprocentowe, takie jak ROR lub DOR, uzywaja NBP po wydanym okresie otwarcia. CPI nadal sluzy do porownania sily nabywczej, ale nie do resetu kuponu."
+      "indexed": "Obligacje indeksowane, takie jak COI lub EDO, używają CPI do przyszłych resetów kuponu po okresie otwarcia oraz do pokazywania presji na wartość realną.",
+      "floating": "Obligacje zmiennoprocentowe, takie jak ROR lub DOR, używają NBP po wydanym okresie otwarcia. CPI nadal służy do porównania siły nabywczej, ale nie do resetu kuponu."
     },
-    "input_footer": "Uzyj plywajacej akcji w dolnym rogu, gdy scenariusz jest gotowy. Trzymaj dane w stanie roboczym, dopoki nie chcesz jednego czystego rankingu.",
-    "stale_results": "Dane sie zmienily. Ranking ponizej nadal pokazuje poprzedni zatwierdzony scenariusz. Uruchom ranking ponownie, gdy chcesz go odswiezyc.",
-    "leading_card_title": "Biezacy lider scenariusza",
-    "leading_card_description": "Najwyzsza zamodelowana wyplata netto dla tego zatwierdzonego scenariusza.",
+    "input_footer": "Użyj pływajacej akcji w dolnym rogu, gdy scenariusz jest gotowy. Trzymaj dane w stanie roboczym, dopóki nie chcesz jednego czystego rankingu.",
+    "stale_results": "Dane się zmieniły. Ranking poniżej nadal pokazuje poprzedni zatwierdzony scenariusz. Uruchom ranking ponownie, gdy chcesz go odświeżyć.",
+    "leading_card_title": "Bieżący lider scenariusza",
+    "leading_card_description": "Najwyższa zamodelowana wypłata netto dla tego zatwierdzonego scenariusza.",
     "tax_wrapper_label": "Opakowanie podatkowe",
     "tax_paid_label": "Zaplacony podatek",
-    "inflation_input_label": "Wejscie inflacji",
-    "nbp_input_label": "Wejscie NBP",
-    "ranked_outcomes_title": "Uporzadkowane wyniki",
-    "ranked_outcomes_description": "Kolejnosc wedlug prognozowanej wyplaty netto po {years} latach. To sorter scenariuszy, a nie rekomendacja.",
-    "leading_gap_primary": "Najwyzsza wyplata w tym scenariuszu",
-    "leading_gap_secondary": "-{gap} wobec wyplaty lidera",
+    "inflation_input_label": "Wejśćie inflacji",
+    "nbp_input_label": "Wejśćie NBP",
+    "ranked_outcomes_title": "Uporządkowane wyniki",
+    "ranked_outcomes_description": "Kolejność według prognozowanej wypłaty netto po {years} latach. To sorter scenariuszy, a nie rekomendacja.",
+    "leading_gap_primary": "Najwyższa wypłatą w tym scenariuszu",
+    "leading_gap_secondary": "-{gap} wobec wypłaty lidera",
     "guardrail_title": "Bariera interpretacji",
-    "guardrail_description": "Ta strona sortuje prognozowane wyplaty dla jednego zatwierdzonego scenariusza. Traktuj ja jako pomocniczy sorter, a nie automatyczna rekomendacje obligacji.",
+    "guardrail_description": "Ta strona sortuje prognozowane wypłaty dla jednego zatwierdzonego scenariusza. Traktuj ją jako pomocniczy sorter, a nie automatyczną rekomendację obligacji.",
     "guardrail_badge": "Wsparcie",
     "audit_title": "Audyt scenariusza",
-    "audit_description": "Otwieraj to tylko wtedy, gdy chcesz sprawdzic sciezke zalozen i ostrzezen za biezacym rankingiem.",
+    "audit_description": "Otwieraj to tylko wtedy, gdy chcesz sprawdzić ścieżkę założeń i ostrzeżeń za bieżącym rankingiem.",
     "audit_badge": "Audyt",
-    "ready_badge": "Powierzchnia pomocnicza",
+    "ready_badge": "Powierzchnia pomocniczą",
     "ready_title": "Gotowe do sortowania jednego scenariusza?",
-    "ready_description": "Ustaw kwote, horyzont i date zakupu. Potem uruchom jeden zatwierdzony scenariusz, aby porownac prognozowane wyplaty miedzy typami obligacji.",
-    "ready_footer": "Zalozenia zaawansowane nadal sa dostepne, ale nie powinny odciagac uwagi od jednego czystego przebiegu rankingu.",
+    "ready_description": "Ustaw kwotę, horyzont i datę zakupu. Potem uruchom jeden zatwierdzony scenariusz, aby porównać prognozowane wypłaty między typami obligacji.",
+    "ready_footer": "Założenia zaawansowane nadal są dostępne, ale nie powinny odciągac uwagi od jednego czystego przebiegu rankingu.",
     "tax_strategies": {
       "standard": "Rachunek standardowy (19% podatku)",
       "ike": "Opakowanie IKE",
       "ikze": "Opakowanie IKZE"
     },
     "metrics": {
-      "leading_payout_label": "Wyplata lidera",
-      "leading_payout_detail": "Najwyzsza zamodelowana wyplata netto po {years} latach.",
+      "leading_payout_label": "Wypłata lidera",
+      "leading_payout_detail": "Najwyższa zamodelowana wypłata netto po {years} latach.",
       "leading_bond_label": "Obligacja lidera",
       "net_profit_label": "Zysk netto",
-      "net_profit_detail": "Prognozowany zysk dla najwyzej ocenionego scenariusza.",
+      "net_profit_detail": "Prognozowany zysk dla najwyżej ocenionego scenariusza.",
       "roi_label": "ROI",
-      "roi_detail": "Wzgledna stopa zwrotu dla najwyzej ocenionego scenariusza."
+      "roi_detail": "Względna stopa zwrotu dla najwyżej ocenionego scenariusza."
     },
     "guardrail_points": {
-      "assumption_shift": "Male zmiany zalozen moga szybko przestawic kolejnosc, zwlaszcza przy krotkich horyzontach albo koniecznosci rolowania.",
-      "suitability": "Wysoka zamodelowana wyplata nie zastapi dopasowania produktu, planu plynnosci ani szerszej oceny portfela."
+      "assumption_shift": "Małe zmiany założeń mogą szybko przestawić kolejność, zwłaszcza przy krótkich horyzontach albo konieczności rolowania.",
+      "suitability": "Wysoka zamodelowana wypłatą nie zastąpi dopasowania produktu, planu płynności ani szerszej oceny portfela."
     },
     "ready_steps": {
       "amount": {
-        "title": "Ustaw kwote",
-        "description": "Zacznij od {amount} albo zmien ja przed pierwszym uruchomieniem."
+        "title": "Ustaw kwotę",
+        "description": "Zacznij od {amount} albo zmień ja przed pierwszym uruchomieniem."
       },
       "horizon": {
         "title": "Wybierz horyzont",
-        "description": "Ten scenariusz jest ustawiony na {months} miesiecy."
+        "description": "Ten scenariusz jest ustawiony na {months} miesięcy."
       },
       "scope": {
-        "title": "Utrzymaj waski zakres",
-        "description": "Uzywaj rankingu jako sortera wyplat, a nie pelnego silnika rekomendacji."
+        "title": "Utrzymaj wąski zakres",
+        "description": "Używaj rankingu jako sortera wypłat, a nie pełnego silnika rekomendacji."
       }
     }
   },
@@ -1420,11 +1420,11 @@
     "new_portfolio": "Nowy Portfel",
     "open_portfolio": "Otwórz Portfel",
     "empty_title": "Twój notatnik jest pusty",
-    "empty_desc": "Utwórz swój pierwszy portfel, aby zacząć śledzić swoje inwestycje w obligacje i zarządzać swoim majątkiem.",
+    "empty_desc": "Utwórz swój pierwszy portfel, aby zacząć śledzić inwestycje w obligacje i zarządzać swoim majątkiem.",
     "create_first": "Utwórz mój pierwszy portfel",
     "load_demo": "Załaduj Portfel Demo",
     "active": "Aktywny",
-    "created": "Utworzono",
+    "created": "Utwórzono",
     "portfolio_details": "Szczegóły Portfela",
     "total_invested": "Zainwestowany Kapitał",
     "live_data": "DANE NA ŻYWO",
@@ -1448,10 +1448,10 @@
     "next_maturity": "Najbliższy Wykup",
     "next_maturity_placeholder": "Brak partii",
     "load_error": "Nie udało się załadować portfeli. Spróbuj ponownie później.",
-    "create_error": "Nie udało się teraz utworzyć portfela. Spróbuj ponownie później.",
+    "create_error": "Nie udało się teraz utwórzyć portfela. Spróbuj ponownie później.",
     "storage_unavailable": "Magazyn portfeli jest tymczasowo niedostępny.",
     "guest_mode": "Tryb notatnika gościa",
-    "guest_desc": "Możesz tworzyć i prowadzić lokalny notatnik gościa nawet bez skonfigurowanego logowania.",
+    "guest_desc": "Możesz twórzyć i prowadzić lokalny notatnik gościa nawet bez skonfigurowanego logowania.",
     "default_description": "Główne oszczędności",
     "estimated_yield_placeholder": "~5,2%",
     "current_yield_placeholder": "5,75%",
@@ -1465,103 +1465,103 @@
     "status_private": "Prywatny szkic",
     "usage_label": "Najlepsze zastosowanie",
     "usage_desc": "Partie, terminy i notatki",
-    "scope_title": "Do czego sluzy ten notatnik",
-    "scope_desc": "Notatnik ma przechowywac rzeczywiste partie i pozwalac do nich wracac. Ma wspierac kalkulatory, a nie zamieniac sie w kolejny dashboard.",
+    "scope_title": "Do czego służy ten notatnik",
+    "scope_desc": "Notatnik ma przechowywać rzeczywiste partie i pozwalac do nich wracać. Ma wspierać kalkulatory, a nie zamieniać się w kolejny dashboard.",
     "my_first_portfolio": "Moj pierwszy portfel",
     "scenario_saved": "Notatnik zapisanych scenariuszy",
     "add_current_lot": "Dodaj partie",
-    "current_lot_added": "Biezaca partia obligacji zostala dodana do notatnika.",
-    "current_lot_added_to_active": "Biezaca partia obligacji zostala dodana do {name}.",
-    "created_success": "Nowy portfel zostal utworzony.",
-    "demo_loaded_success": "Portfel demonstracyjny zostal zaladowany.",
-    "import_failed": "Import nie powiodl sie. Uzyj pakietu eksportu portfela w formacie JSON.",
-    "delete_success": "Portfel zostal usuniety.",
-    "delete_failed": "Nie udalo sie usunac portfela.",
-    "workspace_intro": "To ma pozostac czytelna przestrzenia portfela. Najpierw rekordy partii, potem zapadalnosci, udostepnianie i eksport.",
+    "current_lot_added": "Bieżąca partia obligacji została dodana do notatnika.",
+    "current_lot_added_to_active": "Bieżąca partia obligacji została dodana do {name}.",
+    "created_success": "Nowy portfel został utwórzony.",
+    "demo_loaded_success": "Portfel demonstracyjny został załadany.",
+    "import_failed": "Import nie powiodl się. Użyj pakietu eksportu portfela w formacie JSON.",
+    "delete_success": "Portfel został usunięty.",
+    "delete_failed": "Nie udało się usunąć portfela.",
+    "workspace_intro": "To ma pozostać czytelną przestrzenią portfela. Najpierw rekordy partii, potem zapadalności, udostępnianie i eksport.",
     "workspace_scope_title": "Zakres przestrzeni",
     "portfolios_label": "Portfele",
     "portfolios_label_desc": "Liczba zapisanych zestawow partii w lokalnym notatniku.",
     "public_links_label": "Publiczne linki",
-    "public_links_label_desc": "Portfele udostepnione przez publiczny link.",
+    "public_links_label_desc": "Portfele udostępnione przez publiczny link.",
     "private_drafts_label": "Prywatne szkice",
     "private_drafts_label_desc": "Robocze portfele pozostajace tylko w prywatnym widoku.",
-    "stored_portfolios_note": "Otworz jeden portfel, sprawdz partie i okno zapadalnosci, a dopiero potem przechodz do symulacji zagregowanej.",
-    "capabilities_title": "W notatniku portfela mozesz",
+    "stored_portfolios_note": "Otwórz jeden portfel, sprawdź partie i okno zapadalności, a dopiero potem przechodz do symulacji zagregowanej.",
+    "capabilities_title": "W notatniku portfela możesz",
     "capabilities": {
       "track": {
-        "title": "Sledzic realne partie",
-        "desc": "Zapisuj typ obligacji, liczbe sztuk, date zakupu i robocze notatki w jednym rekordzie portfela."
+        "title": "Śledź rzeczywiste partie",
+        "desc": "Zapisuj typ obligacji, liczbę sztuk, datę zakupu i robocze notatki w jednym rekordzie portfela."
       },
       "maturities": {
-        "title": "Sprawdzac zapadalnosci",
-        "desc": "Przegladaj przyszle wyplaty i okna plynnosci przed czytaniem projekcji."
+        "title": "Sprawdzac zapadalności",
+        "desc": "Przeglądaj przyszłe wypłaty i okna płynności przed czytaniem projekcji."
       },
       "export": {
-        "title": "Eksportowac dane portfela",
+        "title": "Eksportować dane portfela",
         "desc": "Zachowaj przenosny rekord JSON lub CSV do audytu i przekazania dalej."
       },
       "projection": {
-        "title": "Porownywac wartosc realna i prognozowana",
-        "desc": "Traktuj analityke jako kontekst po upewnieniu sie, ze zapisane partie sa poprawne."
+        "title": "Porównywać wartość realną i prognozowana",
+        "desc": "Traktuj analitykę jako kontekst po upewnieniu się, że zapisane partie są poprawne."
       }
     },
     "record_view": "Widok portfela",
-    "record_intro_title": "Otworz jeden portfel, sprawdz zapisane partie i dopiero potem przejdz do eksportu lub symulacji.",
-    "record_intro_desc": "Najpierw przeczytaj zapisane partie oraz najblizsze zapadalnosci. Zakladka analityczna ma byc wsparciem dla rekordu, nie warstwa rekomendacyjna.",
+    "record_intro_title": "Otwórz jeden portfel, sprawdź zapisane partie i dopiero potem przejdź do eksportu lub symulacji.",
+    "record_intro_desc": "Najpierw przeczytaj zapisane partie oraz najbliższe zapadalności. Zakładka analityczna ma być wsparciem dla rekordu, nie warstwa rekomendacyjna.",
     "stored_lots_label": "Zapisane partie",
-    "stored_lots_card_desc": "Pozycje aktualnie sledzone w tym portfelu.",
-    "next_maturity_label": "Najblizsza zapadalnosc",
-    "next_maturity_card_desc": "Najblizsza data zapadalnosci wsrod zapisanych partii.",
-    "total_invested_desc": "Nominalna wartosc wszystkich zapisanych partii.",
-    "next_maturity_suffix": "najblizej",
-    "no_upcoming_maturity": "Brak najblizszej zapadalnosci.",
-    "sharing_mode": "Tryb udostepniania",
+    "stored_lots_card_desc": "Pozycje aktualnie śledzone w tym portfelu.",
+    "next_maturity_label": "Najbliższa zapadalność",
+    "next_maturity_card_desc": "Najbliższa data zapadalności wśród zapisanych partii.",
+    "total_invested_desc": "Nominalna wartość wszystkich zapisanych partii.",
+    "next_maturity_suffix": "najbliżej",
+    "no_upcoming_maturity": "Brak najbliższej zapadalności.",
+    "sharing_mode": "Tryb udostępniania",
     "public_share_desc": "Portfel ma aktywny publiczny link.",
     "private_share_desc": "Portfel pozostaje prywatnym szkicem.",
     "delete_portfolio": "Usun portfel",
-    "back_to_portfolios": "Wroc do portfeli",
-    "open_lot_calculator": "Otworz partie {bondType} w kalkulatorze",
+    "back_to_portfolios": "Wróć do portfeli",
+    "open_lot_calculator": "Otwórz partie {bondType} w kalkulatorze",
     "column_type": "Typ",
     "column_duration": "Okres",
     "column_amount": "Sztuki",
     "column_purchase_date": "Data zakupu",
-    "column_nominal_value": "Wartosc nominalna",
+    "column_nominal_value": "Wartość nominalna",
     "column_action": "Akcja",
     "simulating_projection": "Trwa symulacja portfela...",
-    "total_value_label": "Wartosc laczna",
+    "total_value_label": "Wartość łączna",
     "export_package": "Eksport pakietu",
     "export_summary": "Eksport podsumowania",
     "lots_tab": "Partie",
     "analytics_tab_short": "Analiza",
     "stored_lots_title": "Zapisane partie",
-    "stored_lots_desc": "Przejrzyj kazda pozycje jako rekord: typ obligacji, liczbe sztuk, date zakupu i wartosc nominalna.",
-    "stored_lots_hint": "Najpierw przeczytaj rekord: typ obligacji, date zakupu, liczbe sztuk i wartosc nominalna.",
+    "stored_lots_desc": "Przejrzyj każdą pozycję jako rekord: typ obligacji, liczbę sztuk, datę zakupu i wartość nominalną.",
+    "stored_lots_hint": "Najpierw przeczytaj rekord: typ obligacji, datę zakupu, liczbę sztuk i wartość nominalną.",
     "lots_count": "{count} partii",
-    "liquidity_window_title": "Okno plynnosci",
-    "liquidity_window_desc": "Zobacz, ile nominalnej gotowki wraca w najblizszym oknie zapadalnosci.",
-    "cash_in_window": "Gotowka w oknie",
-    "no_maturities_in_window": "Brak zapadalnosci w tym oknie.",
-    "usage_note_title": "Jak uzywac notatnika",
-    "usage_note_desc": "Traktuj ten widok jako miejsce do przechowywania i kontroli partii. Jezeli chcesz testowac reinwestycje, wczesniejszy wykup lub zalozenia scenariusza, przejdz do kalkulatora z danymi tej partii zamiast zamieniac notatnik w pulpit planistyczny.",
+    "liquidity_window_title": "Okno płynności",
+    "liquidity_window_desc": "Zobacz, ile nominalnej gotówki wraca w najbliższym oknie zapadalności.",
+    "cash_in_window": "Gotówka w oknie",
+    "no_maturities_in_window": "Brak zapadalności w tym oknie.",
+    "usage_note_title": "Jak używać notatnika",
+    "usage_note_desc": "Traktuj ten widok jako miejsce do przechowywania i kontroli partii. Jeżeli chcesz testować reinwestycje, wcześniejszy wykup lub założenia scenariusza, przejdź do kalkulatora z danymi tej partii zamiast zamieniać notatnik w pulpit planistyczny.",
     "projection_title": "Projekcja portfela",
-    "projection_desc": "Zagregowana projekcja wartosci nominalnej wszystkich zapisanych partii. Czytaj ja po rekordach, nie przed nimi.",
-    "projection_read_title": "Jak to czytac",
-    "projection_read_desc": "Traktuj to jako pomocnicza projekcje zapisanego rekordu, a nie silnik rekomendacji. Najpierw sprawdz rekord partii i okno plynnosci.",
-    "projection_empty": "Dodaj partie, aby zobaczyc zagregowana projekcje.",
+    "projection_desc": "Zagregowana projekcja wartości nominalnej wszystkich zapisanych partii. Czytaj ja po rekordach, nie przed nimi.",
+    "projection_read_title": "Jak to czytać",
+    "projection_read_desc": "Traktuj to jako pomocniczą projekcję zapisanego rekordu, a nie silnik rekomendacji. Najpierw sprawdź rekord partii i okno płynności.",
+    "projection_empty": "Dodaj partie, aby zobaczyć zagregowana projekcję.",
     "descriptive_title": "Trzymaj notatnik przy opisie, nie rekomendacji",
-    "descriptive_desc": "Strony portfela powinny pozostac opisowe. Moga podsumowywac zapisane partie i wyniki symulacji, ale nie powinny sugerowac jednego zalecanego ruchu inwestora.",
+    "descriptive_desc": "Strony portfela powinny pozostać opisowe. Mogą podsumowywać zapisane partie i wyniki symulacji, ale nie powinny sugerować jednego zalecanego ruchu inwestora.",
     "ready_steps": {
       "create": {
-        "title": "Utworz jeden notatnik",
-        "desc": "Zacznij od prostego portfela dla partii obligacji, ktore rzeczywiscie posiadasz."
+        "title": "Utwórz jeden notatnik",
+        "desc": "Zacznij od prostego portfela dla partii obligacji, które rzeczywiście posiadasz."
       },
       "store": {
         "title": "Zapisz realne partie",
-        "desc": "Dodaj daty zakupu, liczbe sztuk i typy obligacji, aby kolejne widoki opieraly sie na realnych pozycjach."
+        "desc": "Dodaj daty zakupu, liczbę sztuk i typy obligacji, aby kolejne widoki opieraly się na realnych pozycjach."
       },
       "inspect": {
-        "title": "Sprawdz terminy",
-        "desc": "Wroc do notatnika pozniej, aby przejrzec wyplaty, zapadalnosci i dane do eksportu."
+        "title": "Sprawdź terminy",
+        "desc": "Wróć do notatnika później, aby przejrzeć wypłaty, zapadalności i dane do eksportu."
       }
     },
     "public": "Publiczny",
@@ -1569,16 +1569,16 @@
     "tax_optimized_congrats": "Twój portfel jest zoptymalizowany pod kątem podatkowym! ✨",
     "tax_leak_action_required": "Wymagane działanie: Posiadasz {count} dużych partii (np. {type} z {year}) o łącznej wartości {value} poza 'opakowaniem' podatkowym. Rozważ przeniesienie ich do IKE/IKZE, aby uniknąć 19% podatku Belki.",
     "tax_leak_small": "Wykryto mały wyciek podatkowy w {count} partiach. Rozważ użycie IKE/IKZE dla przyszłych zakupów.",
-    "next_days_window": "Najblizsze {days} dni",
-    "confirm_delete_portfolio_full": "Usunac portfel \"{name}\"? Tej operacji nie mozna cofnac.",
-    "confirm_delete_portfolio_short": "Usunac portfel \"{name}\"?",
-    "import_completed_added_lots": "Import zakonczony. Dodano {count} partii."
+    "next_days_window": "Najbliższe {days} dni",
+    "confirm_delete_portfolio_full": "Usunąć portfel \"{name}\"? Tej operacji nie można cofnąć.",
+    "confirm_delete_portfolio_short": "Usunąć portfel \"{name}\"?",
+    "import_completed_added_lots": "Import zakończony. Dodano {count} partii."
   },
   "economic": {
     "range_data": "Zakres danych",
-    "range_hint": "Ten zakres dziala na wykres CPI i NBP, aby kontekst makro pozostal spojny.",
+    "range_hint": "Ten zakres działa na wykres CPI i NBP, aby kontekst makro pozostał spójny.",
     "reference_panel": "Panel kontekstowy",
-    "compact_source_header": "Zrodlo danych",
+    "compact_source_header": "Źródło danych",
     "data_health": "Stan danych",
     "series": "Serie",
     "purpose": "Rola",
@@ -1587,31 +1587,31 @@
     "context": "Kontekst",
     "reference": "Referencyjny",
     "readable_context": "Czytelny kontekst",
-    "how_to_use_page": "Jak korzystac z tej strony",
-    "data_quality_title": "Jakosc danych",
+    "how_to_use_page": "Jak korzystać z tej strony",
+    "data_quality_title": "Jakość danych",
     "page_scope_title": "Zakres strony",
     "tab_charts": "Wykresy",
-    "tab_status": "Status zrodel",
+    "tab_status": "Status źródeł",
     "tab_guide": "Przewodnik",
     "chart_dashboard_title": "Serie makro",
-    "chart_dashboard_description": "Uzywaj wykresow jako glownej powierzchni czytania. Kontrola zakresu dziala na obie serie, aby kontekst CPI i NBP pozostal spojny.",
-    "status_dashboard_title": "Pokrycie i swiezosc",
-    "status_dashboard_description": "Sprawdz zrodlo, pokrycie i stan synchronizacji, zanim potraktujesz wykres jako mocne wsparcie interpretacji kalkulatora.",
-    "guide_dashboard_title": "Jak uzywac tej referencji",
-    "guide_dashboard_description": "Traktuj strone jako kontekst dla wynikow kalkulatora. Ma wyjasniac zalozenia, nie tworzyc osobnego procesu prognozowania.",
-    "page_intro": "Ta strona dostarcza spokojny kontekst makro do kalkulatorow obligacji. Nie ma udawac osobnego produktu forecastingowego ani rozbudowanego pulpitu rynkowego.",
-    "macro_support_title": "Makro dane maja pomagac liczyc obligacje, nie odwracac od nich uwagi.",
-    "usage_guide_1": "Inflacja pomaga zrozumiec realna sile nabywcza wyniku i zachowanie obligacji indeksowanych.",
-    "usage_guide_2": "Stopa NBP sluzy glownie jako kontekst dla ROR i DOR oraz do interpretacji otoczenia rynkowego.",
-    "usage_guide_3": "Biezaca stopa oferty obligacji i stopa referencyjna NBP to nie to samo: na przyklad ROR moze zaczynac od stopy sprzedazowej oferty, a dopiero potem przechodzic na NBP + marza.",
-    "usage_guide_4": "Krotsze zakresy poprawiaja czytelnosc. Szerszy zakres daje tlo historyczne, ale nie uzupelnia brakujacej jakosci danych.",
-    "data_quality_description": "Jesli synchronizacja jest niepelna, strona powinna mowic o tym wprost. Te wykresy maja pomagac interpretowac wynik kalkulatora, nie budowac falszywego poczucia kompletnosci.",
-    "page_scope_description": "To nie jest osobny panel forecastingowy. Dane tutaj maja sluzyc jako spokojne tlo do czytania kalkulatorow obligacji.",
-    "reference_status_description": "Te panele pokazuja, czy widoczna seria pochodzi z synchronizowanych danych, czy z zapasowego zestawu referencyjnego.",
+    "chart_dashboard_description": "Używaj wykresów jako głównej powierzchni czytania. Kontrola zakresu działa na obie serie, aby kontekst CPI i NBP pozostał spójny.",
+    "status_dashboard_title": "Pokrycie i świeżość",
+    "status_dashboard_description": "Sprawdź źródło, pokrycie i stan synchronizacji, zanim potraktujesz wykres jako mocne wsparcie interpretacji kalkulatora.",
+    "guide_dashboard_title": "Jak używać tej referencji",
+    "guide_dashboard_description": "Traktuj stronę jako kontekst dla wyników kalkulatora. Ma wyjaśniać założenia, nie twórzyć osobnego procesu prognozowania.",
+    "page_intro": "Ta strona dostarcza spokojny kontekst makro do kalkulatorów obligacji. Nie ma udawać osobnego produktu forecastingowego ani rozbudowanego pulpitu rynkowego.",
+    "macro_support_title": "Dane makro mają pomagać analizować obligacje, a nie odwracać od nich uwagi.",
+    "usage_guide_1": "Inflacja pomaga zrozumieć realną siłę nabywczą wyniku i zachowanie obligacji indeksowanych.",
+    "usage_guide_2": "Stopa NBP służy głównie jako kontekst dla ROR i DOR oraz do interpretacji otoczenia rynkowego.",
+    "usage_guide_3": "Bieżąca stopa oferty obligacji i stopa referencyjna NBP to nie to samo: na przykład ROR może zaczynać od stopy sprzedażowej oferty, a dopiero potem przechodzić na NBP + marża.",
+    "usage_guide_4": "Krótsze zakresy poprawiają czytelność. Szerszy zakres daje tło historyczne, ale nie uzupełnia brakującej jakości danych.",
+    "data_quality_description": "Jeśli synchronizacja jest niepełna, strona powinna mówić o tym wprost. Te wykresy mają pomagać interpretować wynik kalkulatora, nie budować fałszywego poczucia kompletności.",
+    "page_scope_description": "To nie jest osobny panel forecastingowy. Dane tutaj mają służyć jako spokojne tło do czytania kalkulatorów obligacji.",
+    "reference_status_description": "Te panele pokazują, czy widoczna seria pochodzi z synchronizowanych danych, czy z zapasowego zestawu referencyjnego.",
     "reference_state": {
       "synced": "Zsynchronizowane",
-      "needs_refresh": "Wymaga odswiezenia",
-      "partial": "Czesciowe",
+      "needs_refresh": "Wymaga odświeżenia",
+      "partial": "Częściowe",
       "fallback": "Zapasowe"
     },
     "reference_copy": {
@@ -1620,37 +1620,37 @@
       "official_nbp": "Oficjalne API NBP",
       "official_nbp_fallback": "Kuratorowana historia stopy referencyjnej NBP",
       "official_bond_site": "Oficjalna oferta obligacji",
-      "official_gus_partial": "GUS / czesciowy zakres referencyjny",
+      "official_gus_partial": "GUS / częściowy zakres referencyjny",
       "official_gus_archive": "Oficjalne archiwum CPI GUS",
-      "coverage_unavailable": "Zakres niedostepny",
+      "coverage_unavailable": "Zakres niedostępny",
       "scope_unknown": "Zakres nieznany",
       "reference_only": "Tylko odczyt referencyjny",
       "supports_context": "Wspiera kontekst kalkulatora",
       "unavailable_title": "Brak metadanych",
-      "unavailable_description": "Ta strona nie ma jeszcze wystarczajacych metadanych synchronizacji, aby opisac swiezosc lub zakres.",
-      "fallback_title": "Zastepczy lub czesciowy zakres",
-      "fallback_description": "Traktuj te serie jako wsparcie referencyjne, dopoki pipeline synchronizacji nie przywroci pelniejszego zakresu.",
-      "stale_title": "Zakres wymaga odswiezenia",
-      "stale_description": "Dane pochodza z poprawnego zrodla, ale ich okno czasowe nie jest juz wystarczajaco aktualne dla biezacego odczytu.",
+      "unavailable_description": "Ta strona nie ma jeszcze wystarczających metadanych synchronizacji, aby opisac świeżość lub zakres.",
+      "fallback_title": "Zastępczy lub częściowy zakres",
+      "fallback_description": "Traktuj te serie jako wsparcie referencyjne, dopóki proces synchronizacji nie przywróci pełniejszego zakresu.",
+      "stale_title": "Zakres wymaga odświeżenia",
+      "stale_description": "Dane pochodzą z poprawnego źródła, ale ich okno czasowe nie jest już wystarczająco aktualne dla bieżącego odczytu.",
       "synced_title": "Zsynchronizowany zakres referencyjny",
-      "synced_description": "Ta seria jest wsparta zsynchronizowanym pipeline danych i moze sluzyc do interpretacji kalkulatora.",
-      "cpi_partial_reference": "Miesieczny CPI nadal ma tylko czesciowy zakres referencyjny. Nie czytaj go jako w pelni aktualnych danych rynkowych.",
-      "cpi_fallback_reference": "Ten wykres CPI korzysta z zastepczego zakresu awaryjnego. Czytaj go tylko jako kontekst pomocniczy, dopoki oficjalny import nie zostanie przywrocony.",
-      "cpi_stale_coverage": "Zrodlo CPI jest poprawne, ale ostatni zaimportowany punkt jest zbyt stary, aby traktowac ten zakres jako biezacy.",
-      "reference_synced_context": "Zakres jest wystarczajaco aktualny, aby spokojnie wspierac odczyt kalkulatora.",
-      "nbp_fallback_reference": "Historia stopy referencyjnej opiera sie na kuratorowanym zakresie wspartym oficjalnymi publikacjami NBP. Czytaj ja jako kontekst referencyjny, nie jako pelny strumien API.",
-      "nbp_partial_reference": "Historia stopy NBP jest tylko czesciowo zsynchronizowana, dlatego brakujace punkty zostaly dopelnione kuratorowanym zakresem historycznym.",
-      "nbp_synced_context": "Historia stopy referencyjnej jest zsynchronizowana i moze wspierac odczyt wynikow obligacji."
+      "synced_description": "Ta seria jest wsparta zsynchronizowanym procesem danych i może służyć do interpretacji kalkulatora.",
+      "cpi_partial_reference": "Miesięczny CPI nadal ma tylko częściowy zakres referencyjny. Nie czytaj go jako w pełni aktualnych danych rynkowych.",
+      "cpi_fallback_reference": "Ten wykres CPI korzysta z zastępczego zakresu awaryjnego. Czytaj go tylko jako kontekst pomocniczy, dopóki oficjalny import nie zostanie przywrócony.",
+      "cpi_stale_coverage": "Źródło CPI jest poprawne, ale ostatni zaimportowany punkt jest zbyt stary, aby traktować ten zakres jako bieżący.",
+      "reference_synced_context": "Zakres jest wystarczająco aktualny, aby spokojnie wspierać odczyt kalkulatora.",
+      "nbp_fallback_reference": "Historia stopy referencyjnej opiera się na kuratorowanym zakresie wspartym oficjalnymi publikacjami NBP. Czytaj ją jako kontekst referencyjny, nie jako pełny strumień API.",
+      "nbp_partial_reference": "Historia stopy NBP jest tylko częściowo zsynchronizowana, dlatego brakujące punkty zostały dopełnione kuratorowanym zakresem historycznym.",
+      "nbp_synced_context": "Historia stopy referencyjnej jest zsynchronizowaną i może wspierać odczyt wyników obligacji."
     },
     "subtitle": "Kontekst historyczny polskiej inflacji i stóp procentowych.",
     "inflation_title": "Wskaźnik inflacji (CPI)",
     "inflation_desc": "Zmiana cen towarów i usług konsumpcyjnych rok do roku.",
     "why_it_matters": "Dlaczego to ma znaczenie?",
-    "inflation_impact_desc": "Inflacja obniża siłę nabywczą Twoich pieniędzy. Jeśli zwrot z inwestycji jest niższy niż inflacja, tracisz pieniądze w ujęciu realnym.",
+    "inflation_impact_desc": "Inflacja obniża siłę nabywczą Twoich pieniędzy. Jeśli zwrot z inwestycji jest niższy niż inflacją, tracisz pieniądze w ujęciu realnym.",
     "data_source": "Źródło danych",
     "source_desc": "Dane historyczne dostarczane przez Główny Urząd Statystyczny (GUS) oraz Narodowy Bank Polski (NBP).",
-    "nbp_rate_title": "Stopa referencyjna NBP",
-    "nbp_rate_desc": "Historyczna stopa referencyjna ustalana przez Narodowy Bank Polski.",
+    "nbp_rate_title": "Stopa referencyjną NBP",
+    "nbp_rate_desc": "Historyczna stopa referencyjną ustalana przez Narodowy Bank Polski.",
     "failed_to_load": "Nie udało się załadować danych",
     "as_of": "Stan na",
     "fallback_in_use": "użyto danych zapasowych",
@@ -1660,31 +1660,31 @@
     "full_scale": "Pełna skala",
     "inflation_scale_notice": "Tryb czytelny ogranicza wczesny skok, aby reszta serii pozostała czytelna. Szczyt widocznej historii przekracza {max}%.",
     "fallback_notices": {
-      "nbp_warning": "Uzywane sa zapasowe dane referencyjne NBP. Czytaj strone referencyjna ostrozniej.",
-      "nbp_live": "Dane referencyjne NBP pochodza z zsynchronizowanego zbioru referencyjnego.",
-      "inflation_warning": "Uzywane sa zapasowe dane referencyjne CPI. Czytaj strone referencyjna ostrozniej.",
-      "inflation_live": "Dane referencyjne CPI pochodza z zsynchronizowanego zbioru referencyjnego."
+      "nbp_warning": "Używane są zapasowe dane referencyjne NBP. Czytaj stronę referencyjną ostrożniej.",
+      "nbp_live": "Dane referencyjne NBP pochodzą z zsynchronizowanego zbioru referencyjnego.",
+      "inflation_warning": "Używane są zapasowe dane referencyjne CPI. Czytaj stronę referencyjną ostrożniej.",
+      "inflation_live": "Dane referencyjne CPI pochodzą z zsynchronizowanego zbioru referencyjnego."
     },
     "reference_rail_title": "Panel referencyjny",
     "status_rail_title": "Status serii"
   },
   "financial_insights": {
     "title": "Interpretacja finansowa",
-    "description": "Uzyj tych kontroli, aby oddzielic wartosc nominalna, sile nabywcza, obciazenie podatkiem i pewnosc danych.",
-    "tax_impact_label": "Wplyw podatku",
-    "tax_impact_description": "Zysk brutto przed podatkiem: {grossProfit}. Zysk netto po potraceniach: {netProfit}.",
-    "real_value_label": "Kontrola wartosci realnej",
-    "real_value_description": "Nominalna wartosc koncowa to {nominalValue}. Inflacja obniza odczyt sily nabywczej o {gap}.",
-    "data_quality_label": "Jakosc danych",
+    "description": "Użyj tych kontroli, aby oddzielić wartość nominalną, siłę nabywczą, obciążenie podatkowe i pewność danych.",
+    "tax_impact_label": "Wpływ podatku",
+    "tax_impact_description": "Zysk brutto przed podatkiem: {grossProfit}. Zysk netto po potrąceniach: {netProfit}.",
+    "real_value_label": "Kontrola wartości realnej",
+    "real_value_description": "Nominalna wartość końcowa to {nominalValue}. Inflacja obniża odczyt siły nabywczej o {gap}.",
+    "data_quality_label": "Jakość danych",
     "data_quality_flags": "{count} flag",
     "data_quality_clean": "Brak flag",
-    "data_quality_description": "Otworz kontekst obliczen, aby sprawdzic dokladna liste ostrzezen przed poleganiem na wyniku.",
-    "data_quality_clean_description": "Ten zatwierdzony wynik nie zglosil flag jakosci danych."
+    "data_quality_description": "Otwórz kontekst obliczeń, aby sprawdzić dokładną listę ostrzeżeń przed poleganiem na wyniku.",
+    "data_quality_clean_description": "Ten zatwierdzony wynik nie zgłosił flag jakości danych."
   },
   "comparison": {
-    "offer_source": "Zrodlo oferty obligacji",
-    "offer_degraded_warning": "Potwierdzenie oferty obligacji jest ograniczone; stawki moga pochodzic ze zrodla wtórnego lub kuratorowanego.",
-    "title_bond_vs_bond": "Bond vs Bond",
+    "offer_source": "Źródło oferty obligacji",
+    "offer_degraded_warning": "Potwierdzenie oferty obligacji jest ograniczone; stawki mogą pochodzić ze źródła wtórnego lub kuratorowanego zestawu danych.",
+    "title_bond_vs_bond": "Obligacja kontra obligacja",
     "desc_bond_vs_bond": "Porównaj różne polskie obligacje skarbowe w tych samych warunkach z automatycznym odnowieniem.",
     "shared_scenario": "Wspólny Scenariusz",
     "horizon_years": "Horyzont (Lata)",
@@ -1696,7 +1696,7 @@
     "market_vs_bonds_desc": "Symulator historyczny: Porównaj wyniki aktywów z miesięcznymi wpłatami skorygowanymi o inflację.",
     "share_scenario": "UDOSTĘPNIJ SCENARIUSZ",
     "export": "EKSPORTUJ",
-    "export_comparison_csv": "Eksport CSV porownania",
+    "export_comparison_csv": "Eksport CSV porównania",
     "copied": "SKOPIOWANO!",
     "summary": "Podsumowanie symulacji",
     "initial_sum": "Kwota Początkowa",
@@ -1739,11 +1739,11 @@
     "scenario_a": "Scenariusz A",
     "scenario_b": "Scenariusz B",
     "shared_base": "Wspólna baza scenariusza",
-    "shared_base_title": "Wspolna baza scenariusza",
-    "shared_base_desc": "Utrzymaj jedna baze: kwote, daty i zalozenia. Nadpisania scenariuszy wlaczaj tylko wtedy, gdy rzeczywiscie maja znaczenie.",
-    "shared_base_scope": "Lewy panel definiuje kwote, date zakupu, wspolny horyzont, zalozenia makro i domyslne opakowanie podatkowe dla obu scenariuszy.",
-    "shared_assumptions_title": "Wspolne zalozenia i podatek",
-    "shared_assumptions_desc": "Zmien sciezke makro lub opakowanie podatkowe tylko wtedy, gdy domyslna konfiguracja wymaga korekty.",
+    "shared_base_title": "Wspólna baza scenariusza",
+    "shared_base_desc": "Utrzymaj jedną bazę: kwotę, daty i założenia. Nadpisania scenariuszy włączaj tylko wtedy, gdy rzeczywiście mają znaczenie.",
+    "shared_base_scope": "Lewy panel definiuje kwotę, datę zakupu, wspólny horyzont, założenia makro i domyślne opakowanie podatkowe dla obu scenariuszy.",
+    "shared_assumptions_title": "Wspólne założenia i podatek",
+    "shared_assumptions_desc": "Zmień ścieżkę makro lub opakowanie podatkowe tylko wtedy, gdy domyślna konfiguracja wymaga korekty.",
     "scenario_a_summary": "Podsumowanie scenariusza A",
     "scenario_b_summary": "Podsumowanie scenariusza B",
     "history_source": "Źródło historii",
@@ -1761,32 +1761,32 @@
       "exact": "Dokładne daty"
     },
     "use_shared_tax": "Użyj wspólnej strategii podatkowej",
-    "shared_tax_desc": "Zostaw wspolne opakowanie podatkowe, dopoki jeden scenariusz naprawde nie wymaga osobnego traktowania podatkowego.",
+    "shared_tax_desc": "Zostaw wspólne opakowanie podatkowe, dopóki jeden scenariusz naprawdę nie wymaga osobnego traktowania podatkowego.",
     "custom_horizon": "Własny horyzont",
     "custom_horizon_desc": "Nadpisz wspólne ustawienie czasu tylko dla tego scenariusza.",
     "scenario_horizon": "Horyzont scenariusza",
-    "shared_horizon_desc": "Ten wspolny horyzont pozostaje domyslna sciezka czasu, dopoki scenariusz jawnie go nie nadpisze.",
+    "shared_horizon_desc": "Ten wspólny horyzont pozostaje domyślną ścieżką czasu, dopóki scenariusz jawnie go nie nadpisze.",
     "override_scope_title": "Zakres nadpisania",
-    "tax_override_desc": "Uzywaj nadpisania podatku tylko wtedy, gdy ten scenariusz swiadomie odchodzi od wspolnego opakowania.",
-    "horizon_override_desc": "To nadpisanie zmienia date koncowa tylko dla tego scenariusza. Wspolna baza nadal prowadzi druga strone porownania.",
-    "family_override_note": "Nadpisania dla obligacji rodzinnych pozostaja dostepne, ale maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego rzeczywiscie ma zastosowanie.",
+    "tax_override_desc": "Używaj nadpisania podatku tylko wtedy, gdy ten scenariusz świadomie odchodzi od wspólnego opakowania.",
+    "horizon_override_desc": "To nadpisanie zmienia datę końcową tylko dla tego scenariusza. Wspólna baza nadal prowadzi drugą stronę porównania.",
+    "family_override_note": "Nadpisania dla obligacji rodzinnych pozostają dostępne, ale mają sens tylko wtedy, gdy warunek uprawnieńia gospodarstwa domowego rzeczywiście ma zastosowanie.",
     "family_bond_badge": "Obligacja rodzinna",
-    "base_follows_shared_title": "Baza pochodzi ze wspolnego scenariusza",
-    "base_follows_shared_desc": "Kwota, data zakupu, inflacja, sciezka NBP i wspolny horyzont pozostaja zgodne, dopoki nie otworzysz opcjonalnych nadpisan.",
+    "base_follows_shared_title": "Baza pochodzi ze wspólnego scenariusza",
+    "base_follows_shared_desc": "Kwota, data zakupu, założenia inflacyjne, ścieżka NBP i wspólny horyzont pozostają zgodne, dopóki nie otwórzysz opcjonalnych nadpisań.",
     "optional_overrides_title": "Opcjonalne nadpisania scenariusza",
-    "scenario_card_desc": "Wybierz obligacje; termin, kwota i zalozenia sa dziedziczone ze wspolnej bazy.",
-    "optional_overrides_desc": "Otwieraj tylko wtedy, gdy jeden scenariusz ma swiadomie odejsc od wspolnej bazy.",
+    "scenario_card_desc": "Wybierz obligację; termin, kwota i założenia są dziedziczone ze wspólnej bazy.",
+    "optional_overrides_desc": "Otwieraj tylko wtedy, gdy jeden scenariusz ma świadomie odejść od wspólnej bazy.",
     "summary_leading_bond": "Prowadzaca obligacja",
-    "summary_higher_payout": "ma wyzsza modelowana wyplate",
-    "summary_equal_outcome": "Oba scenariusze koncza obecnie z taka sama wartoscia.",
-    "summary_absolute_gap": "Roznica kwotowa",
-    "summary_relative_gap": "Roznica procentowa",
-    "summary_compared_to_lower": "Wzgledem nizszej modelowanej wartosci.",
-    "summary_net_payout": "Wyplata netto",
-    "verdict_snapshot_label": "Migawka porownania",
+    "summary_higher_payout": "ma wyższa modelowaną wypłatę",
+    "summary_equal_outcome": "Oba scenariusze kończą obecnie z taką sama wartością.",
+    "summary_absolute_gap": "Różnica kwotowa",
+    "summary_relative_gap": "Różnica procentowa",
+    "summary_compared_to_lower": "Względem niższej modelowanej wartości.",
+    "summary_net_payout": "Wypłata netto",
+    "verdict_snapshot_label": "Migawka porównania",
     "verdict_over_text": "wobec alternatywy w tym",
-    "verdict_high_inflation_badge": "Wysoka inflacja",
-    "verdict_tax_wrapper_badge": "Aktywna roznica opakowania",
+    "verdict_high_inflation_badge": "Wysoka inflacją",
+    "verdict_tax_wrapper_badge": "Aktywna różnica opakowania",
     "verdict_gap_label": "Przewaga",
     "capital_growth": "Wzrost kapitału",
     "risk_drawdown": "Ryzyko / obsunięcie",
@@ -1799,40 +1799,40 @@
     "preset_war_2022": "Start wojny 2022",
     "preset_recovery_2023": "Odbicie 2023",
     "verdict": {
-      "higher_real_value": "ma obecnie wyzsza wartosc realna",
-      "higher_net_payout": "ma obecnie wyzsza modelowana wyplate netto",
+      "higher_real_value": "ma obecnie wyższą wartość realną",
+      "higher_net_payout": "ma obecnie wyższą modelowaną wypłatę netto",
       "headline": "{bond} {outcome} o {gap} w tym horyzoncie {years} lat.",
-      "caution_text": "Traktuj to jako odczyt jednego scenariusza, a nie uniwersalny ranking obligacji. Gdy zmieniaja sie zalozenia, zmienia sie tez roznica.",
-      "mode_context": "Obsluga zapadalnosci: {mode}. Wniosek jest poprawny tylko w ramach tej reguly porownania.",
+      "caution_text": "Traktuj to jako odczyt jednego scenariusza, a nie uniwersalny ranking obligacji. Gdy zmieniają się założenia, zmienia się też różnica.",
+      "mode_context": "Obsługa zapadalności: {mode}. Wniosek jest poprawny tylko w ramach tej reguly porównania.",
       "drivers_title": "Dlaczego ten scenariusz prowadzi",
-      "driver_mode": "Oba scenariusze sa interpretowane przez wybrany tryb: {mode}.",
-      "driver_duration": "{winner} i {loser} maja rozne naturalne terminy, wiec obsluga zapadalnosci wplywa na okno porownania.",
-      "driver_capitalization": "{winner} kapitalizuje inaczej niz alternatywa, co zmienia sciezke wartosci koncowej.",
-      "driver_inflation": "Wysokie zalozenia inflacyjne zwiekszaja znaczenie mechaniki obligacji indeksowanych inflacja."
+      "driver_mode": "Oba scenariusze są interpretowane przez wybrany tryb: {mode}.",
+      "driver_duration": "{winner} i {loser} mają różne naturalne terminy, więc obsługa zapadalności wpływa na okno porównania.",
+      "driver_capitalization": "{winner} kapitalizuje inaczej niż alternatywa, co zmienia ścieżkę wartości końcowej.",
+      "driver_inflation": "Wysokie założenia inflacyjne zwiększają znaczenie mechaniki obligacji indeksowanych inflacją."
     },
     "table_title": "Szczegółowe Porównanie",
-    "table_desc": "Proste sprawdzenie wartosci rok po roku. Uzywaj tej tabeli do odczytu, kiedy jedna sciezka prowadzi w danym punkcie, a nie jako sygnalu rekomendacyjnego.",
+    "table_desc": "Proste sprawdzenie wartości rok po roku. Używaj tej tabeli do odczytu, kiedy jedną ścieżka prowadzi w danym punkcie, a nie jako sygnału rekomendacyjnego.",
     "table_timeline_rows": "Wiersze osi czasu",
-    "table_higher_payout": "Lepsza wyplata netto",
-    "table_compared_pair": "Para porownania",
+    "table_higher_payout": "Lepsza wypłatą netto",
+    "table_compared_pair": "Para porównania",
     "table_tax_paid": "Podatek",
-    "table_ahead_in_row": "Aktualnie wyzej w tym wierszu",
-    "table_ahead_badge_suffix": "wyzej",
+    "table_ahead_in_row": "Aktualnie wyżej w tym wierszu",
+    "table_ahead_badge_suffix": "wyżej",
     "table_tie": "Remis",
-    "table_mobile_title": "Porownanie wiersz po wierszu",
-    "table_mobile_desc": "Na mniejszych ekranach porownuj scenariusze jako liste punktow zamiast szerokiej tabeli.",
-    "table_mobile_trigger": "Otworz tabele porownania",
+    "table_mobile_title": "Porównanie wiersz po wierszu",
+    "table_mobile_desc": "Na mniejszych ekranach porównuj scenariusze jako listę punktów zamiast szerokiej tabeli.",
+    "table_mobile_trigger": "Otwórz tabele porównania",
     "table_mobile_count": "{count} wierszy osi czasu",
-    "table_grouped_by": "Harmonogram pogrupowany wedlug: {cadence}",
-    "growth_chart_label": "Wykres wzrostu porownania",
-    "drawdown_chart_label": "Wykres obsuniec porownania",
-    "chart_accessible_summary_empty": "Wykres porownania nie ma jeszcze widocznych danych aktywow.",
-    "chart_accessible_summary": "Wykres zawiera {count} probkowanych punktow. {leader} prowadzi z wartoscia {leaderValue}; {trailing} ma wartosc {trailingValue}.",
-    "drawdown_accessible_summary_empty": "Wykres obsuniec nie ma jeszcze widocznych danych ryzyka.",
-    "drawdown_accessible_summary": "Wykres obsuniec zawiera {count} probkowanych punktow. Najglebsze obecne obsuniecie to {drawdown}% dla {asset}.",
+    "table_grouped_by": "Harmonogram pogrupowany według: {cadence}",
+    "growth_chart_label": "Wykres wzrostu porównania",
+    "drawdown_chart_label": "Wykres obsunięć porównania",
+    "chart_accessible_summary_empty": "Wykres porównania nie ma jeszcze widocznych danych aktywów.",
+    "chart_accessible_summary": "Wykres zawiera {count} próbkowanych punktów. {leader} prowadzi z wartością {leaderValue}; {trailing} ma wartość {trailingValue}.",
+    "drawdown_accessible_summary_empty": "Wykres obsunięć nie ma jeszcze widocznych danych ryzyka.",
+    "drawdown_accessible_summary": "Wykres obsunięć zawiera {count} próbkowanych punktów. Najglebsze obecne obsunięćie to {drawdown}% dla {asset}.",
     "table_row_fallback": "Wiersz {row}",
     "table_desktop_note": "Tabela potwierdza, gdzie dany scenariusz prowadzi w konkretnym okresie.",
-    "table_footer_note": "Znacznik pokazuje tylko, ktora sciezka prowadzi w konkretnym wierszu. Pozniejsze okresy moga odwrocic wczesniejsze prowadzenie.",
+    "table_footer_note": "Znacznik pokazuje tylko, którą ścieżka prowadzi w konkretnym wierszu. Pozniejsze okresy mogą odwrócic wcześniejsze prowadzenie.",
     "winning": "WYGRYWA",
     "losing": "z tyłu",
     "tie": "REMIS",
@@ -1841,134 +1841,134 @@
     "verdict_high_inflation": "Lepsza ochrona przy wysokiej inflacji",
     "verdict_tax_efficient": "Bardziej efektywna podatkowo",
     "year_by_year": "Wzrost rok po roku",
-    "ready_title": "Porownaj dwa zatwierdzone scenariusze, nie dwa ruchome cele.",
-    "ready_desc": "Najpierw ustaw wspolna baze, potem zmien nadpisania scenariuszy tylko wtedy, gdy sa potrzebne, a na koncu uruchom jedno czyste porownanie.",
-    "ready_shared_base": "Wspolna baza",
-    "ready_shared_base_desc": "Kwota, daty, sciezka inflacji i opakowanie podatkowe.",
+    "ready_title": "Porównaj dwa zatwierdzone scenariusze, nie dwa ruchome cele.",
+    "ready_desc": "Najpierw ustaw wspólną bazę, potem zmień nadpisania scenariuszy tylko wtedy, gdy są potrzebne, a na końcu uruchom jedno czyste porównanie.",
+    "ready_shared_base": "Wspólna baza",
+    "ready_shared_base_desc": "Kwota, daty, ścieżka inflacji i opakowanie podatkowe.",
     "ready_overrides": "Nadpisania scenariuszy",
-    "ready_overrides_desc": "Typ obligacji i opcjonalne korekty dla kazdego scenariusza.",
+    "ready_overrides_desc": "Typ obligacji i opcjonalne korekty dla każdego scenariusza.",
     "ready_committed": "Zatwierdzony wynik",
-    "ready_committed_desc": "Uruchom porownanie, potem przejdz do podsumowania, wykresu i tabeli.",
-    "ready_footer": "Uruchom porownanie przez staly przycisk oblicz w prawym dolnym rogu.",
-    "stale_results": "Dane zostaly zmienione. Wyniki ponizej nadal pokazuja poprzedni przebieg, dopoki nie uruchomisz porownania ponownie.",
-    "chart_header_desc": "Punkty wykresu sa ustawione wedlug rzeczywistych dat kalendarzowych, dzieki czemu oba scenariusze korzystaja z jednej osi czasu.",
-    "chart_help_title": "Jak czytac wykres",
-    "chart_help_desc": "Najpierw sprawdz poziom koncowy obu scenariuszy. Potem dopiero patrz na rytm zmian i odcinki plaskie.",
-    "comparison_chart_help_title": "Jak czytac wykres porownawczy",
-    "comparison_chart_help_desc": "Wykres sluzy do wychwycenia ksztaltu scenariusza. Szczegoly kadencji wyplat i rytmu aktualizacji mozna rozwinac tylko wtedy, gdy sa potrzebne.",
-    "comparison_chart_help_note": "Najpierw odczytaj poziom koncowy obu scenariuszy. Dopiero potem patrz na nachylenie linii i odcinki plaskie.",
+    "ready_committed_desc": "Uruchom porównanie, potem przejdź do podsumowania, wykresu i tabeli.",
+    "ready_footer": "Uruchom porównanie przez stały przycisk oblicz w prawym dolnym rogu.",
+    "stale_results": "Dane zostały zmienione. Wyniki poniżej nadal pokazują poprzedni przebieg, dopóki nie uruchomisz porównania ponownie.",
+    "chart_header_desc": "Punkty wykresu są ustawione według rzeczywistych dat kalendarzowych, dzięki czemu oba scenariusze korzystaja z jednej osi czasu.",
+    "chart_help_title": "Jak czytać wykres",
+    "chart_help_desc": "Najpierw sprawdź poziom końcowy obu scenariuszy. Potem dopiero patrz na rytm zmian i odcinki plaskie.",
+    "comparison_chart_help_title": "Jak czytać wykres porównawczy",
+    "comparison_chart_help_desc": "Wykres służy do wychwycenia kształtu scenariusza. Szczegóły kadencji wypłat i rytmu aktualizacji można rozwinąć tylko wtedy, gdy są potrzebne.",
+    "comparison_chart_help_note": "Najpierw odczytaj poziom końcowy obu scenariuszy. Dopiero potem patrz na nachylenie linii i odcinki plaskie.",
     "mixed_cadence": "Mieszany rytm",
-    "mixed_cadence_notice": "To porownanie miesza rozne kadencje wyplat: {bondTypeA} aktualizuje sie {cadenceA}, a {bondTypeB} aktualizuje sie {cadenceB}.",
-    "cadence_monthly": "miesiecznie",
+    "mixed_cadence_notice": "To porównanie miesza różne kadencje wypłat: {bondTypeA} aktualizuje się {cadenceA}, a {bondTypeB} aktualizuje się {cadenceB}.",
+    "cadence_monthly": "miesięcznie",
     "cadence_longer": "rzadziej",
-    "end_level": "Poziom koncowy",
-    "end_level_desc": "Pokazuje, ktory scenariusz konczy wyzej przy tych samych zalozeniach.",
+    "end_level": "Poziom końcowy",
+    "end_level_desc": "Pokazuje, który scenariusz kończy wyżej przy tych samych założeniach.",
     "update_rhythm": "Rytm aktualizacji",
-    "update_rhythm_desc": "Plaskie odcinki nie oznaczaja stagnacji. Czasem oznaczaja tylko rzadsze kapitalizowanie lub wyplate.",
-    "assumptions_meta": "Zalozenia i meta scenariuszy",
-    "assumptions_meta_desc": "Obie strony porownania zachowuja jawne zalozenia i ostrzezenia, ale nie powinny dominowac nad wynikiem i tabela.",
+    "update_rhythm_desc": "Plaskie odcinki nie oznaczaja stagnacji. Czasem oznaczaja tylko rzadsze kapitalizowanie lub wypłatę.",
+    "assumptions_meta": "Założenia i meta scenariuszy",
+    "assumptions_meta_desc": "Obie strony porównania zachowują jawne założenia i ostrzeżenia, ale nie powinny dominować nad wynikiem i tabelą.",
     "helper_secondary": "Pomocnicze",
     "notes_suffix": "notatki",
     "fairness": {
-      "title": "Uczciwosc porownania",
+      "title": "Uczciwość porównania",
       "mode_label": "Tryb"
     },
     "duration_mismatch": {
-      "title": "Wykryto rozne terminy wykupu",
-      "description": "{bondA} zapada po {durationA}, a {bondB} po {durationB}. Wybrany tryb decyduje, co dzieje sie ze srodkami po zapadalnosci."
+      "title": "Wykryto różne terminy wykupu",
+      "description": "{bondA} zapada po {durationA}, a {bondB} po {durationB}. Wybrany tryb decyduje, co dzieje się ze środkami po zapadalności."
     },
     "auto_rollover_mode_label": "Automatyczne rolowanie do horyzontu",
-    "auto_rollover_fairness_desc": "Krotsze serie sa automatycznie reinwestowane, aby oba scenariusze byly porownane w tym samym wybranym horyzoncie.",
+    "auto_rollover_fairness_desc": "Krótsze serie są automatycznie reinwestowane, aby oba scenariusze były porównane w tym samym wybranym horyzoncie.",
     "auto_rollover_notice_title": "Automatyczne rolowanie aktywne",
-    "auto_rollover_notice": "Porownywane obligacje maja rozne naturalne terminy. Krotsze serie sa automatycznie rolowane, aby utrzymac wspolny horyzont.",
+    "auto_rollover_notice": "Porównywane obligacje mają różne naturalne terminy. Krótsze serie są automatycznie rolowane, aby utrzymać wspólny horyzont.",
     "maturity_mode": {
-      "label": "Obsluga zapadalnosci",
-      "description": "Wybierz, jak porownanie traktuje obligacje, ktore zapadaja przed koncem wybranego horyzontu.",
+      "label": "Obsługa zapadalności",
+      "description": "Wybierz, jak porównanie traktuje obligacje, które zapadają przed końcem wybranego horyzontu.",
       "reinvest_until_horizon": {
         "label": "Reinwestuj do wybranego horyzontu",
-        "description": "Srodki po zapadalnosci sa automatycznie reinwestowane, aby oba scenariusze byly oceniane przez caly wybrany horyzont."
+        "description": "Środki po zapadalności są automatycznie reinwestowane, aby oba scenariusze były oceniane przez cały wybrany horyzont."
       },
       "hold_to_maturity": {
-        "label": "Porownaj pierwotne terminy",
-        "description": "Kazdy scenariusz konczy sie w naturalnym terminie obligacji albo we wskazanej dacie wyjscia, jesli wypada wczesniej."
+        "label": "Porównaj pierwotne terminy",
+        "description": "Każdy scenariusz kończy się w naturalnym terminie obligacji albo we wskazanej dacie wyjścia, jeśli wypada wcześniej."
       },
       "cash_after_maturity": {
-        "label": "Przenies do gotowki po zapadalnosci",
-        "description": "Po naturalnej zapadalnosci srodki pozostaja jako gotowka bez dalszych odsetek nominalnych do wybranego horyzontu."
+        "label": "Przenies do gotówki po zapadalności",
+        "description": "Po naturalnej zapadalności środki pozostają jako gotówka bez dalszych odsetek nominalnych do wybranego horyzontu."
       },
       "align_to_shorter_duration": {
-        "label": "Porownaj do pierwszej zapadalnosci",
-        "description": "Oba scenariusze sa oceniane tylko do krotszego naturalnego terminu w ramach wybranego horyzontu."
+        "label": "Porównaj do pierwszej zapadalności",
+        "description": "Oba scenariusze są oceniane tylko do krótszego naturalnego terminu w ramach wybranego horyzontu."
       }
     },
-    "page_notice_eyebrow": "Wspolny scenariusz",
-    "page_notice_title": "Porownanie scenariuszy",
-    "page_notice_desc": "Uzywaj tej strony do porownania dwoch modelowanych wynikow przy jawnych zalozeniach. Najlepiej traktowac ja jako sprawdzenie scenariusza, a nie uniwersalny ranking czy silnik rekomendacji.",
+    "page_notice_eyebrow": "Wspólny scenariusz",
+    "page_notice_title": "Porównanie scenariuszy",
+    "page_notice_desc": "Używaj tej strony do porównania dwóch modelowanych wyników przy jawnych założeniach. Najlepiej traktować ją jako sprawdzenie scenariusza, a nie uniwersalny ranking czy silnik rekomendacji.",
     "page": {
       "reading_guide": {
-        "understand_assumptions": "To porownanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepsza obligacje.",
-        "compare_payout": "Najpierw porownaj wyplate koncowa, a dopiero potem podatki, kadencje i wartosc realna.",
-        "check_real_value": "Wlacz tryb wartosci realnej, gdy wazniejsza jest ochrona przed inflacja niz nominalna gotowka."
+        "understand_assumptions": "To porównanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepszą obligację.",
+        "compare_payout": "Najpierw porównaj wypłatę końcową, a dopiero potem podatki, kadencje i wartość realną.",
+        "check_real_value": "Włącz tryb wartości realnej, gdy ważniejsza jest ochrona przed inflacją niż nominalna gotówka."
       },
-      "configuration_title": "Wspolna konfiguracja porownania",
-      "configuration_description": "Jedna kwota, jeden horyzont i jeden zestaw zalozen. Dzieki temu porownanie skupia sie na roznicach konstrukcji obligacji.",
-      "initial_investment": "Kapital poczatkowy",
+      "configuration_title": "Wspólna konfiguracja porównania",
+      "configuration_description": "Jedna kwota, jeden horyzont i jeden zestaw założeń. Dzięki temu porównanie skupia się na różnicach konstrukcji obligacji.",
+      "initial_investment": "Kapitał początkowy",
       "investment_horizon": "Horyzont scenariusza",
-      "real_value_toggle_description": "Pokaz wynik skorygowany o sile nabywcza zamiast nominalnego majatku.",
+      "real_value_toggle_description": "Pokaż wynik skorygowany o siłę nabywcza zamiast nominalnego majątku.",
       "rollover_title": "Rollover liczony automatycznie",
-      "rollover_description": "Jesli horyzont jest dluzszy niz termin obligacji, silnik automatycznie laczy kolejny cykl zakupu.",
+      "rollover_description": "Jeśli horyzont jest dłuższy niż termin obligacji, silnik automatycznie łączy kolejny cykl zakupu.",
       "bond_picker_title": "Obligacje w tym przebiegu",
-      "bond_picker_description": "Wybierz tylko te obligacje, ktore chcesz sprawdzic w tym samym wspolnym scenariuszu.",
-      "how_to_read_title": "Jak czytac to porownanie",
-      "how_to_read_description": "Zacznij od wiodacego wyniku modelu, potem sprawdz rytm wyplat, podatki i wartosc po inflacji.",
+      "bond_picker_description": "Wybierz tylko te obligacje, które chcesz sprawdzić w tym samym wspólnym scenariuszu.",
+      "how_to_read_title": "Jak czytać to porównanie",
+      "how_to_read_description": "Zacznij od wiodącego wyniku modelu, potem sprawdź rytm wypłat, podatki i wartość po inflacji.",
       "how_to_read_badge": "Przewodnik",
-      "reading_checklist_title": "Czytaj w tej kolejnosci",
+      "reading_checklist_title": "Czytaj w tej kolejności",
       "steps": {
-        "configure_title": "Ustaw wspolna baze",
-        "configure_description": "Zachowaj ten sam kapital, horyzont i zalozenia, aby zmieniala sie tylko konstrukcja obligacji.",
-        "run_title": "Uruchom jedno czyste porownanie",
-        "run_description": "Przelicz po zmianach, aby wszystkie scenariusze korzystaly z tych samych biezacych zalozen.",
-        "decide_title": "Podejmij decyzje po wyniku",
-        "decide_description": "Najpierw sprawdz wyplate koncowa, potem podatki, kadencje i wartosc realna."
+        "configure_title": "Ustaw wspólną bazę",
+        "configure_description": "Zachowaj ten sam kapitał, horyzont i założenia, aby zmieniała się tylko konstrukcja obligacji.",
+        "run_title": "Uruchom jedno czyste porównanie",
+        "run_description": "Przelicz po zmianach, aby wszystkie scenariusze korzystały z tych samych bieżących założeń.",
+        "decide_title": "Podejmij decyzję po wyniku",
+        "decide_description": "Najpierw sprawdź wypłatę końcową, potem podatki, kadencje i wartość realną."
       },
-      "empty_state_title": "Jedno porownanie. Jeden wspolny scenariusz.",
-      "empty_state_description": "Najpierw wybierz obligacje, potem zatwierdz wspolne zalozenia i uruchom jedno czytelne porownanie.",
+      "empty_state_title": "Jedno porównanie. Jeden wspólny scenariusz.",
+      "empty_state_description": "Najpierw wybierz obligację, potem zatwierdź wspólne założenia i uruchom jedno czytelne porównanie.",
       "empty_steps": {
-        "choose_bonds_title": "Wybierz obligacje",
-        "choose_bonds_description": "Zaznacz produkty, ktore chcesz zobaczyc obok siebie.",
-        "set_assumptions_title": "Ustaw wspolne zalozenia",
-        "set_assumptions_description": "Uzyj jednej bazy kapitalu, jednego horyzontu i jednego widoku CPI/NBP przed porownaniem wynikow.",
-        "run_title": "Uruchom porownanie",
-        "run_description": "Uzyj przypietego przycisku przeliczania, gdy wspolna konfiguracja jest gotowa."
+        "choose_bonds_title": "Wybierz obligację",
+        "choose_bonds_description": "Zaznacz produkty, które chcesz zobaczyć obok siebie.",
+        "set_assumptions_title": "Ustaw wspólne założenia",
+        "set_assumptions_description": "Użyj jednej bazy kapitału, jednego horyzontu i jednego widoku CPI/NBP przed porównaniem wyników.",
+        "run_title": "Uruchom porównanie",
+        "run_description": "Użyj przypiętego przycisku przeliczania, gdy wspólną konfiguracja jest gotowa."
       },
       "summary_title": "Migawka scenariusza",
-      "summary_description": "Zwiezly widok wiodacego wyniku zanim przejdziesz do kart obligacji i pelnego wykresu.",
-      "best_match": "Wiodacy wynik modelu",
-      "verdict_eyebrow": "Glowny wynik porownania",
-      "verdict_description": "{bondType} ma najwyzsze modelowane {valueLabel}: {value}, przed {runnerUp} o {spread}.",
+      "summary_description": "Zwięzły widok wiodącego wyniku zanim przejdziesz do kart obligacji i pełnego wykresu.",
+      "best_match": "Wiodący wynik modelu",
+      "verdict_eyebrow": "Główny wynik porównania",
+      "verdict_description": "{bondType} ma najwyższe modelowane {valueLabel}: {value}, przed {runnerUp} o {spread}.",
       "verdict_single_description": "{bondType} to jedyny modelowany scenariusz w tym uruchomieniu, z {valueLabel}: {value}.",
-      "verdict_narrative": "Traktuj to jako wynik scenariusza dla wybranych zalozen, a nie ogolna rekomendacje.",
-      "leading_result": "Wiodacy wynik",
-      "leading_result_desc": "Najwyzsza modelowana wartosc przy obecnej wspolnej konfiguracji.",
-      "modeled_value_desc": "Uzywa obecnego trybu nominalnego albo realnego.",
+      "verdict_narrative": "Traktuj to jako wynik scenariusza dla wybranych założeń, a nie ogólna rekomendację.",
+      "leading_result": "Wiodący wynik",
+      "leading_result_desc": "Najwyższa modelowaną wartość przy obecnej wspólnej konfiguracji.",
+      "modeled_value_desc": "Używa obecnego trybu nominalnego albo realnego.",
       "next_result": "Kolejny wynik",
-      "next_result_desc": "Modelowana wartosc: {value}.",
-      "next_result_empty": "Dodaj kolejna obligacje, aby zobaczyc roznice.",
+      "next_result_desc": "Modelowana wartość: {value}.",
+      "next_result_empty": "Dodaj kolejną obligację, aby zobaczyć różnice.",
       "scenarios_modeled": "Przeliczone scenariusze",
       "scenarios_modeled_count": "{count} scenariusze",
-      "results_title": "Wyniki dla kazdej obligacji",
-      "results_description": "Szczegoly drugiego poziomu sa schowane, aby wiodacy wynik i wykres pozostaly glowna sciezka czytania.",
-      "chart_title": "Wykres porownania",
-      "chart_description": "Uzyj wykresu, aby porownac ksztalt sciezki, a nie tylko wyplate koncowa.",
-      "chart_note_title": "Jak czytac wykres porownania",
-      "chart_note_description": "Najpierw sprawdz koncowy poziom kazdej sciezki. Dopiero potem analizuj zmiany nachylenia i plaskie odcinki.",
-      "calculation_context_description": "Ostrzezenia, zalozenia i swiezosc danych dla wspolnego silnika porownania.",
+      "results_title": "Wyniki dla każdej obligacji",
+      "results_description": "Szczegóły drugiego poziomu są schowane, aby wiodący wynik i wykres pozostały główna ścieżka czytania.",
+      "chart_title": "Wykres porównania",
+      "chart_description": "Użyj wykresu, aby porównać kształt ścieżki, a nie tylko wypłatę końcowa.",
+      "chart_note_title": "Jak czytać wykres porównania",
+      "chart_note_description": "Najpierw sprawdź końcowy poziom każdej ścieżki. Dopiero potem analizuj zmiany nachylenia i plaskie odcinki.",
+      "calculation_context_description": "Ostrzeżenia, założenia i świeżość danych dla wspólnego silnika porównania.",
       "calculation_context_badge": "Meta"
     },
     "controls": {
-      "description": "Ustaw jeden historyczny punkt startu, jedna kwote poczatkowa i jedna miesieczna skladke przed ponownym przeliczeniem porownania.",
-      "advanced_title": "Zaawansowany kontekst porownania",
-      "advanced_description": "Pokaz wspolny punkt wejscia w czasie i przelacznik sily nabywczej tylko wtedy, gdy sa potrzebne."
+      "description": "Ustaw jeden historyczny punkt startu, jedną kwotę początkowa i jedną miesięczna składkę przed ponownym przeliczeniem porównania.",
+      "advanced_title": "Zaawansowany kontekst porównania",
+      "advanced_description": "Pokaż wspólny punkt wejścia w czasie i przełącznik siły nabywczej tylko wtedy, gdy są potrzebne."
     }
   },
   "regular_form": {
@@ -1996,38 +1996,38 @@
     "interest": "Odsetki",
     "net_value": "Wartość netto",
     "plan_eyebrow": "Podsumowanie planu",
-    "hero_description": "To jest koncowa wartosc dla zatwierdzonego planu regularnych wplat. Najpierw przejrzyj karty podsumowania, a dopiero potem schodz do rocznikow i pojedynczych partii.",
-    "hero_narrative": "To jest scenariusz dla jednego typu obligacji i jednego rytmu wplat. Traktuj wynik jako test planu, a nie automatyczna rekomendacje.",
-    "total_invested_helper": "Suma gotowki wplaconej do planu.",
-    "final_nominal_helper": "Wartosc wyjscia przed korekta o inflacje.",
-    "net_profit_helper": "Zysk netto po podatku i oplatach.",
-    "real_value_helper": "Sila nabywcza na dacie koncowej.",
-    "real_cagr_helper": "Srednioroczna realna stopa zwrotu.",
-    "tax_helper": "Laczny podatek w tym scenariuszu.",
+    "hero_description": "To jest końcowa wartość dla zatwierdzonego planu regularnych wpłat. Najpierw przejrzyj karty podsumowania, a dopiero potem schodź do roczników i pojedynczych partii.",
+    "hero_narrative": "To jest scenariusz dla jednego typu obligacji i jednego rytmu wpłat. Traktuj wynik jako test planu, a nie automatyczną rekomendację.",
+    "total_invested_helper": "Suma gotówki wpłaconej do planu.",
+    "final_nominal_helper": "Wartość wyjścia przed korekta o inflację.",
+    "net_profit_helper": "Zysk netto po podatku i opłatach.",
+    "real_value_helper": "Siła nabywcza na dacie końcowej.",
+    "real_cagr_helper": "Średnioroczna realną stopa zwrotu.",
+    "tax_helper": "Łączny podatek w tym scenariuszu.",
     "yearly_title": "Budowa rok po roku",
-    "yearly_description": "Sprawdz, jak duzy udzial w wyniku koncowym mial kazdy rocznik zakupow.",
+    "yearly_description": "Sprawdź, jak duży udział w wyniku końcowym miał każdy rocznik zakupów.",
     "yearly_badge": "Roczniki",
-    "yearly_mobile_description": "Na mniejszych ekranach czytaj roczniki jako liste zamiast szerokiej tabeli.",
-    "open_yearly_buckets": "Otworz roczniki",
-    "yearly_trigger_count": "{count} rocznikow",
+    "yearly_mobile_description": "Na mniejszych ekranach czytaj roczniki jako listę zamiast szerokiej tabeli.",
+    "open_yearly_buckets": "Otwórz roczniki",
+    "yearly_trigger_count": "{count} roczników",
     "lots_label": "Partie",
     "recent_title": "Ostatnie partie",
-    "recent_description": "Ostatnie zakupy pomagaja skontrolowac czas wejscia, daty zapadalnosci i wartosc netto pojedynczych partii.",
-    "recent_note": "Najpierw przeczytaj karty podsumowania i roczniki. Pojedyncze partie sa tylko szybka kontrola czasu zakupu i zapadalnosci.",
-    "matures": "Zapadalnosc",
-    "net_lot_value": "Wartosc netto partii"
+    "recent_description": "Ostatnie zakupy pomagają skontrolowac czas wejścia, daty zapadalności i wartość netto pojedynczych partii.",
+    "recent_note": "Najpierw przeczytaj karty podsumowania i roczniki. Pojedyncze partie są tylko szybką kontrolą czasu zakupu i zapadalności.",
+    "matures": "Zapadalność",
+    "net_lot_value": "Wartość netto partii"
   },
   "ladder": {
     "description": "Buduj drabinę obligacji, aby zapewnić cykliczną płynność i stabilny wzrost.",
     "building": "Kalkulacja drabiny",
     "optimized": "Drabina zoptymalizowana",
     "what_is_title": "Czym jest drabina obligacji?",
-    "what_is_desc": "Drabina obligacji to strategia regularnego kupowania obligacji o powtarzalnym rytmie zapadalności. Po zamknięciu pierwszego pełnego cyklu jedna partia może zapadać cyklicznie, zapewniając środki na wydatki lub reinwestycję."
+    "what_is_desc": "Drabina obligacji to strategia regularnego kupowania obligacji o powtarzalnym rytmie zapadalności. Po zamknięciu pierwszego pełnego cyklu jedną partia może zapadać cyklicznie, zapewniając środki na wydatki lub reinwestycję."
   },
   "shared": {
     "feature_status": {
       "labels": {
-        "trusted": "Glowne narzedzie",
+        "trusted": "Główne narzędzie",
         "conditional": "Kolejny krok",
         "experimental": "Laboratorium eksperymentalne",
         "limited": "Ograniczony zakres",
@@ -2036,9 +2036,9 @@
     },
     "format": {
       "month_forms": {
-        "one": "miesiac",
-        "few": "miesiace",
-        "many": "miesiecy"
+        "one": "miesiąc",
+        "few": "miesiące",
+        "many": "miesięcy"
       },
       "year_forms": {
         "one": "rok",
@@ -2046,166 +2046,166 @@
         "many": "lat"
       },
       "duration_month_forms": {
-        "one": "miesiac",
-        "few": "miesiace",
-        "many": "miesiecy"
+        "one": "miesiąc",
+        "few": "miesiące",
+        "many": "miesięcy"
       },
       "duration_year_forms": {
         "one": "rok",
         "few": "lata",
         "many": "lat"
       },
-      "horizon_months": "{count, plural, one {# miesiac} few {# miesiace} many {# miesiecy} other {# miesiaca}}",
+      "horizon_months": "{count, plural, one {# miesiąc} few {# miesiące} many {# miesięcy} other {# miesiąca}}",
       "horizon_years": "{count, plural, one {# rok} few {# lata} many {# lat} other {# roku}}",
-      "duration_months": "{count, plural, one {# miesiac} few {# miesiace} many {# miesiecy} other {# miesiaca}}",
+      "duration_months": "{count, plural, one {# miesiąc} few {# miesiące} many {# miesięcy} other {# miesiąca}}",
       "duration_years": "{count, plural, one {# rok} few {# lata} many {# lat} other {# roku}}"
     }
   },
   "retirement": {
-    "page_notice_eyebrow": "Waski model wyplat",
-    "page_notice_title": "Model wyplat",
-    "page_notice_desc": "Ta strona uzywa uproszczonego modelu stalego tempa wyplat. Jest przydatna do waskich testow wyplat, ale nie jest pelnym silnikiem planowania emerytalnego. Wspierane rodziny obligacji: {supportedBondTypes}.",
+    "page_notice_eyebrow": "Wąski model wypłat",
+    "page_notice_title": "Model wypłat",
+    "page_notice_desc": "Ta strona używa uproszczonego modelu stałego tempa wypłat. Jest przydatna do wąskich testów wypłat, ale nie jest pełnym silnikiem planowania emerytalnego. Wspierane rodziny obligacji: {supportedBondTypes}.",
     "supported_bonds_limit": "Wspiera tylko {bondTypes} na tej ograniczonej powierzchni.",
-    "ready_step_balance_desc": "Zacznij od {initialCapital} i jednej stalej kwoty wyplaty.",
-    "ready_step_horizon_desc": "Biezacy przebieg jest ustawiony na {horizon}."
+    "ready_step_balance_desc": "Zacznij od {initialCapital} i jednej stałej kwoty wypłaty.",
+    "ready_step_horizon_desc": "Bieżący przebieg jest ustawiony na {horizon}."
   },
   "shared_portfolio_page": {
-    "public_notice": "Ogladasz publicznie udostepniony portfel.",
+    "public_notice": "Oglądasz publicznie udostępniony portfel.",
     "read_only": "Tylko odczyt"
   },
   "regular_investment_page": {
     "reading_guide": {
-      "follow_contribution": "Sprawdz, jak kazda kolejna wplata ma mniej czasu na wzrost, gdy wchodzi pozniej do planu.",
-      "compare_lot_age": "Porownaj wczesne i pozne partie obligacji, zanim skupisz sie na wyniku koncowym.",
-      "check_real_value": "Uzyj trybu wartosci realnej, gdy wazniejszy jest kontekst inflacji niz nominalna suma."
+      "follow_contribution": "Sprawdź, jak każda kolejna wpłata ma mniej czasu na wzrost, gdy wchodzi później do planu.",
+      "compare_lot_age": "Porównaj wczesne i późne partie obligacji, zanim skupisz się na wyniku końcowym.",
+      "check_real_value": "Użyj trybu wartości realnej, gdy ważniejszy jest kontekst inflacji niż nominalna suma."
     },
-    "how_to_read_title": "Jak czytac ten plan",
-    "how_to_read_description": "Najpierw czytaj rytm wplat, potem ksztalt wykresu, a na koncu kontekst obliczen.",
+    "how_to_read_title": "Jak czytać ten plan",
+    "how_to_read_description": "Najpierw czytaj rytm wpłat, potem kształt wykresu, a na końcu kontekst obliczeń.",
     "how_to_read_badge": "Przewodnik",
-    "chart_title": "Sciezka wplat",
-    "chart_description": "Wykres pokazuje, jak plan buduje sie w czasie przy jednej powtarzalnej zasadzie wplat.",
-    "value_chart_label": "Wykres wartosci regularnego inwestowania",
-    "chart_accessible_summary_empty": "Wykres regularnego inwestowania nie ma jeszcze widocznych punktow danych.",
-    "chart_accessible_summary": "Wykres zawiera {count} probkowanych punktow. Koncowa suma wplat to {invested}, a wyswietlana wartosc koncowa to {value}.",
-    "calculation_context_description": "Ostrzezenia, zalozenia i swiezosc danych dla silnika regularnych zakupow.",
+    "chart_title": "Ścieżka wpłat",
+    "chart_description": "Wykres pokazuje, jak plan buduje się w czasie przy jednej powtarzalnej zasadzie wpłat.",
+    "value_chart_label": "Wykres wartości regularnego inwestowania",
+    "chart_accessible_summary_empty": "Wykres regularnego inwestowania nie ma jeszcze widocznych punktów danych.",
+    "chart_accessible_summary": "Wykres zawiera {count} próbkowanych punktów. Końcowa suma wpłat to {invested}, a wyświetlana wartość końcowa to {value}.",
+    "calculation_context_description": "Ostrzeżenia, założenia i świeżość danych dla silnika regularnych zakupów.",
     "calculation_context_badge": "Meta",
-    "form_description": "Najpierw glowny plan wplat. Zaawansowane zalozenia pozostaja zwiniete do czasu, gdy sa potrzebne.",
+    "form_description": "Najpierw główny plan wpłat. Zaawansowane założenia pozostają zwiniete do czasu, gdy są potrzebne.",
     "core_plan_title": "Plan bazowy",
-    "core_plan_description": "Ustaw typ obligacji, otoczke podatkowa i powtarzalna kwote wplaty.",
-    "family_bond_note": "Obligacje rodzinne maja ograniczenia uprawnien. Uzywaj ich tutaj tylko wtedy, gdy kontekst zakupu rzeczywiscie na to pozwala."
+    "core_plan_description": "Ustaw typ obligacji, otoczkę podatkowa i powtarzalna kwotę wpłaty.",
+    "family_bond_note": "Obligacje rodzinne mają ograniczenia uprawnień. Używaj ich tutaj tylko wtedy, gdy kontekst zakupu rzeczywiście na to pozwala."
   },
   "education_page": {
     "rate_labels": {
       "fixed_term": "Staly okres",
-      "first_month": "Pierwszy miesiac"
+      "first_month": "Pierwszy miesiąc"
     }
   },
   "retirement_page": {
-    "page_title": "Model wyplat emerytalnych",
-    "page_description": "Uruchom jeden waski scenariusz wyplat z jawnymi zalozeniami i przeczytaj sciezke salda, zanim potraktujesz go jako material planistyczny.",
+    "page_title": "Model wypłat emerytalnych",
+    "page_description": "Uruchom jeden wąski scenariusz wypłat z jawnymi założeniami i przeczytaj ścieżkę salda, zanim potraktujesz go jako materiał planistyczny.",
     "primary_inputs": "Glówne dane",
-    "primary_inputs_description": "Ustaw kapital, wyplate, horyzont i wspierana rodzine obligacji. Zaawansowane zalozenia staja nizej i pozostaja drugorzedne.",
-    "initial_capital": "Kapital poczatkowy",
-    "monthly_withdrawal": "Miesieczna wyplata",
+    "primary_inputs_description": "Ustaw kapitał, wypłatę, horyzont i wspieraną rodzinę obligacji. Zaawansowane założenia stają niżej i pozostają drugorzędne.",
+    "initial_capital": "Kapitał początkowy",
+    "monthly_withdrawal": "Miesięczna wypłatą",
     "scenario_horizon": "Horyzont scenariusza",
     "bond_family": "Rodzina obligacji",
-    "advanced_assumptions": "Zaawansowane zalozenia",
-    "advanced_assumptions_description": "Inflacja, modelowana stopa NBP i opakowanie podatkowe.",
-    "expected_inflation": "Prognozowana inflacja",
+    "advanced_assumptions": "Zaawansowane założenia",
+    "advanced_assumptions_description": "Inflacja, modelowaną stopa NBP i opakowanie podatkowe.",
+    "expected_inflation": "Prognozowana inflacją",
     "expected_nbp_rate": "Prognozowana stopa NBP",
     "tax_wrapper": "Opakowanie podatkowe",
-    "floating_action_note": "Uzyj plywajacej akcji w prawym dolnym rogu, gdy scenariusz wyplat bedzie gotowy do pierwszego uruchomienia lub przeliczenia.",
-    "stale_results": "Dane zostaly zmienione. Sciezka salda ponizej nadal pokazuje poprzedni zatwierdzony przebieg. Przelicz, gdy chcesz go odswiezyc.",
+    "floating_action_note": "Użyj pływajacej akcji w prawym dolnym rogu, gdy scenariusz wypłat będzie gotowy do pierwszego uruchomienia lub przeliczenia.",
+    "stale_results": "Dane zostały zmienione. Ścieżka salda poniżej nadal pokazuje poprzedni zatwierdzony przebieg. Przelicz, gdy chcesz go odświeżyć.",
     "scenario_status": "Status scenariusza",
     "balance_positive": "Saldo pozostaje dodatnie",
-    "balance_depletes": "Saldo wyczerpuje sie przed czasem",
+    "balance_depletes": "Saldo wyczerpuje się przed czasem",
     "projected_exhaustion": "Prognozowana data wyczerpania",
     "no_projected_depletion": "Brak prognozowanego wyczerpania w wybranym horyzoncie.",
-    "final_balance": "Saldo koncowe",
-    "final_balance_detail": "Nominalne saldo na koncu horyzontu dla tej jednej modelowanej sciezki.",
-    "total_withdrawn": "Lacznie wyplacono",
-    "total_withdrawn_detail": "Skumulowane wyplaty w wybranym horyzoncie.",
+    "final_balance": "Saldo końcowe",
+    "final_balance_detail": "Nominalne saldo na końcu horyzontu dla tej jednej modelowanej ścieżki.",
+    "total_withdrawn": "Łącznie wypłacono",
+    "total_withdrawn_detail": "Skumulowane wypłaty w wybranym horyzoncie.",
     "modeled_annual_rate": "Modelowana stopa roczna",
-    "modeled_annual_rate_detail": "Stala stopa uzyta dla {bond}.",
-    "balance_path": "Sciezka salda",
-    "balance_path_description": "Ten wykres pokazuje tylko zatwierdzony scenariusz. Probkujemy go rocznie, aby sciezka pozostala czytelna.",
+    "modeled_annual_rate_detail": "Stała stopa użytą dla {bond}.",
+    "balance_path": "Ścieżka salda",
+    "balance_path_description": "Ten wykres pokazuje tylko zatwierdzony scenariusz. Próbkujemy go rocznie, aby ścieżka pozostała czytelna.",
     "coverage": "Zakres",
     "tax_paid": "Podatek zaplacony",
-    "how_to_read": "Jak to czytac",
-    "how_to_read_description": "Zacznij od statusu scenariusza i salda koncowego. Wykres ma pokazywac sciezke zuzycia kapitalu w czasie, a nie pelna rekomendacje emerytalna.",
+    "how_to_read": "Jak to czytać",
+    "how_to_read_description": "Zacznij od statusu scenariusza i salda końcowego. Wykres ma pokazywać ścieżkę zużycia kapitału w czasie, a nie pełna rekomendację emerytalna.",
     "balance": "Saldo",
-    "withdrawal": "Wyplata",
-    "assumptions_and_warnings": "Zalozenia i ostrzezenia scenariusza",
-    "assumptions_and_warnings_description": "Otworz to, gdy chcesz zobaczyc pomocniczy slad zalozen dla biezacego przebiegu wyplat.",
+    "withdrawal": "Wypłata",
+    "assumptions_and_warnings": "Założenia i ostrzeżenia scenariusza",
+    "assumptions_and_warnings_description": "Otwórz to, gdy chcesz zobaczyć pomocniczy ślad założeń dla bieżącego przebiegu wypłat.",
     "audit": "Audyt",
-    "assumptions": "Zalozenia scenariusza",
-    "warnings_and_notes": "Ostrzezenia i notatki",
-    "no_extra_assumptions": "Poza widocznymi danymi nie zgloszono dodatkowych zalozen.",
-    "no_extra_warnings": "Dla tego scenariusza nie zwrocono dodatkowych ostrzezen.",
+    "assumptions": "Założenia scenariusza",
+    "warnings_and_notes": "Ostrzeżenia i notatki",
+    "no_extra_assumptions": "Poza widocznymi danymi nie zgłoszono dodatkowych założeń.",
+    "no_extra_warnings": "Dla tego scenariusza nie zwrócono dodatkowych ostrzeżeń.",
     "ready_badge": "Model ograniczony",
-    "ready_title": "Gotowy do przetestowania jednej sciezki wyplat?",
-    "ready_description": "Ustaw kapital poczatkowy, wyplate, horyzont i wspierana rodzine obligacji. Potem uruchom jedno zatwierdzone obliczenie, zanim zaczniesz czytac sciezke salda.",
+    "ready_title": "Gotowy do przetestowania jednej ścieżki wypłat?",
+    "ready_description": "Ustaw kapitał początkowy, wypłatę, horyzont i wspieraną rodzinę obligacji. Potem uruchom jedno zatwierdzone obliczenie, zanim zaczniesz czytać ścieżkę salda.",
     "limits_title": "Limity modelu i wspierany zakres",
-    "limits_description": "Otworz to, gdy chcesz zobaczyc ograniczenia stojace za ta powierzchnia wyplat.",
+    "limits_description": "Otwórz to, gdy chcesz zobaczyć ograniczenia stojące za tą powierzchnią wypłat.",
     "limits_badge": "Limity",
-    "depletion_warning": "Ten przebieg prognozuje wyczerpanie srodkow dnia {date}. Uruchom go ponownie z nizsza wyplata, dluzszym sprawdzeniem horyzontu albo inna wspierana rodzina obligacji, zanim wyciagniesz wnioski.",
+    "depletion_warning": "Ten przebieg prognozuje wyczerpanie środków w dniu {date}. Uruchom go ponownie z niższą wypłatą, dłuższym horyzontem albo inną obsługiwaną rodziną obligacji, zanim wyciągniesz wnioski.",
     "tax_strategy": {
       "standard": "Konto standardowe (19% podatku)",
       "ike": "Opakowanie IKE",
       "ikze": "Opakowanie IKZE"
     },
     "model_limits": {
-      "steady_rate": "Uzywa jednej stalej modelowanej stopy rocznej zamiast zmiennych sciezek rynkowych.",
-      "scope": "Nie modeluje zmiennych wyplat, rolowanych drabin ani szerszego doradztwa emerytalnego."
+      "steady_rate": "Używa jednej stałej modelowanej stopy rocznej zamiast zmiennych ścieżek rynkowych.",
+      "scope": "Nie modeluje zmiennych wypłat, rolowanych drabin ani szerszego doradztwa emerytalnego."
     },
     "ready_steps": {
-      "balance_path": "Zbuduj pierwsza sciezke salda",
-      "commit_horizon": "Zatwierdz jeden horyzont",
-      "read_narrowly": "Czytaj wasko",
-      "read_narrowly_description": "To model zuzycia kapitalu przy stalej stopie, a nie pelny silnik doradztwa emerytalnego."
+      "balance_path": "Zbuduj pierwszą ścieżkę salda",
+      "commit_horizon": "Zatwierdź jeden horyzont",
+      "read_narrowly": "Czytaj wąsko",
+      "read_narrowly_description": "To model zużycia kapitału przy stałej stopie, a nie pełny silnik doradztwa emerytalnego."
     },
-    "ready_footer": "Zaawansowane zalozenia pozostaja dostepne, ale pierwszy odczyt powinien pochodzic z jednego czystego zatwierdzonego przebiegu."
+    "ready_footer": "Zaawansowane założenia pozostają dostępne, ale pierwszy odczyt powinien pochodzić z jednego czystego zatwierdzonego przebiegu."
   },
   "workspace": {
-    "guest_preview_badge": "Podglad goscia",
-    "active_workspace_badge": "Aktywny workspace",
-    "guest_preview_description": "Przechowywanie workspace jest zarezerwowane dla zalogowanych uzytkownikow. Uzytkownik anonimowy moze obejrzec strukture strony, ale zapisywanie partii i zarzadzanie portfelami pozostaje zablokowane.",
-    "active_workspace_description": "Ten workspace jest polaczony z zapisanymi portfelami. Uzyj go do otwierania, porownywania i zarzadzania zapisanymi partiami obligacji.",
+    "guest_preview_badge": "Podgląd gościa",
+    "active_workspace_badge": "Aktywna przestrzeń robocza",
+    "guest_preview_description": "Przechowywanie danych przestrzeni roboczej jest zarezerwowane dla zalogowanych użytkowników. Użytkownik anonimowy może obejrzeć strukturę strony, ale zapisywanie partii i zarządzanie portfelami pozostaje zablokowane.",
+    "active_workspace_description": "Ta przestrzeń robocza jest połączona z zapisanymi portfelami. Użyj jej do otwierania, porównywania i zarządzania zapisanymi partiami obligacji.",
     "active_selection_title": "Aktywny portfel",
     "no_active_portfolio": "Brak aktywnego portfela",
-    "active_selection_desc": "Uzyj aktywnego portfela jako biezacego miejsca dla przegladu partii, aktualizacji i przyszlych zapisow.",
-    "create_first_portfolio_desc": "Utworz pierwszy portfel, a potem trzymaj go jako aktywny kontener workspace, dopoki swiadomie go nie zmienisz.",
-    "preview_only_desc": "Tryb goscia utrzymuje te powierzchnie jako opisowe. Zapisywanie i zarzadzanie portfelami pozostana zablokowane do czasu udostepnienia logowania.",
-    "action_strip_title": "Akcje workspace",
-    "action_strip_desc": "Utworz lub zaimportuj portfel, a potem utrzymuj jeden aktywny kontener dla przyszlej pracy na partiach i notatniku.",
-    "action_strip_guest_desc": "Te akcje pokazuja przyszly przebieg dla zalogowanego uzytkownika. Odswiezanie pozostaje dostepne, ale zapisy i import sa celowo zablokowane.",
+    "active_selection_desc": "Użyj aktywnego portfela jako bieżącego miejsca dla przeglądu partii, aktualizacji i przyszłych zapisów.",
+    "create_first_portfolio_desc": "Utwórz pierwszy portfel, a potem trzymaj go jako aktywną przestrzeń roboczą, dopóki świadomie go nie zmienisz.",
+    "preview_only_desc": "Tryb gościa utrzymuje te powierzchnie jako opisowe. Zapisywanie i zarządzanie portfelami pozostaną zablokowane do czasu udostępnienia logowania.",
+    "action_strip_title": "Akcje przestrzeni roboczej",
+    "action_strip_desc": "Utwórz lub zaimportuj portfel, a potem utrzymuj jeden aktywny kontener dla przyszłej pracy na partiach i notatniku.",
+    "action_strip_guest_desc": "Te akcje pokazują przyszły przebieg dla zalogowanego użytkownika. Odświeżanie pozostaje dostępne, ale zapisy i import są celowo zablokowane.",
     "sign_in_required_short": "Wymagane logowanie",
-    "sign_in_needed_for_portfolio": "Zapisywanie do portfela jest dostepne tylko w zalogowanym workspace. Nadal mozesz normalnie uzywac kalkulatora i zapisywac osobne scenariusze.",
-    "locked_notebook_notice": "Tryb goscia moze pokazac strukture notatnika, ale zapisywanie portfeli, import partii i ladowanie demo pozostaja zablokowane do czasu dostepu do przestrzeni.",
-    "empty_guest_description": "Funkcje workspace dla zalogowanych nie sa dostepne w trybie goscia. Korzystaj swobodnie z kalkulatorow, a partie do portfeli zapiszesz po zalogowaniu."
+    "sign_in_needed_for_portfolio": "Zapisywanie do portfela jest dostępne tylko w zalogowanej przestrzeni roboczej. Nadal możesz normalnie używać kalkulatora i zapisywać osobne scenariusze.",
+    "locked_notebook_notice": "Tryb gościa może pokazać strukturę notatnika, ale zapisywanie portfeli, import partii i ładowanie danych demonstracyjnych pozostają zablokowane do czasu uzyskania dostępu do przestrzeni.",
+    "empty_guest_description": "Funkcje przestrzeni roboczej dla zalogowanych nie są dostępne w trybie gościa. Korzystaj swobodnie z kalkulatorów, a partie do portfeli zapiszesz po zalogowaniu."
   },
   "export": {
     "single_bond_pdf": {
       "bond_type": "Typ obligacji",
       "purchase_date": "Data zakupu",
-      "exit_date": "Data wyjscia",
-      "initial_investment": "Kwota poczatkowa",
-      "net_payout": "Wyplata netto",
+      "exit_date": "Data wyjścia",
+      "initial_investment": "Kwota początkowa",
+      "net_payout": "Wypłata netto",
       "net_profit": "Zysk netto",
-      "total_tax": "Laczny podatek",
-      "real_value": "Wartosc realna",
+      "total_tax": "Łączny podatek",
+      "real_value": "Wartość realna",
       "real_annualized_return": "Realna stopa roczna",
-      "structured_summary_note": "Raport PDF jest generowany z uporzadkowanego zestawu danych, a nie ze zrzutu ekranu strony.",
+      "structured_summary_note": "Raport PDF jest generowany z uporządkowanego zestawu danych, a nie ze zrzutu ekranu strony.",
       "title": "Raport symulacji obligacji",
       "generated_label": "Wygenerowano",
       "summary_heading": "Podsumowanie scenariusza",
-      "informational_disclaimer": "Raport ma wylacznie charakter informacyjny. Nie jest porada inwestycyjna, oferta ani rekomendacja. Przed podjeciem decyzji sprawdz aktualne warunki obligacji u oficjalnego emitenta.",
+      "informational_disclaimer": "Raport ma wyłącznie charakter informacyjny. Nie jest poradą inwestycyjną, ofertą ani rekomendacją. Przed podjęciem decyzji sprawdź aktualne warunki obligacji u oficjalnego emitenta.",
       "footer_disclaimer": "Raport informacyjny — nie stanowi porady inwestycyjnej.",
       "run_notes": "Uwagi do przebiegu",
       "data_context": "Kontekst danych",
-      "no_notes": "Nie zgloszono dodatkowych uwag do obliczenia.",
-      "data_context_note": "Kwoty i stopy dotycza zakonczonego scenariusza kalkulatora. Moga roznic sie od aktualnej oferty i nie prognozuja przyszlych wynikow.",
-      "normalized_layer_note": "Eksport PDF korzysta z tej samej uporzadkowanej warstwy wynikow, co podsumowanie scenariusza. Nie opiera sie na przechwytywaniu kolorow ani wykresu z DOM."
+      "no_notes": "Nie zgłoszono dodatkowych uwag do obliczenia.",
+      "data_context_note": "Kwoty i stopy dotyczą zakończonego scenariusza kalkulatora. Mogą różnić się od aktualnej oferty i nie prognozują przyszłych wyników.",
+      "normalized_layer_note": "Eksport PDF korzysta z tej samej uporządkowanej warstwy wyników, co podsumowanie scenariusza. Nie opiera się na przechwytywaniu kolorów ani wykresu z DOM."
     }
   }
 }
