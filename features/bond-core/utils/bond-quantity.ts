@@ -2,8 +2,8 @@ const BOND_UNIT_PRICE = 100;
 export const MAX_BOND_QUANTITY = 1_000;
 
 function normalizeBondQuantity(value: number) {
-  if (!Number.isFinite(value)) return null;
-  return Math.min(MAX_BOND_QUANTITY, Math.max(1, Math.trunc(value)));
+  if (!Number.isInteger(value) || value < 1 || value > MAX_BOND_QUANTITY) return null;
+  return value;
 }
 
 export function bondQuantityFromInvestment(value: number) {

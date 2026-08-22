@@ -7,6 +7,8 @@ interface AdvancedRatePathSectionProps {
   description: string;
   emptyNote: string;
   values?: number[];
+  min: number;
+  max: number;
   step: number;
   onChange: (values: number[]) => void;
 }
@@ -16,6 +18,8 @@ export function AdvancedRatePathSection({
   description,
   emptyNote,
   values,
+  min,
+  max,
   step,
   onChange,
 }: AdvancedRatePathSectionProps) {
@@ -28,7 +32,14 @@ export function AdvancedRatePathSection({
         </div>
       </div>
       {values ? (
-        <ProjectedRatePathEditor values={values} prefix="Y" step={step} onChange={onChange} />
+        <ProjectedRatePathEditor
+          values={values}
+          prefix="Y"
+          min={min}
+          max={max}
+          step={step}
+          onChange={onChange}
+        />
       ) : (
         <p className="text-base leading-6 text-muted-foreground">{emptyNote}</p>
       )}

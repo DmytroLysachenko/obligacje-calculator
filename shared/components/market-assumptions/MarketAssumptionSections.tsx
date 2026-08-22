@@ -127,6 +127,8 @@ export function InflationAssumptionSection({
           description={t('bonds.market_assumptions.inflation_path_desc')}
           emptyNote={t('bonds.market_assumptions.inflation_simple_mode_note')}
           values={customInflation}
+          min={-20}
+          max={100}
           step={0.1}
           onChange={(values) => onUpdate('customInflation', values)}
         />
@@ -208,6 +210,8 @@ export function NbpAssumptionSection({
           description={t('bonds.market_assumptions.nbp_path_desc')}
           emptyNote={t('bonds.market_assumptions.nbp_simple_mode_note')}
           values={customNbpRate}
+          min={-10}
+          max={100}
           step={0.05}
           onChange={(values) => onUpdate('customNbpRate', values)}
         />

@@ -14,7 +14,7 @@ describe('bond quantity', () => {
 
   it('rejects non-finite values and bounds strange quantities', () => {
     expect(investmentFromBondQuantity(Number.NaN)).toBeNull();
-    expect(investmentFromBondQuantity(-5)).toBe(100);
-    expect(investmentFromBondQuantity(MAX_BOND_QUANTITY + 1)).toBe(MAX_BOND_QUANTITY * 100);
+    expect(investmentFromBondQuantity(-5)).toBeNull();
+    expect(investmentFromBondQuantity(MAX_BOND_QUANTITY + 1)).toBeNull();
   });
 });

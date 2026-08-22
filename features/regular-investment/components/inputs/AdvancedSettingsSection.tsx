@@ -85,7 +85,9 @@ export function AdvancedSettingsSection({
                 <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
                 <InfoTooltip content={t('regular_form.tax_help')} />
               </div>
-              <p className="text-base leading-6 text-muted-foreground">{t('bonds.belka_tax_desc')}</p>
+              <p className="text-base leading-6 text-muted-foreground">
+                {t('bonds.belka_tax_desc')}
+              </p>
             </div>
             <Switch checked={showCustomTax} onCheckedChange={onShowCustomTaxChange} />
           </div>
@@ -98,9 +100,18 @@ export function AdvancedSettingsSection({
               <Input
                 id="taxRate"
                 type="number"
+                min={0}
+                max={100}
+                step={0.01}
+                inputMode="decimal"
                 className="h-10"
                 value={inputs.taxRate}
-                onChange={(e) => onUpdate('taxRate', Number(e.target.value))}
+                onChange={(event) => {
+                  const value = Number(event.target.value);
+                  if (Number.isFinite(value) && value >= 0 && value <= 100) {
+                    onUpdate('taxRate', value);
+                  }
+                }}
               />
             </div>
           ) : null}

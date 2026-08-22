@@ -102,14 +102,24 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
                 id="savingsGoal"
                 name="savingsGoal"
                 type="number"
+                min={0}
+                max={100_000_000_000}
+                step={1}
                 inputMode="decimal"
                 autoComplete="off"
                 placeholder={t('bonds.example_goal')}
                 className="pl-4 pr-12"
                 value={inputs.savingsGoal || ''}
-                onChange={(e) =>
-                  onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)
-                }
+                onChange={(event) => {
+                  if (!event.target.value) {
+                    onUpdate('savingsGoal', undefined);
+                    return;
+                  }
+                  const value = Number(event.target.value);
+                  if (Number.isFinite(value) && value >= 0 && value <= 100_000_000_000) {
+                    onUpdate('savingsGoal', value);
+                  }
+                }}
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
                 PLN
