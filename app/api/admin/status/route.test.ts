@@ -22,6 +22,9 @@ describe('admin status route', () => {
     mocks.authorize.mockRejectedValueOnce(new Error('UNAUTHORIZED_ADMIN_SESSION'));
     const response = await GET(new Request('https://example.test/api/admin/status') as never, {} as never);
     expect(response.status).toBe(401);
-    await expect(response.json()).resolves.toEqual({ error: 'Unauthorized' });
+    await expect(response.json()).resolves.toMatchObject({
+      error: 'Unauthorized',
+      requestId: expect.any(String),
+    });
   });
 });
