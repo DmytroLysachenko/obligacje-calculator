@@ -27,7 +27,7 @@ describe('data-reference localization', () => {
     expect(getReferenceScopeLabel(meta, 'pl')).toBe('Tylko odczyt referencyjny');
 
     const state = getReferenceState(meta, 'pl');
-    expect(state.title).toBe('Zastepczy lub czesciowy zakres');
+    expect(state.title).toBe('Zastępczy lub częściowy zakres');
     expect(state.description).toContain('wsparcie referencyjne');
   });
 
@@ -61,10 +61,10 @@ describe('data-reference localization', () => {
     };
 
     expect(getReferenceMetaItems(meta, 'pl')).toEqual([
-      { label: 'Zrodlo', value: 'Zsynchronizowany zestaw danych' },
+      { label: 'Źródło', value: 'Zsynchronizowany zestaw danych' },
       { label: 'Stan na', value: '2024-06' },
       { label: 'Zakres', value: '2010-01 - 2024-06' },
-      { label: 'Uzycie', value: 'Wspiera kontekst kalkulatora' },
+      { label: 'Użycie', value: 'Wspiera kontekst kalkulatora' },
     ]);
 
     expect(getReferenceMetaItems(undefined, 'en')).toEqual([
@@ -91,9 +91,9 @@ describe('data-reference localization', () => {
     };
 
     expect(getReferenceState(partialMeta, 'pl').description).toContain(
-      'czesciowy zakres referencyjny',
+      'częściowy zakres referencyjny',
     );
-    expect(getReferenceState(staleMeta, 'pl').title).toBe('Zakres wymaga odswiezenia');
+    expect(getReferenceState(staleMeta, 'pl').title).toBe('Zakres wymaga odświeżenia');
     expect(getReferenceState(staleMeta, 'en').description).toContain('too old');
   });
 
