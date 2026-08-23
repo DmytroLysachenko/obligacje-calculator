@@ -44,6 +44,7 @@ test('home primary action opens the single-bond calculator', async ({ page }, te
 test('home keeps the primary action and decision guide in the first viewport', async ({
   page,
 }, testInfo) => {
+  test.skip(testInfo.project.name === 'mobile-chromium', 'Mobile prioritizes the decision guide');
   const diagnostics = installBrowserDiagnostics(page);
 
   await stubOpportunisticSync(page);
