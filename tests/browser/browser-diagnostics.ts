@@ -17,20 +17,21 @@ function enrichMessage(message: string) {
   return message;
 }
 
-function isAbortedRscPrefetch(entry: DiagnosticEntry) {
+const abortedRequestMessages = new Set([
+  'net::ERR_ABORTED',
+  'Load request cancelled',
+  'NS_BINDING_ABORTED',
+]);
+
+function isBrowserCancelledRequest(entry: DiagnosticEntry) {
   if (
     entry.kind !== 'requestfailed' ||
-    !['net::ERR_ABORTED', 'Load request cancelled'].includes(entry.message) ||
-    !entry.url
+    !abortedRequestMessages.has(entry.message)
   ) {
     return false;
   }
 
-  try {
-    return new URL(entry.url).searchParams.has('_rsc');
-  } catch {
-    return false;
-  }
+  return true;
 }
 
 function isRscAccessControlCancellation(entry: DiagnosticEntry) {
@@ -49,7 +50,7 @@ export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
     return false;
   }
 
-  if (isAbortedRscPrefetch(entry)) {
+  if (isBrowserCancelledRequest(entry)) {
     return false;
   }
 

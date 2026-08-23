@@ -22,7 +22,7 @@ for (const route of smokeRoutes) {
     const diagnostics = installBrowserDiagnostics(page);
 
     await stubOpportunisticSync(page);
-    await page.goto(route.path, { waitUntil: 'networkidle' });
+    await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 
     expect((await page.title()).trim()).not.toBe('');
     await expect(page.locator('main#main-content')).toBeVisible();

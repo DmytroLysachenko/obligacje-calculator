@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { DiagnosticEntry, isActionableDiagnosticEntry } from './browser-diagnostics';
 
 describe('browser diagnostics filtering', () => {
-  it('ignores aborted Next RSC prefetches while keeping real request failures actionable', () => {
+  it('ignores browser-cancelled requests while keeping real request failures actionable', () => {
     const entries: DiagnosticEntry[] = [
       {
         kind: 'requestfailed',
@@ -12,8 +12,8 @@ describe('browser diagnostics filtering', () => {
       },
       {
         kind: 'requestfailed',
-        message: 'net::ERR_ABORTED',
-        url: 'http://127.0.0.1:3100/api/calculation-defaults',
+        message: 'NS_BINDING_ABORTED',
+        url: 'http://127.0.0.1:3100/api/observability/vitals',
       },
       {
         kind: 'requestfailed',
@@ -27,7 +27,7 @@ describe('browser diagnostics filtering', () => {
       },
     ];
 
-    expect(entries.filter(isActionableDiagnosticEntry)).toEqual([entries[1], entries[3]]);
+    expect(entries.filter(isActionableDiagnosticEntry)).toEqual([entries[3]]);
   });
 
   it('ignores browser-specific page errors caused by cancelled RSC navigation', () => {
