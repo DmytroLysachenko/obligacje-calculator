@@ -102,6 +102,23 @@ export async function stubOpportunisticSync(page: Page) {
   });
 }
 
+export async function stubGuestPortfolioAccess(page: Page) {
+  await page.route('**/api/portfolio/access', async (requestRoute) => {
+    await requestRoute.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        data: {
+          ownerId: 'playwright-guest',
+          isGuest: true,
+          authMode: 'guest',
+          canManageWorkspace: false,
+        },
+      }),
+    });
+  });
+}
+
 export async function expectNoBrowserDiagnostics(
   testInfo: TestInfo,
   entries: readonly DiagnosticEntry[],

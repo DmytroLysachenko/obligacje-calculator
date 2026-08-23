@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import {
   expectNoBrowserDiagnostics,
   installBrowserDiagnostics,
+  stubGuestPortfolioAccess,
   stubOpportunisticSync,
 } from './browser-diagnostics';
 
@@ -22,11 +23,12 @@ for (const route of smokeRoutes) {
     const diagnostics = installBrowserDiagnostics(page);
 
     await stubOpportunisticSync(page);
+    await stubGuestPortfolioAccess(page);
     await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 
-    expect((await page.title()).trim()).not.toBe('');
     await expect(page.locator('main#main-content')).toBeVisible();
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    expect((await page.title()).trim()).not.toBe('');
     await expect(page.locator('body')).not.toContainText('Application error');
     await expect(page.locator('nav[aria-label]').first()).toBeAttached();
     await expect(page.locator('a[href="#main-content"]').first()).toBeAttached();
