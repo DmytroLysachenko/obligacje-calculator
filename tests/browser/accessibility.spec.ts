@@ -126,6 +126,7 @@ for (const route of [
     await page.keyboard.press('Tab');
     const skipLink = page.getByRole('link', {
       name: /skip to (main )?content|przejd(?:ź|z) do g(?:ł|l)ownej tre(?:ś|s)ci/i,
+      includeHidden: true,
     });
     await expect(skipLink).toBeFocused();
     await page.keyboard.press('Enter');
@@ -228,6 +229,7 @@ test('reduced-motion preference keeps core navigation usable', async ({ page }, 
   await expect(
     page.getByRole('link', {
       name: /skip to (main )?content|przejd(?:ź|z) do g(?:ł|l)ownej tre(?:ś|s)ci/i,
+      includeHidden: true,
     }),
   ).toBeFocused();
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
