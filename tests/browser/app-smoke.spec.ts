@@ -5,6 +5,7 @@ import {
   installBrowserDiagnostics,
   stubGuestPortfolioAccess,
   stubOpportunisticSync,
+  stubWebVitals,
 } from './browser-diagnostics';
 
 const smokeRoutes = [
@@ -24,6 +25,7 @@ for (const route of smokeRoutes) {
 
     await stubOpportunisticSync(page);
     await stubGuestPortfolioAccess(page);
+    await stubWebVitals(page);
     await page.goto(route.path, { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('main#main-content')).toBeVisible();

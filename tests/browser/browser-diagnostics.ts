@@ -102,6 +102,12 @@ export async function stubOpportunisticSync(page: Page) {
   });
 }
 
+export async function stubWebVitals(page: Page) {
+  await page.route('**/api/observability/vitals', async (requestRoute) => {
+    await requestRoute.fulfill({ status: 204, body: '' });
+  });
+}
+
 export async function stubGuestPortfolioAccess(page: Page) {
   await page.route('**/api/portfolio/access', async (requestRoute) => {
     await requestRoute.fulfill({
