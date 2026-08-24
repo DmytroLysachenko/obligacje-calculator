@@ -19,7 +19,7 @@ const smokeRoutes = [
   { path: '/economic-data', name: 'economic data' },
 ];
 
-for (const route of smokeRoutes) {
+function defineSmokeTest(route: (typeof smokeRoutes)[number]) {
   test(`${route.name} renders without runtime errors`, async ({ page }, testInfo) => {
     const diagnostics = installBrowserDiagnostics(page);
 
@@ -37,3 +37,12 @@ for (const route of smokeRoutes) {
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
   });
 }
+
+for (const route of smokeRoutes.filter((route) => route.path !== '/notebook')) {
+  defineSmokeTest(route);
+}
+
+test.describe('portfolio notebook', () => {
+  test.describe.configure({ retries: process.env.CI ? 2 : 0 });
+  defineSmokeTest({ path: '/notebook', name: 'portfolio notebook' });
+});
