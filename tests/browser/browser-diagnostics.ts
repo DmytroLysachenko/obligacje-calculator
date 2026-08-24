@@ -24,10 +24,7 @@ const abortedRequestMessages = new Set([
 ]);
 
 function isBrowserCancelledRequest(entry: DiagnosticEntry) {
-  if (
-    entry.kind !== 'requestfailed' ||
-    !abortedRequestMessages.has(entry.message)
-  ) {
+  if (entry.kind !== 'requestfailed' || !abortedRequestMessages.has(entry.message)) {
     return false;
   }
 
@@ -45,7 +42,9 @@ function isRscAccessControlCancellation(entry: DiagnosticEntry) {
 function isFirefoxCancelledOperation(entry: DiagnosticEntry) {
   return (
     entry.kind === 'pageerror' &&
-    entry.message.trim() === 'The operation was aborted.'
+    ['The operation was aborted.', 'NetworkError when attempting to fetch resource.'].includes(
+      entry.message.trim(),
+    )
   );
 }
 

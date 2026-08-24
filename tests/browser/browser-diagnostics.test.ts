@@ -40,12 +40,12 @@ describe('browser diagnostics filtering', () => {
   });
 
   it('ignores Firefox page errors caused by cancelled operations', () => {
-    expect(
-      isActionableDiagnosticEntry({
-        kind: 'pageerror',
-        message: 'The operation was aborted. ',
-      }),
-    ).toBe(false);
+    for (const message of [
+      'The operation was aborted. ',
+      'NetworkError when attempting to fetch resource.',
+    ]) {
+      expect(isActionableDiagnosticEntry({ kind: 'pageerror', message })).toBe(false);
+    }
   });
 
   it('keeps React hydration errors actionable with their enriched page error payload', () => {
