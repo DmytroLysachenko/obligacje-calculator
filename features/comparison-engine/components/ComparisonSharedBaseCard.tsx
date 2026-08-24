@@ -146,13 +146,13 @@ export function ComparisonSharedBaseCard({
                 <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
-                  fromYear={2010}
-                  toYear={2050}
+                  startMonth={new Date(2010, 0)}
+                  endMonth={new Date(2050, 11)}
                   selected={parseISO(sharedConfig.purchaseDate)}
                   onSelect={(date) =>
                     date && onUpdateSharedConfig('purchaseDate', toDateString(date))
                   }
-                  initialFocus
+                  autoFocus
                 />
               </PopoverContent>
             </Popover>
@@ -187,13 +187,13 @@ export function ComparisonSharedBaseCard({
                   <LazyCalendar
                     mode="single"
                     captionLayout="dropdown"
-                    fromYear={2010}
-                    toYear={2050}
+                    startMonth={new Date(2010, 0)}
+                    endMonth={new Date(2050, 11)}
                     selected={parseISO(sharedConfig.withdrawalDate)}
                     onSelect={(date) =>
                       date && onUpdateSharedConfig('withdrawalDate', toDateString(date))
                     }
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>

@@ -3,6 +3,11 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Next 16 traces the CommonJS SWC helpers but omits their ESM counterparts
+  // under pnpm. The server imports these at startup.
+  outputFileTracingIncludes: {
+    '/*': ['node_modules/.pnpm/@swc+helpers@*/node_modules/@swc/helpers/esm/**/*'],
+  },
   // Enables Partial Prerendering: the request-specific locale/CSP shell can
   // stream independently while cacheable public component trees are reused.
   cacheComponents: true,
