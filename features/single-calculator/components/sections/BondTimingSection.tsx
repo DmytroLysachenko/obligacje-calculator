@@ -90,11 +90,11 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
                 <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
-                  fromYear={2010}
-                  toYear={2050}
+                  startMonth={new Date(2010, 0)}
+                  endMonth={new Date(2050, 11)}
                   selected={parseISO(inputs.purchaseDate)}
                   onSelect={(date) => date && onUpdate('purchaseDate', toDateString(date))}
-                  initialFocus
+                  autoFocus
                 />
               </PopoverContent>
             </Popover>
@@ -135,11 +135,11 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
                   <LazyCalendar
                     mode="single"
                     captionLayout="dropdown"
-                    fromYear={2010}
-                    toYear={2050}
+                    startMonth={new Date(2010, 0)}
+                    endMonth={new Date(2050, 11)}
                     selected={parseISO(inputs.withdrawalDate)}
                     onSelect={(date) => date && onUpdate('withdrawalDate', toDateString(date))}
-                    initialFocus
+                    autoFocus
                   />
                 </PopoverContent>
               </Popover>

@@ -79,11 +79,11 @@ export function TimingSection({
               <LazyCalendar
                 mode="single"
                 captionLayout="dropdown"
-                fromYear={2010}
-                toYear={2050}
+                startMonth={new Date(2010, 0)}
+                endMonth={new Date(2050, 11)}
                 selected={parseISO(purchaseDate)}
                 onSelect={(date) => date && onUpdate('purchaseDate', toDateString(date))}
-                initialFocus
+                autoFocus
               />
             </PopoverContent>
           </Popover>
@@ -116,11 +116,11 @@ export function TimingSection({
                 <LazyCalendar
                   mode="single"
                   captionLayout="dropdown"
-                  fromYear={2010}
-                  toYear={2050}
+                  startMonth={new Date(2010, 0)}
+                  endMonth={new Date(2050, 11)}
                   selected={parseISO(withdrawalDate)}
                   onSelect={(date) => date && onUpdate('withdrawalDate', toDateString(date))}
-                  initialFocus
+                  autoFocus
                 />
               </PopoverContent>
             </Popover>
