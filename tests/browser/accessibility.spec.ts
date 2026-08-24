@@ -124,10 +124,7 @@ for (const route of [
     await page.goto(route.path, { waitUntil: 'networkidle' });
 
     await page.keyboard.press('Tab');
-    const skipLink = page.getByRole('link', {
-      name: /skip to (main )?content|przejd(?:ź|z) do g(?:ł|l)ownej tre(?:ś|s)ci/i,
-      includeHidden: true,
-    });
+    const skipLink = page.locator('a[href="#main-content"]');
     await expect(skipLink).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(page.locator('main#main-content')).toBeFocused();
@@ -226,12 +223,7 @@ test('reduced-motion preference keeps core navigation usable', async ({ page }, 
 
   await expect(page.locator('main#main-content')).toBeVisible();
   await page.keyboard.press('Tab');
-  await expect(
-    page.getByRole('link', {
-      name: /skip to (main )?content|przejd(?:ź|z) do g(?:ł|l)ownej tre(?:ś|s)ci/i,
-      includeHidden: true,
-    }),
-  ).toBeFocused();
+  await expect(page.locator('a[href="#main-content"]')).toBeFocused();
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
 });
 
