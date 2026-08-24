@@ -6,6 +6,11 @@ import {
   stubOpportunisticSync,
 } from './browser-diagnostics';
 
+const screenshotOptions = {
+  animations: 'disabled' as const,
+  maxDiffPixelRatio: 0.015,
+};
+
 async function openVisualRoute(page: Page, locale: 'en' | 'pl', path: string) {
   await page
     .context()
@@ -26,9 +31,10 @@ test.describe('visual regression', () => {
     await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'no-preference' });
     await openVisualRoute(page, 'en', '/');
 
-    await expect(page.locator('main#main-content')).toHaveScreenshot('home-en-desktop-light.png', {
-      animations: 'disabled',
-    });
+    await expect(page.locator('main#main-content')).toHaveScreenshot(
+      'home-en-desktop-light.png',
+      screenshotOptions,
+    );
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
   });
 
@@ -40,9 +46,7 @@ test.describe('visual regression', () => {
 
     await expect(page.locator('main#main-content')).toHaveScreenshot(
       'comparison-pl-mobile-light.png',
-      {
-        animations: 'disabled',
-      },
+      screenshotOptions,
     );
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
   });
@@ -55,9 +59,7 @@ test.describe('visual regression', () => {
 
     await expect(page.locator('main#main-content')).toHaveScreenshot(
       'comparison-pl-tablet-dark.png',
-      {
-        animations: 'disabled',
-      },
+      screenshotOptions,
     );
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
   });
@@ -71,9 +73,7 @@ test.describe('visual regression', () => {
 
     await expect(page.locator('main#main-content')).toHaveScreenshot(
       'calculator-pl-200-percent.png',
-      {
-        animations: 'disabled',
-      },
+      screenshotOptions,
     );
     await client.send('Emulation.setPageScaleFactor', { pageScaleFactor: 1 });
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
@@ -87,9 +87,7 @@ test.describe('visual regression', () => {
 
     await expect(page.locator('main#main-content')).toHaveScreenshot(
       'comparison-en-mobile-reduced-motion.png',
-      {
-        animations: 'disabled',
-      },
+      screenshotOptions,
     );
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
   });
