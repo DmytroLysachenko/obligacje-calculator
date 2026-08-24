@@ -42,6 +42,13 @@ function isRscAccessControlCancellation(entry: DiagnosticEntry) {
   );
 }
 
+function isFirefoxCancelledOperation(entry: DiagnosticEntry) {
+  return (
+    entry.kind === 'pageerror' &&
+    entry.message.trim() === 'The operation was aborted.'
+  );
+}
+
 export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
   if (
     entry.kind === 'console' &&
@@ -55,6 +62,10 @@ export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
   }
 
   if (isRscAccessControlCancellation(entry)) {
+    return false;
+  }
+
+  if (isFirefoxCancelledOperation(entry)) {
     return false;
   }
 
