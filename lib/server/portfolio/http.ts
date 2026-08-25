@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import {
-  isTrustedMutationOrigin,
-  requiresOriginCheck,
-} from '@/lib/server/http/mutation-origin';
+import { isTrustedMutationOrigin, requiresOriginCheck } from '@/lib/server/http/mutation-origin';
 import { createDomainErrorResponse, createUnauthorizedResponse } from '@/lib/server/http/responses';
 
 import {

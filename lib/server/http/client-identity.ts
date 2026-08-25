@@ -13,7 +13,8 @@ export function getClientIdentity(
   { trustedProxy = process.env.TRUSTED_PROXY === '1' }: { trustedProxy?: boolean } = {},
 ) {
   const candidate = trustedProxy
-    ? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip')
+    ? (request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      request.headers.get('x-real-ip'))
     : request.headers.get('x-real-ip');
 
   return candidate && (IPV4.test(candidate) || IPV6.test(candidate)) ? candidate : 'unknown';
