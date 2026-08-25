@@ -1637,6 +1637,19 @@ and authenticated post-deploy smoke (SCALE-04); load-test saturation results
 (PERF-07); aggregate field-Web-Vitals receipt (PERF-08); and production database
 query-plan/role evidence (SCALE-02 and the runtime-role portion of DATA-01).
 
+### Maintainer scope decision — 2026-08-25
+
+The project remains a private preview. The maintainer has deliberately deferred
+new cloud-managed operational work, including GCP IAM/Secret Manager expansion
+and the associated Cloud Run, backup, managed-database, Inngest, load-test, and
+field-Web-Vitals evidence collection. Existing repository controls remain in
+place; this is not a claim that the deferred controls have been implemented or
+verified.
+
+Keep the affected rows as `Blocked`, do not introduce recurring cloud spend or
+operational complexity solely to close this plan, and revisit the evidence gate
+before any public-launch or production-readiness claim.
+
 The ledger is deliberately explicit about incomplete work. `In progress` means
 the repository-owned implementation remains outstanding; `Blocked` means the
 missing action is outside repository authority. No item may be relabeled
