@@ -44,6 +44,46 @@ _Avoid_: anonymous-only preview, OAuth-optional readiness
 The documented monthly operator run that refreshes active bond offers and macro data for the private preview. Automation is intentionally deferred until public-launch preparation.
 _Avoid_: scheduled production sync, ad-hoc data refresh
 
+**Private portfolio utility**:
+The intended long-term posture of the application: a personally operated tool
+and portfolio artifact, used by its maintainer and selected preview users, not
+a product pursuing public launch or broad production admission. Work should
+prioritize trusted personal decisions, current data, and demonstrable code
+quality; public-launch operational controls remain deferred unless this posture
+changes.
+_Avoid_: production SaaS, public-launch candidate
+
+**Investment strategy comparison**:
+A decision workflow that contrasts explicitly stated long-term investment
+strategies under the same contribution, horizon, tax, cost, and data-freshness
+assumptions. It explains trade-offs and projected outcomes; it does not issue a
+personalized buy, sell, or allocation instruction.
+_Avoid_: return ranking, investment recommendation
+
+**Cross-asset strategy comparison**:
+An informative comparison of explicitly chosen bond, equity/index, and
+cryptocurrency strategies over a stated horizon. It preserves each asset
+class's distinct return basis, volatility, drawdown risk, fees, taxes, data
+provenance, and limitations; an apparent winner is never presented as a
+recommended allocation.
+_Avoid_: apples-to-apples return table, portfolio advice
+
+**Historical contribution replay**:
+An informative reconstruction of what a fixed, recurring contribution—such as
+100 PLN each week—would have bought and become worth over a selected completed
+period. It reports historical outcomes under declared price, FX, fee, tax, and
+reinvestment assumptions; it is not a forecast or an implied future return.
+_Avoid_: expected return calculator, investment forecast
+
+**Long-term instruments workspace**:
+The future private workspace that may organize Polish treasury bonds, equities,
+and cryptocurrencies into distinct research and strategy-comparison sections.
+Each instrument class retains its own assumptions, risk language, data sources,
+and evidence rather than being treated as interchangeable. It is deferred until
+the Polish-bond strategy workflow is coherent and useful for the maintainer's
+own decisions.
+_Avoid_: generic trading dashboard, unified asset calculator
+
 **Normal sync evidence**:
 The private-preview readiness record produced by a successful monthly sync using the official `gov.pl` current-offer source, with the resulting source and freshness state visible in the app. Fallback sourcing is a separately tested degraded mode and does not establish normal readiness.
 _Avoid_: fallback-only readiness, hidden fallback data
