@@ -91,7 +91,9 @@ export function updateRegularInvestmentLotsForMonth({
         customInflation?.[inflationResetYearIndex],
         customNbpRate?.[globalYearIndex],
       );
-      const interestThisMonth = dLotGrossValue.times(currentInterestRate.dividedBy(12).dividedBy(100));
+      const interestThisMonth = dLotGrossValue.times(
+        currentInterestRate.dividedBy(12).dividedBy(100),
+      );
       const newAccumulatedInterest = dLotAccumulatedInterest.plus(interestThisMonth);
       lot.accumulatedInterest = newAccumulatedInterest.toNumber();
 
@@ -159,9 +161,7 @@ export function summarizeRegularInvestmentLots({
       const nominalStarting = units.times(nominalValue);
 
       return {
-        nominalValue: summary.nominalValue.plus(
-          isCapitalized ? lot.grossValue : nominalStarting,
-        ),
+        nominalValue: summary.nominalValue.plus(isCapitalized ? lot.grossValue : nominalStarting),
         profit: summary.profit.plus(new Decimal(lot.netValue).minus(lot.investedAmount)),
         tax: summary.tax.plus(lot.tax),
         fees: summary.fees.plus(lot.earlyWithdrawalFee),

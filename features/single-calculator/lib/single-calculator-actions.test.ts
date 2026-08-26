@@ -55,7 +55,9 @@ const inputs = {
 const results = { netPayoutValue: 1100 } as never;
 const t = (key: string) => key;
 
-function createActions(overrides: Partial<Parameters<typeof createSingleCalculatorActions>[0]> = {}) {
+function createActions(
+  overrides: Partial<Parameters<typeof createSingleCalculatorActions>[0]> = {},
+) {
   const setStatus = vi.fn();
   return {
     actions: createSingleCalculatorActions({

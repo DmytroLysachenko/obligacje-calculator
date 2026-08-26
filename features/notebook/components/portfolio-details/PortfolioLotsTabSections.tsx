@@ -156,7 +156,9 @@ export function PortfolioLotsTableSection({
                         <Button variant="outline" size="icon" className="min-h-11 min-w-11" asChild>
                           <a
                             href={`/single-calculator?bondType=${lot.bondType}&purchaseDate=${lot.purchaseDate}`}
-                            aria-label={t('notebook.open_lot_calculator', { bondType: lot.bondType })}
+                            aria-label={t('notebook.open_lot_calculator', {
+                              bondType: lot.bondType,
+                            })}
                           >
                             <ExternalLink aria-hidden="true" className="h-4 w-4" />
                           </a>

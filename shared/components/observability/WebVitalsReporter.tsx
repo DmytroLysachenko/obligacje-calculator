@@ -16,8 +16,7 @@ interface VitalPayload {
 
 function send(payload: Omit<VitalPayload, 'path' | 'navigationType'>) {
   const navigation = performance.getEntriesByType('navigation')[0] as
-    | PerformanceNavigationTiming
-    | undefined;
+    PerformanceNavigationTiming | undefined;
   const body = JSON.stringify({
     ...payload,
     path: window.location.pathname,
@@ -43,10 +42,12 @@ function send(payload: Omit<VitalPayload, 'path' | 'navigationType'>) {
 export function WebVitalsReporter() {
   useEffect(() => {
     const privacyNavigator = navigator as Navigator & { globalPrivacyControl?: boolean };
-    if (!shouldReportWebVital({
-      doNotTrack: navigator.doNotTrack,
-      globalPrivacyControl: privacyNavigator.globalPrivacyControl,
-    })) {
+    if (
+      !shouldReportWebVital({
+        doNotTrack: navigator.doNotTrack,
+        globalPrivacyControl: privacyNavigator.globalPrivacyControl,
+      })
+    ) {
       return;
     }
 

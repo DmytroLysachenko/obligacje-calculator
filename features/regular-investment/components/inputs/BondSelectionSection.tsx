@@ -7,9 +7,9 @@ import { BondDefinition } from '@/features/bond-core/constants/bond-definitions'
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondType } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
+import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
-import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 
 type BondSelectionSectionProps = {
   bondType: BondType;

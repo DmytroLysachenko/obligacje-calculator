@@ -32,9 +32,9 @@ describe('input guardrails', () => {
     );
 
     expect(issue?.severity).toBe('blocking');
-    expect(applyGuardrailFix(issue!, { ...baseInputs, initialInvestment: 50 }).initialInvestment).toBe(
-      100,
-    );
+    expect(
+      applyGuardrailFix(issue!, { ...baseInputs, initialInvestment: 50 }).initialInvestment,
+    ).toBe(100);
   });
 
   it('blocks withdrawal dates before purchase', () => {

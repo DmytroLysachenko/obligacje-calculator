@@ -21,8 +21,7 @@ type BrowserMetrics = {
 
 function collectPerformanceEntries(): BrowserMetrics {
   const navigation = performance.getEntriesByType('navigation')[0] as
-    | PerformanceNavigationTiming
-    | undefined;
+    PerformanceNavigationTiming | undefined;
   const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
   const scripts = resources.filter((resource) => resource.initiatorType === 'script');
   const lcp = (window as typeof window & { __largestContentfulPaint?: number })
@@ -46,8 +45,9 @@ for (const route of budgetedRoutes) {
       new PerformanceObserver((entries) => {
         const latest = entries.getEntries().at(-1);
         if (latest) {
-          (window as typeof window & { __largestContentfulPaint?: number }).__largestContentfulPaint =
-            latest.startTime;
+          (
+            window as typeof window & { __largestContentfulPaint?: number }
+          ).__largestContentfulPaint = latest.startTime;
         }
       }).observe({ type: 'largest-contentful-paint', buffered: true });
     });

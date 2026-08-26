@@ -2,10 +2,7 @@
 
 import type { BondType } from '@/features/bond-core/types';
 
-import type {
-  ScenarioOverride,
-  SharedComparisonConfig,
-} from '../lib/comparison-calculator-state';
+import type { ScenarioOverride, SharedComparisonConfig } from '../lib/comparison-calculator-state';
 
 import { comparisonLayout } from './comparison-layout';
 import { ComparisonFairnessPanel, ComparisonSetupStatePanel } from './ComparisonContainerPanels';

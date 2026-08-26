@@ -1,10 +1,11 @@
+import { describe, expect, it } from 'vitest';
+
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { buildDefaultSharedConfig } from '@/features/comparison-engine/lib/comparison-calculator-state';
 import {
   parseComparisonUrlState,
   withComparisonUrlState,
 } from '@/features/comparison-engine/lib/comparison-deep-link';
-import { describe, expect, it } from 'vitest';
 
 describe('comparison deep links', () => {
   it('serializes an independently configured pair into a shareable setup URL', () => {

@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   InvestmentLotSchema,
-  PortfolioLotTransactionSchema,
   InvestmentLotUpdateSchema,
   PORTFOLIO_LIMITS,
+  PortfolioLotTransactionSchema,
   PortfolioSchema,
 } from './portfolio-schemas';
 
