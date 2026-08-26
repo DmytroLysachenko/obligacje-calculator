@@ -1,25 +1,30 @@
 'use client';
 
-import { useCallback } from 'react';
+import useSWR from 'swr';
 
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { apiGet } from '@/shared/lib/api-client';
-import { ClientResource } from '@/shared/lib/client-resource';
-
-import { useClientResource } from './useClientResource';
-
-const definitionsResource = new ClientResource<Record<BondType, BondDefinition>>({
-  maxAgeMs: 15 * 60_000,
-  staleAfterMs: 5 * 60_000,
-});
 
 export function useBondDefinitions() {
-  const fetchDefinitions = useCallback(
-    () => apiGet<Record<BondType, BondDefinition>>('/api/bond-definitions'),
-    [],
+  const resource = useSWR<Record<BondType, BondDefinition>>(
+    '/api/bond-definitions',
+    apiGet<Record<BondType, BondDefinition>>,
+    {
+      dedupingInterval: 15 * 60_000,
+      focusThrottleInterval: 15 * 60_000,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      keepPreviousData: true,
+    },
   );
-  const resource = useClientResource(definitionsResource, fetchDefinitions);
 
-  return { definitions: resource.data, ...resource };
+  return {
+    definitions: resource.data ?? null,
+    isLoading: resource.isLoading,
+    isRefreshing: resource.isValidating && resource.data !== undefined,
+    error: resource.error ?? null,
+    refresh: () => resource.mutate(),
+    invalidate: () => resource.mutate(undefined, { revalidate: false }),
+  };
 }
