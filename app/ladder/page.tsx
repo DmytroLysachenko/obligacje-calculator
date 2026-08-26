@@ -1,6 +1,6 @@
 import { LadderPageClient } from '@/features/ladder-strategy/components/LadderPageClient';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
-import { BondDefinitionsBoundary } from '@/shared/components/providers/BondDefinitionsBoundary';
+import { CalculatorRouteBoundary } from '@/shared/components/page/CalculatorRouteBoundary';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('ladder');
@@ -8,8 +8,8 @@ export async function generateMetadata() {
 
 export default function LadderStrategyPage() {
   return (
-    <BondDefinitionsBoundary>
+    <CalculatorRouteBoundary>
       <LadderPageClient />
-    </BondDefinitionsBoundary>
+    </CalculatorRouteBoundary>
   );
 }

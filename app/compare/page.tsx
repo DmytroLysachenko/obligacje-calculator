@@ -1,6 +1,6 @@
 import { ComparePageClient } from '@/features/comparison-engine/components/ComparePageClient';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
-import { BondDefinitionsBoundary } from '@/shared/components/providers/BondDefinitionsBoundary';
+import { CalculatorRouteBoundary } from '@/shared/components/page/CalculatorRouteBoundary';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('comparison');
@@ -8,8 +8,8 @@ export async function generateMetadata() {
 
 export default function ComparisonPage() {
   return (
-    <BondDefinitionsBoundary>
+    <CalculatorRouteBoundary>
       <ComparePageClient />
-    </BondDefinitionsBoundary>
+    </CalculatorRouteBoundary>
   );
 }
