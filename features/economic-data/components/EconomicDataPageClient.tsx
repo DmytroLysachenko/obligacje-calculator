@@ -2,7 +2,7 @@
 
 import { Activity, Database, Info } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { useCallback, useState } from 'react';
 
 import { BondType } from '@/features/bond-core/types';
@@ -21,7 +21,6 @@ import {
 } from '@/features/economic-data/lib/economic-page-model';
 import {
   type EconomicView,
-  parseEconomicView,
   serializeEconomicView,
 } from '@/features/economic-data/lib/economic-view';
 import { useAppI18n } from '@/i18n/client';
@@ -56,12 +55,11 @@ const NBPRateChart = dynamic(
   { loading: ChartLoading },
 );
 
-export function EconomicDataPageClient() {
+export function EconomicDataPageClient({ initialView }: { initialView: EconomicView }) {
   const { t, locale: language } = useAppI18n();
   const { definitions } = useBondDefinitions();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [view, setView] = useState<EconomicView>(() => parseEconomicView(searchParams));
+  const [view, setView] = useState<EconomicView>(initialView);
   const { data: inflationMeta, isLoading: isLoadingInflation } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
   const { data: nbpMeta, isLoading: isLoadingNbp } =

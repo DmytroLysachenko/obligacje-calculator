@@ -1,7 +1,7 @@
 'use client';
 
 import { Target } from 'lucide-react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAppI18n } from '@/i18n/client';
@@ -19,7 +19,6 @@ import {
 } from '../lib/input-guardrails';
 import { createSingleCalculatorActions } from '../lib/single-calculator-actions';
 import { buildSingleCalculatorReadingGuide } from '../lib/single-calculator-container-model';
-import { parseBondType } from '../lib/single-calculator-state';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
@@ -28,6 +27,7 @@ import { SharedScenarioNotice } from './SharedScenarioNotice';
 
 interface BondCalculatorContainerProps {
   initialInputs?: import('@/features/bond-core/types').BondInputs;
+  initialBondType?: import('@/features/bond-core/types').BondType | null;
   sharedScenarioTitle?: string;
 }
 
@@ -35,12 +35,11 @@ const SINGLE_CALCULATOR_FORM_ID = 'single-calculator-inputs';
 
 export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = ({
   initialInputs,
+  initialBondType = null,
   sharedScenarioTitle,
 }) => {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const bondFromUrl = parseBondType(searchParams.get('bond'));
-  const shouldSyncBondToUrl = useRef(Boolean(bondFromUrl));
+  const shouldSyncBondToUrl = useRef(Boolean(initialBondType));
   const {
     inputs,
     results,
@@ -56,7 +55,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     selectedSeriesId,
     lastCommittedInputs,
     isPersistenceReady,
-  } = useBondCalculator(initialInputs, bondFromUrl);
+  } = useBondCalculator(initialInputs, initialBondType);
   const { t, locale: language } = useAppI18n();
   const { canManageWorkspace } = usePortfolioAccess();
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -69,15 +68,15 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       !isPersistenceReady ||
       !shouldSyncBondToUrl.current ||
       typeof window === 'undefined' ||
-      searchParams.get('bond') === inputs.bondType
+      new URLSearchParams(window.location.search).get('bond') === inputs.bondType
     ) {
       return;
     }
 
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     params.set('bond', inputs.bondType);
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
-  }, [initialInputs, inputs.bondType, isPersistenceReady, pathname, searchParams]);
+  }, [initialInputs, inputs.bondType, isPersistenceReady, pathname]);
 
   const handleBondTypeChange = (type: import('@/features/bond-core/types').BondType) => {
     shouldSyncBondToUrl.current = true;
