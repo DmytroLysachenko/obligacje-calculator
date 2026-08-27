@@ -27,6 +27,7 @@
     "format:check": "prettier --check .",
     "scan:unused": "tsx scripts/run-unused-scan.ts",
     "analyze:bundles": "tsx scripts/route-bundle-report.ts",
+    "check:bundle-budgets": "tsx scripts/check-route-bundle-budgets.ts",
     "test": "vitest",
     "test:browser": "playwright test tests/browser/app-smoke.spec.ts --project=chromium --project=mobile-chromium",
     "test:browser:ci": "playwright test tests/browser/app-smoke.spec.ts tests/browser/home-page.spec.ts tests/browser/education.spec.ts tests/browser/web-vitals.spec.ts --project=chromium --project=mobile-chromium --workers=1",
