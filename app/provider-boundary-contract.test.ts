@@ -36,7 +36,12 @@ describe('provider boundary contract', () => {
 
     expectNotContains(layout, 'BondDefinitionsProvider');
     for (const routeFile of routeFiles) {
-      expectContains(readSource(routeFile), '<BondDefinitionsBoundary>');
+      const source = readSource(routeFile);
+      const isDirectBoundary = source.includes('<BondDefinitionsBoundary>');
+      const isCalculatorRouteBoundary = source.includes('<CalculatorRouteBoundary');
+      if (!isDirectBoundary && !isCalculatorRouteBoundary) {
+        throw new Error(`${routeFile} must scope bond definitions to its interactive route.`);
+      }
     }
   });
 
@@ -56,16 +61,14 @@ describe('provider boundary contract', () => {
     expectContains(provider, 'useBondDefinitions as useBondDefinitionsHook');
     expectContains(provider, 'BondDefinitionsProvider');
     expectContains(boundary, '<BondDefinitionsProvider>');
-    expectContains(resourceHook, 'new ClientResource');
+    expectContains(resourceHook, 'useSWR');
     expectContains(resourceHook, "'/api/bond-definitions'");
   });
 
   it('keeps route files free of definition resource loading details', () => {
     for (const routeFile of routeFiles) {
       const source = readSource(routeFile);
-      expectNotContains(source, 'ClientResource');
       expectNotContains(source, '/api/bond-definitions');
-      expectNotContains(source, 'useClientResource');
     }
   });
 });
