@@ -1,5 +1,6 @@
 'use client';
 import { Scale } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -18,9 +19,13 @@ import { buildDefaultSharedConfig } from '../lib/comparison-calculator-state';
 import { buildComparisonContainerViewModel } from '../lib/comparison-container-model';
 import { parseComparisonUrlState } from '../lib/comparison-deep-link';
 
-import { ComparisonCommittedResults } from './ComparisonCommittedResults';
 import { ComparisonPlanReceipt } from './ComparisonPlanReceipt';
 import { ComparisonPlanWorkspace } from './ComparisonPlanWorkspace';
+
+const ComparisonCommittedResults = dynamic(
+  () => import('./ComparisonCommittedResults').then((module) => module.ComparisonCommittedResults),
+  { loading: () => <div className="h-[520px] animate-pulse rounded-md bg-muted" /> },
+);
 
 export const ComparisonContainer: React.FC = () => {
   const searchParams = useSearchParams();

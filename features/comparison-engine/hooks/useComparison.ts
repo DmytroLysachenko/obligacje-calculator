@@ -11,7 +11,7 @@ import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-per
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { MODEL_VERSION } from '../../bond-core/handlers';
+import { MODEL_VERSION } from '../../bond-core/model-version';
 import { BondType } from '../../bond-core/types';
 import type { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { ScenarioKind } from '../../bond-core/types/scenarios';
