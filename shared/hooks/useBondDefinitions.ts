@@ -2,7 +2,7 @@
 
 import useSWR from 'swr';
 
-import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { BOND_DEFINITIONS, BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { apiGet } from '@/shared/lib/api-client';
 
@@ -16,6 +16,9 @@ export function useBondDefinitions() {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       keepPreviousData: true,
+      // Render a complete, safe baseline immediately; the API still refreshes
+      // it with the current offer without blocking the calculator's first paint.
+      fallbackData: BOND_DEFINITIONS,
     },
   );
 
