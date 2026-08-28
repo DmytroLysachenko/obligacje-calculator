@@ -11,7 +11,7 @@ import { getMetadataLocale } from '@/i18n/locale-utils';
 import { createAppJsonLd, serializeJsonLd } from '@/lib/seo/app-json-ld';
 import { getCanonicalBaseUrl, isIndexableDeployment } from '@/lib/site-url';
 import { RouteFocusManager } from '@/shared/components/accessibility/RouteFocusManager';
-import { Sidebar } from '@/shared/components/chrome/Sidebar';
+import { DeferredSidebar } from '@/shared/components/chrome/DeferredSidebar';
 import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
 import { WebVitalsReporter } from '@/shared/components/observability/WebVitalsReporter';
 import { ThemeProvider } from '@/shared/context/ThemeContext';
@@ -127,7 +127,7 @@ async function RequestAwareBody({ children }: { children: React.ReactNode }) {
                   {t('common.skip_to_content')}
                 </a>
                 <React.Suspense fallback={null}>
-                  <Sidebar />
+                  <DeferredSidebar />
                 </React.Suspense>
                 <main
                   id="main-content"
