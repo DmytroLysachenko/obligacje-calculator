@@ -7,28 +7,24 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   BondInputs,
   CalculationResult,
-  ChartStep,
   SingleBondCalculationEnvelope,
 } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
-import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
-import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 
-import { BondResultsSummary } from './BondResultsSummary';
+const BondResultsSummary = dynamic(
+  () => import('./BondResultsSummary').then((module) => module.BondResultsSummary),
+  { loading: () => <Skeleton className="h-72 w-full rounded-md" /> },
+);
 
-const BondChart = dynamic(() => import('./BondChart').then((module) => module.BondChart), {
-  loading: () => <Skeleton className="h-[360px] w-full rounded-md md:h-[460px]" />,
-});
-const BondTimeline = dynamic(() => import('./BondTimeline').then((module) => module.BondTimeline), {
-  loading: () => <Skeleton className="h-72 w-full rounded-md" />,
-});
+const BondCalculatorDetailsContent = dynamic(
+  () =>
+    import('./BondCalculatorDetailsContent').then((module) => module.BondCalculatorDetailsContent),
+  { loading: () => <Skeleton className="h-[360px] w-full rounded-md md:h-[460px]" /> },
+);
 
 interface BondCalculatorResultsPanelProps {
   results: CalculationResult | null;
@@ -157,68 +153,17 @@ export function BondCalculatorDetailsPanel({
   isCalculating,
   readingGuide,
 }: BondCalculatorDetailsPanelProps) {
-  const { t } = useAppI18n();
-  const [displayStep, setDisplayStep] = React.useState<ChartStep>('yearly');
-
   if (!results) {
     return null;
   }
 
   return (
-    <div
-      id="bond-details"
-      className={cn(
-        'ui-compact-flow transition-opacity duration-200',
-        isCalculating && 'pointer-events-none opacity-50',
-      )}
-    >
-      <CalculatorSection
-        title={t('bonds.evolution')}
-        description={t('bonds.simulation.chart_section_desc')}
-      >
-        <ChartSupportNote
-          title={t('bonds.simulation.chart_help_title')}
-          description={t('bonds.simulation.chart_help_desc')}
-        />
-        <BondChart
-          results={results}
-          initialInvestment={results.initialInvestment}
-          inputs={inputs}
-          showRealValue={inputs.showRealValue}
-          displayStep={displayStep}
-          onDisplayStepChange={setDisplayStep}
-        />
-      </CalculatorSection>
-
-      <SecondaryInsightAccordion
-        title={t('bonds.simulation.how_to_read_title')}
-        description={t('bonds.simulation.how_to_read_desc')}
-        badge={t('bonds.simulation.secondary_badge')}
-      >
-        <ReadingChecklist items={readingGuide} />
-      </SecondaryInsightAccordion>
-
-      <CalculatorSection
-        title={t('bonds.timeline')}
-        description={t('bonds.simulation.timeline_section_desc')}
-        className="ui-section-divider"
-      >
-        <BondTimeline results={results} chartStep={displayStep} />
-      </CalculatorSection>
-
-      <SecondaryInsightAccordion
-        title={t('bonds.simulation.calculation_context')}
-        description={t('bonds.simulation.meta_desc')}
-        badge={t('bonds.simulation.meta_badge')}
-      >
-        <CalculationMetaPanel
-          warnings={envelope?.warnings}
-          assumptions={envelope?.assumptions}
-          calculationNotes={envelope?.calculationNotes}
-          dataQualityFlags={envelope?.dataQualityFlags}
-          dataFreshness={envelope?.dataFreshness}
-        />
-      </SecondaryInsightAccordion>
-    </div>
+    <BondCalculatorDetailsContent
+      results={results}
+      inputs={inputs}
+      envelope={envelope}
+      isCalculating={isCalculating}
+      readingGuide={readingGuide}
+    />
   );
 }
