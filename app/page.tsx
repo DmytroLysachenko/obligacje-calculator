@@ -1,3 +1,6 @@
+import { Suspense } from 'react';
+
+import { HomeOfferProvenance } from '@/features/home/components/HomeOfferProvenance';
 import { LandingDashboardClient } from '@/features/home/components/LandingDashboardClient';
 import { getGlobalDataFreshness } from '@/lib/data/market-data';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
@@ -6,8 +9,22 @@ export async function generateMetadata() {
   return getLocalizedPageMetadata('home');
 }
 
-export default async function LandingDashboardPage() {
+async function HomeOfferProvenanceBoundary() {
   const dataFreshness = await getGlobalDataFreshness();
 
-  return <LandingDashboardClient dataFreshness={dataFreshness} />;
+  return <HomeOfferProvenance dataFreshness={dataFreshness} />;
+}
+
+export default function LandingDashboardPage() {
+  return (
+    <LandingDashboardClient
+      offerProvenance={
+        <Suspense
+          fallback={<div className="h-[68px] animate-pulse border-y border-border bg-muted/40" />}
+        >
+          <HomeOfferProvenanceBoundary />
+        </Suspense>
+      }
+    />
+  );
 }

@@ -1,9 +1,9 @@
 'use client';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 import { Button } from '@/components/ui/button';
-import type { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import {
   type HomeToolDefinition,
   primaryHomeTools,
@@ -13,7 +13,6 @@ import { useAppI18n } from '@/i18n/client';
 import { SectionHeading } from '@/shared/components/page/SectionHeading';
 
 import { HomeDecisionSlip } from './HomeDecisionSlip';
-import { HomeOfferProvenance } from './HomeOfferProvenance';
 import { HomePrimaryRoute, HomeSupportingRoutes } from './HomeRouteSections';
 type ToolItem = {
   href: string;
@@ -30,11 +29,7 @@ function HeroTrustStrip() {
     </p>
   );
 }
-export function LandingDashboardClient({
-  dataFreshness,
-}: {
-  dataFreshness?: CalculationDataFreshness;
-}) {
+export function LandingDashboardClient({ offerProvenance }: { offerProvenance?: ReactNode }) {
   const { t } = useAppI18n();
   const primaryTools: ToolItem[] = primaryHomeTools.map((item) => ({
     ...item,
@@ -92,7 +87,7 @@ export function LandingDashboardClient({
 
             <div className="max-w-4xl space-y-3">
               <HeroTrustStrip />
-              <HomeOfferProvenance dataFreshness={dataFreshness} />
+              {offerProvenance}
             </div>
           </div>
 
