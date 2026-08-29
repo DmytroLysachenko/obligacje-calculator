@@ -11,10 +11,8 @@ import { useAppI18n } from '@/i18n/client';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { FormSection } from '@/shared/components/forms/FormSection';
-import {
-  AssumptionSetupMode,
-  MarketAssumptionsForm,
-} from '@/shared/components/MarketAssumptionsForm';
+import { DeferredMarketAssumptionsForm } from '@/shared/components/market-assumptions/DeferredMarketAssumptionsForm';
+import type { AssumptionSetupMode } from '@/shared/components/MarketAssumptionsForm';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
@@ -68,6 +66,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   const hasMounted = useHasMounted();
   const [inflationSetupMode, setInflationSetupMode] = useState<AssumptionSetupMode>('fixed');
   const [nbpSetupMode, setNbpSetupMode] = useState<AssumptionSetupMode>('fixed');
+  const [isInflationAssumptionsOpen, setIsInflationAssumptionsOpen] = useState(false);
+  const [isNbpAssumptionsOpen, setIsNbpAssumptionsOpen] = useState(false);
 
   const handleUpdate = useCallback(
     (key: keyof BondInputs, value: unknown) => {
@@ -206,21 +206,24 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             <AdvancedAssumptionsDisclosure
               title={t('bonds.form.step_inflation_title')}
               description={t('bonds.form.step_inflation_desc')}
+              onOpenChange={setIsInflationAssumptionsOpen}
             >
-              <MarketAssumptionsForm
-                expectedInflation={inputs.expectedInflation}
-                expectedNbpRate={inputs.expectedNbpRate}
-                bondType={inputs.bondType}
-                customInflation={inputs.customInflation}
-                customNbpRate={inputs.customNbpRate}
-                inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
-                onUpdate={handleUpdate as (key: string, value: unknown) => void}
-                compact
-                section="inflation"
-                showIntro={false}
-                inflationSetupMode={inflationSetupMode}
-                onInflationSetupModeChange={setInflationSetupMode}
-              />
+              {isInflationAssumptionsOpen ? (
+                <DeferredMarketAssumptionsForm
+                  expectedInflation={inputs.expectedInflation}
+                  expectedNbpRate={inputs.expectedNbpRate}
+                  bondType={inputs.bondType}
+                  customInflation={inputs.customInflation}
+                  customNbpRate={inputs.customNbpRate}
+                  inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+                  onUpdate={handleUpdate as (key: string, value: unknown) => void}
+                  compact
+                  section="inflation"
+                  showIntro={false}
+                  inflationSetupMode={inflationSetupMode}
+                  onInflationSetupModeChange={setInflationSetupMode}
+                />
+              ) : null}
             </AdvancedAssumptionsDisclosure>
           ) : null}
 
@@ -228,21 +231,24 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             <AdvancedAssumptionsDisclosure
               title={t('bonds.form.step_nbp_title')}
               description={t('bonds.form.step_nbp_desc')}
+              onOpenChange={setIsNbpAssumptionsOpen}
             >
-              <MarketAssumptionsForm
-                expectedInflation={inputs.expectedInflation}
-                expectedNbpRate={inputs.expectedNbpRate}
-                bondType={inputs.bondType}
-                customInflation={inputs.customInflation}
-                customNbpRate={inputs.customNbpRate}
-                inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
-                onUpdate={handleUpdate as (key: string, value: unknown) => void}
-                compact
-                section="nbp"
-                showIntro={false}
-                nbpSetupMode={nbpSetupMode}
-                onNbpSetupModeChange={setNbpSetupMode}
-              />
+              {isNbpAssumptionsOpen ? (
+                <DeferredMarketAssumptionsForm
+                  expectedInflation={inputs.expectedInflation}
+                  expectedNbpRate={inputs.expectedNbpRate}
+                  bondType={inputs.bondType}
+                  customInflation={inputs.customInflation}
+                  customNbpRate={inputs.customNbpRate}
+                  inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+                  onUpdate={handleUpdate as (key: string, value: unknown) => void}
+                  compact
+                  section="nbp"
+                  showIntro={false}
+                  nbpSetupMode={nbpSetupMode}
+                  onNbpSetupModeChange={setNbpSetupMode}
+                />
+              ) : null}
             </AdvancedAssumptionsDisclosure>
           ) : null}
         </div>

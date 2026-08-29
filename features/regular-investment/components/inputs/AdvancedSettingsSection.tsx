@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,7 +10,7 @@ import { RegularInvestmentInputs } from '@/features/bond-core/types';
 import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
-import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { DeferredMarketAssumptionsForm } from '@/shared/components/market-assumptions/DeferredMarketAssumptionsForm';
 
 type AdvancedSettingsSectionProps = {
   inputs: RegularInvestmentInputs;
@@ -29,22 +29,27 @@ export function AdvancedSettingsSection({
   onUpdate,
   t,
 }: AdvancedSettingsSectionProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <section>
       <AdvancedAssumptionsDisclosure
         title={t('common.advanced')}
         description={t('bonds.form.advanced_desc')}
+        onOpenChange={setIsOpen}
       >
-        <MarketAssumptionsForm
-          expectedInflation={inputs.expectedInflation}
-          expectedNbpRate={inputs.expectedNbpRate}
-          bondType={inputs.bondType}
-          customInflation={inputs.customInflation}
-          customNbpRate={inputs.customNbpRate}
-          inflationHorizonYears={Math.max(1, Math.ceil(inputs.investmentHorizonMonths / 12))}
-          onUpdate={onUpdate}
-          compact
-        />
+        {isOpen ? (
+          <DeferredMarketAssumptionsForm
+            expectedInflation={inputs.expectedInflation}
+            expectedNbpRate={inputs.expectedNbpRate}
+            bondType={inputs.bondType}
+            customInflation={inputs.customInflation}
+            customNbpRate={inputs.customNbpRate}
+            inflationHorizonYears={Math.max(1, Math.ceil(inputs.investmentHorizonMonths / 12))}
+            onUpdate={onUpdate}
+            compact
+          />
+        ) : null}
 
         {currentDef.rebuyDiscount > 0 ? (
           <div className="space-y-4 border-t border-border pt-6">

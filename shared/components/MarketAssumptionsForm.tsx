@@ -25,7 +25,7 @@ export type { AssumptionSetupMode } from '@/shared/lib/market-assumptions-form-m
 type UpdateHandler = {
   bivarianceHack: (key: keyof BondInputs | string, value: unknown) => void;
 }['bivarianceHack'];
-interface MarketAssumptionsFormProps {
+export interface MarketAssumptionsFormProps {
   expectedInflation: number;
   expectedNbpRate?: number;
   bondType: BondType;
@@ -141,7 +141,7 @@ export const MarketAssumptionsForm = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div data-testid="market-assumptions-form" className="space-y-6">
       {showIntro ? (
         <div className="space-y-3">
           <p
