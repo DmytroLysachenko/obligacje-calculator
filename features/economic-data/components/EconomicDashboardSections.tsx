@@ -46,7 +46,7 @@ interface UsageGuidePanelProps {
   };
 }
 
-interface ReferenceStatusPanelProps {
+export interface ReferenceStatusPanelProps {
   inflationMeta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
   nbpMeta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
   isLoadingInflation: boolean;
