@@ -8,7 +8,7 @@ import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { stripDisplayOnlyInputs } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
 
-import { MODEL_VERSION } from '../../bond-core/handlers';
+import { MODEL_VERSION } from '../../bond-core/model-version';
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
 import {
   RegularInvestmentCalculationEnvelope,

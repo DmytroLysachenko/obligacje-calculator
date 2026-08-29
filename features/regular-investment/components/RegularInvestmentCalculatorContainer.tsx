@@ -8,20 +8,22 @@ import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
-import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
 import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
 
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
-import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
+const RegularInvestmentResultsSummary = dynamic(
+  () =>
+    import('./RegularInvestmentResultsSummary').then(
+      (module) => module.RegularInvestmentResultsSummary,
+    ),
+  { loading: () => <Skeleton className="h-72 w-full rounded-md" /> },
+);
 
-const RegularInvestmentChart = dynamic(
-  () => import('./RegularInvestmentChart').then((module) => module.RegularInvestmentChart),
+const RegularInvestmentDetails = dynamic(
+  () => import('./RegularInvestmentDetails').then((module) => module.RegularInvestmentDetails),
   { loading: () => <Skeleton className="h-[320px] w-full rounded-md md:h-[420px]" /> },
 );
 const LoadingState = () => (
@@ -151,48 +153,16 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         }
         details={
           results ? (
-            <div
-              className={cn(
-                'ui-compact-flow transition-opacity duration-200',
-                isCalculating && 'pointer-events-none opacity-50',
-              )}
-            >
-              {hasPreviousOfferResult ? (
-                <p className="ui-meta border-l-2 border-amber-500/70 pl-3" role="status">
-                  Wyniki dotyczą poprzednio zatwierdzonej oferty. Przelicz symulację po zmianie
-                  parametrów lub oferty obligacji.
-                </p>
-              ) : null}
-              <CalculatorSection
-                title={t('regular_investment_page.chart_title')}
-                description={t('regular_investment_page.chart_description')}
-                className="ui-section-divider"
-              >
-                <RegularInvestmentChart results={results} bondType={inputs.bondType} />
-              </CalculatorSection>
-
-              <SecondaryInsightAccordion
-                title={t('regular_investment_page.how_to_read_title')}
-                description={t('regular_investment_page.how_to_read_description')}
-                badge={t('regular_investment_page.how_to_read_badge')}
-              >
-                <ReadingChecklist items={readingGuide} />
-              </SecondaryInsightAccordion>
-
-              <SecondaryInsightAccordion
-                title={t('bonds.simulation.calculation_context')}
-                description={t('regular_investment_page.calculation_context_description')}
-                badge={t('regular_investment_page.calculation_context_badge')}
-              >
-                <CalculationMetaPanel
-                  warnings={warnings}
-                  assumptions={assumptions}
-                  calculationNotes={envelope?.calculationNotes}
-                  dataQualityFlags={envelope?.dataQualityFlags}
-                  dataFreshness={envelope?.dataFreshness}
-                />
-              </SecondaryInsightAccordion>
-            </div>
+            <RegularInvestmentDetails
+              results={results}
+              inputs={inputs}
+              isCalculating={isCalculating}
+              hasPreviousOfferResult={hasPreviousOfferResult}
+              readingGuide={readingGuide}
+              warnings={warnings}
+              assumptions={assumptions}
+              envelope={envelope}
+            />
           ) : null
         }
       />
