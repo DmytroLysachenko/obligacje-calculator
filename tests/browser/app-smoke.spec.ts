@@ -42,6 +42,36 @@ for (const route of smokeRoutes.filter((route) => route.path !== '/notebook')) {
   defineSmokeTest(route);
 }
 
+test('shared content canvas aligns routes and prevents horizontal overflow', async ({ page }) => {
+  await stubOpportunisticSync(page);
+  await stubGuestPortfolioAccess(page);
+  await stubWebVitals(page);
+
+  const routes = ['/', '/single-calculator', '/compare', '/economic-data'];
+  const canvasBoxes: { x: number; width: number }[] = [];
+
+  for (const route of routes) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+
+    const canvas = page.locator('.ui-app-canvas').first();
+    await expect(canvas).toBeVisible();
+    const box = await canvas.boundingBox();
+    expect(box).not.toBeNull();
+    canvasBoxes.push({ x: box!.x, width: box!.width });
+
+    const hasHorizontalOverflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    );
+    expect(hasHorizontalOverflow).toBe(false);
+  }
+
+  const firstCanvas = canvasBoxes[0];
+  for (const canvas of canvasBoxes.slice(1)) {
+    expect(canvas.x).toBeCloseTo(firstCanvas.x, 0);
+    expect(canvas.width).toBeCloseTo(firstCanvas.width, 0);
+  }
+});
+
 test.describe('portfolio notebook', () => {
   test.describe.configure({ retries: process.env.CI ? 2 : 0 });
   defineSmokeTest({ path: '/notebook', name: 'portfolio notebook' });
