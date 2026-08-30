@@ -2,9 +2,9 @@
 
 import React from 'react';
 
-export type AppTheme = 'light' | 'dark' | 'system';
+import { THEME_STORAGE_KEY } from '@/shared/lib/theme-preferences';
 
-const STORAGE_KEY = 'bonds-calculator-theme';
+export type AppTheme = 'light' | 'dark' | 'system';
 
 type ThemeContextValue = {
   theme: AppTheme;
@@ -26,16 +26,26 @@ function applyTheme(theme: AppTheme) {
   return resolvedTheme;
 }
 
+function readStoredTheme(): AppTheme {
+  if (typeof window === 'undefined') return 'system';
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  return storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system'
+    ? storedTheme
+    : 'system';
+}
+
+function readAppliedTheme(): Exclude<AppTheme, 'system'> {
+  if (typeof document === 'undefined') return 'light';
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<AppTheme>('system');
-  const [resolvedTheme, setResolvedTheme] = React.useState<Exclude<AppTheme, 'system'>>('light');
+  const [theme, setThemeState] = React.useState<AppTheme>(readStoredTheme);
+  const [resolvedTheme, setResolvedTheme] =
+    React.useState<Exclude<AppTheme, 'system'>>(readAppliedTheme);
 
   React.useEffect(() => {
-    const storedTheme = window.localStorage.getItem(STORAGE_KEY);
-    const initialTheme: AppTheme =
-      storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system'
-        ? storedTheme
-        : 'system';
+    const initialTheme = readStoredTheme();
     setThemeState(initialTheme);
     setResolvedTheme(applyTheme(initialTheme));
 
@@ -48,7 +58,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setTheme = React.useCallback((nextTheme: AppTheme) => {
-    window.localStorage.setItem(STORAGE_KEY, nextTheme);
+    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
     setThemeState(nextTheme);
     setResolvedTheme(applyTheme(nextTheme));
   }, []);
