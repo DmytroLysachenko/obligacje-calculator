@@ -46,7 +46,7 @@ export function LandingDashboardClient({ offerProvenance }: { offerProvenance?: 
   const primaryTool = primaryTools.find((item) => item.href === '/single-calculator');
   const supportingTools = primaryTools.filter((item) => item.href !== '/single-calculator');
   return (
-    <div className="ui-page-flow mx-auto max-w-[var(--layout-content-max)]">
+    <div className="ui-page-flow">
       <section className="pb-8 md:pb-10">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start xl:gap-12">
           <div className="max-w-4xl space-y-6 md:space-y-8">

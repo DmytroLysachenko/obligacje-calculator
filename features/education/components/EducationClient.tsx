@@ -61,7 +61,7 @@ export default function EducationClient({
 
   return (
     <PageTransition>
-      <div className="ui-page-flow mx-auto max-w-[var(--layout-content-max)]">
+      <div className="ui-page-flow">
         <header className="ui-page-header max-w-4xl space-y-5">
           <p className="inline-flex items-center gap-2 border-l-2 border-border px-3 py-1 ui-eyebrow">
             <BookOpen className="size-3.5 text-foreground" aria-hidden="true" />

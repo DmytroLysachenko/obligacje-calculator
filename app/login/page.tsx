@@ -35,7 +35,7 @@ export default async function LoginPage() {
   const providers = getConfiguredOAuthProviders();
 
   return (
-    <section className="mx-auto flex min-h-[70vh] w-full max-w-6xl items-center py-8 md:py-12">
+    <section className="flex min-h-[70vh] w-full items-center py-8 md:py-12">
       <div className="grid w-full overflow-hidden border-y border-border lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.78fr)]">
         <div className="space-y-8 px-1 py-8 md:px-8 md:py-12 lg:pr-14">
           <div className="space-y-4">

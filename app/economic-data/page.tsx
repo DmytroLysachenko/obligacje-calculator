@@ -1,5 +1,5 @@
 import { EconomicDataPageClient } from '@/features/economic-data/components/EconomicDataPageClient';
-import { type EconomicView,parseEconomicView } from '@/features/economic-data/lib/economic-view';
+import { type EconomicView, parseEconomicView } from '@/features/economic-data/lib/economic-view';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 import { BondDefinitionsBoundary } from '@/shared/components/providers/BondDefinitionsBoundary';
 

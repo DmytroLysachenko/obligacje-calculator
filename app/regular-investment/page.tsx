@@ -8,7 +8,7 @@ export async function generateMetadata() {
 
 export default function RegularInvestmentPage() {
   return (
-    <CalculatorRouteBoundary suspense transition containerClassName="max-w-7xl mx-auto">
+    <CalculatorRouteBoundary suspense transition>
       <RegularInvestmentCalculatorContainer />
     </CalculatorRouteBoundary>
   );

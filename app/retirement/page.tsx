@@ -16,7 +16,7 @@ export default async function RetirementPlannerPage() {
   const t = await getTranslations('retirement');
   return (
     <PageTransition>
-      <div className="mx-auto max-w-7xl space-y-8">
+      <div className="space-y-8">
         <FeatureStatusNotice
           status="limited"
           eyebrow={t('page_notice_eyebrow')}

@@ -19,7 +19,7 @@ export default async function PortfolioNotebookPage() {
 
   return (
     <PageTransition>
-      <div className="container mx-auto ui-page-flow">
+      <div className="ui-page-flow">
         <BondDefinitionsBoundary>
           <NotebookContainer />
         </BondDefinitionsBoundary>
