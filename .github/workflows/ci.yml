@@ -59,6 +59,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Check formatting
+        run: pnpm format:check
+
       - name: Release tests
         run: pnpm test:release
 
@@ -73,6 +76,7 @@ jobs:
             echo ""
             echo "- TypeScript: \`pnpm check:types\`"
             echo "- Lint: \`pnpm lint\`"
+            echo "- Formatting: \`pnpm format:check\`"
             echo "- Release tests: \`pnpm test:release\`"
             echo "- Coverage: \`pnpm test:coverage\` (70% per aggregate metric)"
           } >> "${GITHUB_STEP_SUMMARY}"
@@ -101,6 +105,9 @@ jobs:
 
       - name: Report route bundles
         run: pnpm analyze:bundles
+
+      - name: Enforce route bundle budgets
+        run: pnpm check:bundle-budgets
 
       - name: Retain route bundle report
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4

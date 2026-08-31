@@ -7,10 +7,10 @@ export interface RouteBundleBudget {
 
 /** Initial ceilings are intentionally above the measured clean-build baseline. */
 export const calculatorRouteBundleBudgets: readonly RouteBundleBudget[] = [
-  { route: '/compare', maxBytes: 2_000_000 },
-  { route: '/ladder', maxBytes: 2_000_000 },
-  { route: '/regular-investment', maxBytes: 2_000_000 },
-  { route: '/single-calculator', maxBytes: 2_000_000 },
+  { route: '/compare', maxBytes: 1_100_000 },
+  { route: '/ladder', maxBytes: 1_950_000 },
+  { route: '/regular-investment', maxBytes: 750_000 },
+  { route: '/single-calculator', maxBytes: 800_000 },
 ];
 
 export function findBundleBudgetFailures(
