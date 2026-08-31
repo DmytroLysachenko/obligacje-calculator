@@ -31,6 +31,19 @@ const providerConsumers = [
 ] as const;
 
 describe('provider boundary contract', () => {
+  it('keeps client provider composition behind one root-layout boundary', () => {
+    const layout = readSource('app/layout.tsx');
+    const providers = readSource('shared/components/providers/ClientAppProviders.tsx');
+
+    expectContains(layout, "from '@/shared/components/providers/ClientAppProviders'");
+    expectContains(layout, '<ClientAppProviders');
+    expectNotContains(layout, 'NextIntlClientProvider');
+    expectContains(providers, '<NextIntlClientProvider');
+    expectContains(providers, '<AppLocaleProvider>');
+    expectContains(providers, '<ThemeProvider>');
+    expectContains(providers, '<ErrorBoundary>');
+  });
+
   it('loads bond definitions only on routes with interactive offer consumers', () => {
     const layout = readSource('app/layout.tsx');
 
