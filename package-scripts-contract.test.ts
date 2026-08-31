@@ -11,6 +11,8 @@ const pkg = JSON.parse(readFileSync(join(process.cwd(), 'package.json'), 'utf8')
 describe('package scripts contract', () => {
   it('keeps a single release-check command for Cloud Run promotion gates', () => {
     expect(pkg.scripts['check:types']).toBe('tsc --noEmit');
+    expect(pkg.scripts['check:push']).toBe('pnpm check:types && pnpm test:core');
+    expect(pkg.scripts['analyze:lighthouse']).toBe('tsx scripts/lighthouse-summary.ts');
     expect(pkg.scripts['test:release']).toContain('features/bond-core');
     expect(pkg.scripts['test:release']).toContain('lib/data/bond-series.test.ts');
     expect(pkg.scripts['test:release']).toContain('lib/seo/app-json-ld.test.ts');
@@ -68,6 +70,8 @@ describe('package scripts contract', () => {
     expect(launcher).toContain("existsSync('.next/standalone/server.js')");
     expect(launcher).toContain("process.platform !== 'win32'");
     expect(launcher).toContain("cpSync('.next/static'");
+    expect(launcher).toContain('tmpdir()');
+    expect(launcher).toContain('PLAYWRIGHT_SERVER_STDERR_FILE');
     expect(launcher).toContain("require.resolve('next/dist/bin/next')");
     expect(launcher).toContain("PLAYWRIGHT_SMOKE: process.env.PLAYWRIGHT_SMOKE ?? '1'");
     expect(launcher).toContain(
@@ -75,9 +79,9 @@ describe('package scripts contract', () => {
     );
   });
 
-  it('keeps lint-staged full-repo checks isolated from staged filenames', () => {
-    expect(pkg['lint-staged']['*.{ts,tsx}']).toEqual(
-      expect.arrayContaining(['bash -c "pnpm exec tsc --noEmit"', 'bash -c "pnpm test:core"']),
-    );
+  it('keeps staged formatting fast and defers full checks to pre-push', () => {
+    expect(pkg['lint-staged']['*.{ts,tsx}']).toEqual(['eslint --fix']);
+    const prePushHook = readFileSync(join(process.cwd(), '.husky/pre-push'), 'utf8');
+    expect(prePushHook).toContain('pnpm check:push');
   });
 });
