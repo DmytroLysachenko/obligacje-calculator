@@ -12,6 +12,13 @@ describe('package scripts contract', () => {
   it('keeps a single release-check command for Cloud Run promotion gates', () => {
     expect(pkg.scripts['check:types']).toBe('tsc --noEmit');
     expect(pkg.scripts['check:push']).toBe('pnpm check:types && pnpm test:core');
+    expect(pkg.scripts['test:trusted-core']).toContain('single-bond-edge-golden.test.ts');
+    expect(pkg.scripts['test:trusted-core']).toContain('economic-dashboard-model.test.ts');
+    expect(pkg.scripts['test:trusted-core']).toContain('economic-data-semantic.test.tsx');
+    expect(pkg.scripts['test:trusted-core']).toContain('education-offer-provenance.test.ts');
+    expect(pkg.scripts['test:trusted-core']).toContain('education-entry-semantic.test.tsx');
+    expect(pkg.scripts['test:trusted-core']).toContain('single-result-semantic.test.tsx');
+    expect(pkg.scripts['test:trusted-core:browser']).toContain("--grep 'trusted-core routes'");
     expect(pkg.scripts['analyze:lighthouse']).toBe('tsx scripts/lighthouse-summary.ts');
     expect(pkg.scripts['test:release']).toContain('features/bond-core');
     expect(pkg.scripts['test:release']).toContain('lib/data/bond-series.test.ts');

@@ -65,6 +65,9 @@ jobs:
       - name: Release tests
         run: pnpm test:release
 
+      - name: Trusted-core evidence
+        run: pnpm test:trusted-core
+
       - name: Measured coverage threshold
         run: pnpm test:coverage
 
@@ -78,6 +81,7 @@ jobs:
             echo "- Lint: \`pnpm lint\`"
             echo "- Formatting: \`pnpm format:check\`"
             echo "- Release tests: \`pnpm test:release\`"
+            echo "- Trusted core: \`pnpm test:trusted-core\`"
             echo "- Coverage: \`pnpm test:coverage\` (70% per aggregate metric)"
           } >> "${GITHUB_STEP_SUMMARY}"
 
@@ -283,8 +287,8 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Browser smoke, accessibility, and web vitals
-        run: pnpm test:browser:ci && pnpm test:a11y && pnpm test:browser:visual
+      - name: Browser smoke, trusted-core journeys, accessibility, and web vitals
+        run: pnpm test:browser:ci && pnpm test:trusted-core:browser && pnpm test:a11y && pnpm test:browser:visual
 
       - name: Lighthouse quality gate
         run: pnpm test:lighthouse
