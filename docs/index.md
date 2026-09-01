@@ -67,6 +67,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [09. Comprehensive Codebase Quality, Security, and Refactor Plan](./plans/09_comprehensive_codebase_quality_security_refactor_plan.md) - Full-codebase audit and prioritized remediation program for security, correctness, data integrity, architecture, testing, performance, UI/UX, accessibility, scalability, operations, and documentation.
 - [10. Security, Resilience, and Adversarial Evidence Audit](./plans/10_security_resilience_evidence_audit.md) - Threat model, endpoint authorization matrix, adversarial runtime evidence, migration and supply-chain verification, load results, cross-browser/accessibility findings, and security acceptance criteria.
 - [11. Codebase Simplification and Cleanup Audit](./plans/11_codebase_simplification_cleanup_audit.md) - Evidence-led, no-behavior-change plan for removing dead code, reducing brittle tests and duplicate orchestration, and keeping React/Next bundle work measurable.
+- [12. Trusted-Core Release Scorecard](./plans/12_trusted_core_release_scorecard.md) - Repository evidence required for education, the single calculator, and economic-data admission.
 
 ### 6. Archived Plans
 
