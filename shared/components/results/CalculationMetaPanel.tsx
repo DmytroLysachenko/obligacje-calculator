@@ -7,9 +7,10 @@ import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import {
   getBondOfferFreshnessState,
-  getBondOfferSourceTranslationKey,
   getCalculationFreshnessMetaState,
+  getCalculationReferenceMeta,
 } from '@/shared/lib/data-freshness-display';
+import { buildReferenceProvenanceViewModel } from '@/shared/lib/data-reference';
 
 interface CalculationMetaPanelProps {
   warnings?: string[];
@@ -136,7 +137,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
   calculationVersion = 'v1.2.0',
   compact = false,
 }) => {
-  const { t } = useAppI18n();
+  const { t, locale } = useAppI18n();
 
   const hasContent =
     warnings.length > 0 ||
@@ -151,6 +152,10 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
 
   const freshnessMeta = dataFreshness ? getCalculationFreshnessMetaState(dataFreshness) : null;
   const bondOffer = getBondOfferFreshnessState(dataFreshness);
+  const provenance = buildReferenceProvenanceViewModel(
+    getCalculationReferenceMeta(dataFreshness),
+    locale,
+  );
 
   return (
     <div className="space-y-5">
@@ -179,11 +184,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
             ) : null}
             <div>
               {t('comparison.offer_source')}:{' '}
-              <span className="font-semibold">
-                {t(
-                  `sidebar.freshness.offer_sources.${getBondOfferSourceTranslationKey(bondOffer.source)}`,
-                )}
-              </span>
+              <span className="font-semibold">{provenance.source}</span>
             </div>
             {bondOffer.isDegraded ? (
               <div className="font-semibold">{t('comparison.offer_degraded_warning')}</div>
