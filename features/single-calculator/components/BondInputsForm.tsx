@@ -15,13 +15,10 @@ import { DeferredMarketAssumptionsForm } from '@/shared/components/market-assump
 import type { AssumptionSetupMode } from '@/shared/components/MarketAssumptionsForm';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
-import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
-import {
-  isFloatingNbpBondType,
-  isInflationIndexedBondType,
-} from '@/shared/lib/market-assumption-semantics';
+import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
 import { BondInputs, BondType } from '../../bond-core/types';
+import { buildBondInputsViewModel } from '../lib/bond-inputs-view-model';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 
 import { BondConfigSection } from './sections/BondConfigSection';
@@ -77,16 +74,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   );
 
   const currentDef = definitions?.[inputs.bondType];
-  const investmentHorizonMonths =
-    inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
-  const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
+  const viewModel = buildBondInputsViewModel(inputs);
   const maturityDate = useMemo(
     () =>
       parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12))),
     [inputs.duration, inputs.purchaseDate],
   );
-  const usesInflation = isInflationIndexedBondType(inputs.bondType);
-  const usesNbpRate = isFloatingNbpBondType(inputs.bondType);
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
@@ -195,14 +188,14 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             <BondTimingSection
               inputs={inputs}
               onUpdate={handleUpdate}
-              investmentHorizonYears={investmentHorizonYears}
-              investmentHorizonMonths={investmentHorizonMonths}
+              investmentHorizonYears={viewModel.investmentHorizonYears}
+              investmentHorizonMonths={viewModel.investmentHorizonMonths}
               currentDef={currentDef}
               hasMounted={hasMounted}
             />
           </FormSection>
 
-          {usesInflation ? (
+          {viewModel.usesInflation ? (
             <AdvancedAssumptionsDisclosure
               title={t('bonds.form.step_inflation_title')}
               description={t('bonds.form.step_inflation_desc')}
@@ -215,7 +208,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   bondType={inputs.bondType}
                   customInflation={inputs.customInflation}
                   customNbpRate={inputs.customNbpRate}
-                  inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+                  inflationHorizonYears={viewModel.assumptionHorizonYears}
                   onUpdate={handleUpdate as (key: string, value: unknown) => void}
                   compact
                   section="inflation"
@@ -227,7 +220,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             </AdvancedAssumptionsDisclosure>
           ) : null}
 
-          {usesNbpRate ? (
+          {viewModel.usesNbpRate ? (
             <AdvancedAssumptionsDisclosure
               title={t('bonds.form.step_nbp_title')}
               description={t('bonds.form.step_nbp_desc')}
@@ -240,7 +233,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   bondType={inputs.bondType}
                   customInflation={inputs.customInflation}
                   customNbpRate={inputs.customNbpRate}
-                  inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+                  inflationHorizonYears={viewModel.assumptionHorizonYears}
                   onUpdate={handleUpdate as (key: string, value: unknown) => void}
                   compact
                   section="nbp"
