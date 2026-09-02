@@ -23,6 +23,7 @@ import {
 } from '../lib/single-calculator-effect-state';
 import {
   PersistedSingleCalculatorState,
+  resolveAvailableSelectedSeriesId,
   restoreSingleCalculatorState,
   SINGLE_CALCULATOR_STORAGE_KEY,
 } from '../lib/single-calculator-persistence';
@@ -144,7 +145,7 @@ export function useBondCalculatorEffects({
         SINGLE_CALCULATOR_STORAGE_KEY,
       );
 
-      const restored = restoreSingleCalculatorState(restoredState, fallbackInputs);
+      const restored = restoreSingleCalculatorState(restoredState);
       if (restored) {
         restoredFromPersistenceRef.current = restored.restoredFromPersistence;
         setInputs(restored.inputs);
@@ -201,10 +202,35 @@ export function useBondCalculatorEffects({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      void fetchSeries(inputs.bondType, setAvailableSeries);
+      void fetchSeries(inputs.bondType).then((series) => {
+        if (!series) {
+          return;
+        }
+        setAvailableSeries(series);
+        const resolvedSeriesId = resolveAvailableSelectedSeriesId(selectedSeriesId, series);
+        if (resolvedSeriesId !== selectedSeriesId) {
+          setSelectedSeriesId(resolvedSeriesId);
+          setInputs((previous) =>
+            resolveDefinitionSyncedInputs({
+              previous,
+              definitions: definitions ?? BOND_DEFINITIONS,
+              selectedSeriesId: resolvedSeriesId,
+            }),
+          );
+          setIsDirty(true);
+        }
+      });
     }, 0);
     return () => clearTimeout(timer);
-  }, [inputs.bondType, setAvailableSeries]);
+  }, [
+    definitions,
+    inputs.bondType,
+    selectedSeriesId,
+    setAvailableSeries,
+    setInputs,
+    setIsDirty,
+    setSelectedSeriesId,
+  ]);
 
   useEffect(() => {
     if (!initialInputs || hasAutoCalculatedSharedScenarioRef.current || isCalculating) {
@@ -245,14 +271,12 @@ export function useBondCalculatorEffects({
   ]);
 }
 
-async function fetchSeries(
-  symbol: BondType,
-  setAvailableSeries: React.Dispatch<React.SetStateAction<BondSeriesMetadata[]>>,
-) {
+async function fetchSeries(symbol: BondType): Promise<BondSeriesMetadata[] | null> {
   try {
     await Promise.resolve();
-    setAvailableSeries(await fetchBondSeriesForSymbol(symbol));
+    return await fetchBondSeriesForSymbol(symbol);
   } catch (error) {
     logClientError('Failed to fetch series:', error);
+    return null;
   }
 }
