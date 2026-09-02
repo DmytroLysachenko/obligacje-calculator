@@ -72,6 +72,47 @@ test('shared content canvas aligns routes and prevents horizontal overflow', asy
   }
 });
 
+test('trusted-core routes: accessible education, calculator, and economic journeys', async ({
+  page,
+}, testInfo) => {
+  const diagnostics = installBrowserDiagnostics(page);
+  await stubOpportunisticSync(page);
+  await stubGuestPortfolioAccess(page);
+  await stubWebVitals(page);
+
+  for (const route of ['/education', '/single-calculator', '/economic-data']) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('main#main-content')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    await expect(page.locator('a[href="#main-content"]')).toBeAttached();
+    await expect(page.locator('body')).not.toContainText('Application error');
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth),
+    ).toBe(false);
+  }
+
+  await page.goto('/education', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('link', { name: /official|oficjal/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /calculate|oblicz/i }).first()).toBeVisible();
+
+  await page.goto('/single-calculator', { waitUntil: 'domcontentloaded' });
+  await page
+    .getByRole('button', { name: /calculate|oblicz/i })
+    .first()
+    .focus();
+  await expect(page.getByRole('button', { name: /calculate|oblicz/i }).first()).toBeFocused();
+
+  await page.goto('/economic-data', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: /CPI/i }).press('Tab');
+  await expect(page.getByRole('button', { name: 'NBP' })).toBeFocused();
+  await page.getByRole('button', { name: 'NBP' }).press('Enter');
+  await expect(page.getByRole('button', { name: 'NBP' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByText(/status dashboard|stan danych/i).click();
+  await expect(page.getByText(/source|źródło/i).first()).toBeVisible();
+
+  await expectNoBrowserDiagnostics(testInfo, diagnostics);
+});
+
 test.describe('portfolio notebook', () => {
   test.describe.configure({ retries: process.env.CI ? 2 : 0 });
   defineSmokeTest({ path: '/notebook', name: 'portfolio notebook' });
