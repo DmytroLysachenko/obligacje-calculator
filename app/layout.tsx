@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import React from 'react';
@@ -15,9 +14,6 @@ import { ClientAppProviders } from '@/shared/components/providers/ClientAppProvi
 import { THEME_BOOTSTRAP_SCRIPT } from '@/shared/lib/theme-preferences';
 
 import './globals.css';
-
-const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
-const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
 export const viewport: Viewport = {
   themeColor: '#f8f6f1',
@@ -99,10 +95,7 @@ async function RequestAwareBody({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <body
-      className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
-      data-locale={language}
-    >
+    <body className="bg-background text-foreground antialiased" data-locale={language}>
       <script
         nonce={nonce}
         suppressHydrationWarning
@@ -167,9 +160,7 @@ async function RequestAwareBody({ children }: { children: React.ReactNode }) {
 
 function RootLayoutFallback() {
   return (
-    <body
-      className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground antialiased`}
-    >
+    <body className="bg-background text-foreground antialiased">
       <main
         id="main-content"
         className="flex min-h-screen flex-1 flex-col overflow-x-hidden bg-background pt-14 outline-none lg:pl-[var(--sidebar-width)] lg:pt-0"
