@@ -43,7 +43,11 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
   }
   if (isError) {
     return (
-      <div className="flex h-[400px] w-full items-center justify-center text-destructive">
+      <div
+        className="flex h-[400px] w-full items-center justify-center text-destructive"
+        role="status"
+        aria-live="polite"
+      >
         {t('economic.failed_to_load')}
       </div>
     );
