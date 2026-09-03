@@ -2,8 +2,8 @@
 
 import { Activity, Database, Info } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { usePathname } from 'next/navigation';
-import React, { useCallback, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { BondType } from '@/features/bond-core/types';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@/features/economic-data/lib/economic-page-model';
 import {
   type EconomicView,
+  parseEconomicView,
   serializeEconomicView,
 } from '@/features/economic-data/lib/economic-view';
 import { useAppI18n } from '@/i18n/client';
@@ -60,7 +61,12 @@ export function EconomicDataPageClient({ initialView }: { initialView: EconomicV
   const { t, locale: language } = useAppI18n();
   const { definitions } = useBondDefinitions();
   const pathname = usePathname();
-  const [view, setView] = useState<EconomicView>(initialView);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const view = useMemo(() => {
+    const query = searchParams.toString();
+    return query ? parseEconomicView(new URLSearchParams(query)) : initialView;
+  }, [initialView, searchParams]);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const labels = buildEconomicPageLabels(t);
 
@@ -74,14 +80,11 @@ export function EconomicDataPageClient({ initialView }: { initialView: EconomicV
   const usageGuide = buildEconomicUsageGuide(t, floatingRateContext);
   const updateView = useCallback(
     (patch: Partial<EconomicView>) => {
-      setView((current) => {
-        const next = { ...current, ...patch };
-        const query = serializeEconomicView(next);
-        window.history.replaceState(window.history.state, '', `${pathname}?${query}`);
-        return next;
-      });
+      const next = { ...view, ...patch };
+      if (next.series === 'nbp') next.scale = 'readable';
+      router.push(`${pathname}?${serializeEconomicView(next)}`, { scroll: false });
     },
-    [pathname],
+    [pathname, router, view],
   );
   const selectedChart =
     view.series === 'cpi' ? (
