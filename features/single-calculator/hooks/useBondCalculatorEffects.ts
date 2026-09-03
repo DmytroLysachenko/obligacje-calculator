@@ -11,7 +11,6 @@ import {
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
 import { logClientError } from '@/shared/lib/client-logger';
-import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
 import { fetchBondSeriesForSymbol } from '../lib/single-calculator-actions';
 import { buildSingleCalculatorPersistenceSnapshot } from '../lib/single-calculator-client-state';
@@ -22,12 +21,11 @@ import {
   resolveDefinitionSyncedInputs,
 } from '../lib/single-calculator-effect-state';
 import {
-  PersistedSingleCalculatorState,
+  type PersistedSingleCalculatorState,
   resolveAvailableSelectedSeriesId,
-  restoreSingleCalculatorState,
   SINGLE_CALCULATOR_STORAGE_KEY,
 } from '../lib/single-calculator-persistence';
-import { resolveBondTypeInputUpdate } from '../lib/single-calculator-state';
+import { resolveSingleCalculatorRestoration } from '../lib/single-calculator-restoration';
 
 interface UseBondCalculatorEffectsInput {
   inputs: BondInputs;
@@ -120,32 +118,15 @@ export function useBondCalculatorEffects({
     const timer = window.setTimeout(() => {
       hasRestoredStateRef.current = true;
 
-      if (bondFromUrl) {
-        const selectedInputs = resolveBondTypeInputUpdate(
-          fallbackInputs,
-          bondFromUrl,
-          definitions[bondFromUrl],
-        );
-        const horizonMonths = Math.round(definitions[bondFromUrl].duration * 12);
-        selectedInputs.investmentHorizonMonths = horizonMonths;
-        selectedInputs.withdrawalDate = getWithdrawalDateFromMonths(
-          selectedInputs.purchaseDate,
-          horizonMonths,
-        );
-        setInputs(selectedInputs);
-        setEnvelope(null);
-        setSelectedSeriesId('current');
-        setLastCommittedInputs(null);
-        setIsDirty(true);
-        setIsPersistenceReady(true);
-        return;
-      }
-
       const restoredState = loadPersistedCalculatorState<PersistedSingleCalculatorState>(
         SINGLE_CALCULATOR_STORAGE_KEY,
       );
-
-      const restored = restoreSingleCalculatorState(restoredState);
+      const restored = resolveSingleCalculatorRestoration({
+        bondFromUrl,
+        fallbackInputs,
+        persistedState: restoredState,
+        definitions,
+      });
       if (restored) {
         restoredFromPersistenceRef.current = restored.restoredFromPersistence;
         setInputs(restored.inputs);

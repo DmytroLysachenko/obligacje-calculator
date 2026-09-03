@@ -17,7 +17,7 @@ export interface PersistedSingleCalculatorState {
   isDirty: boolean;
 }
 
-interface RestoredSingleCalculatorState {
+export interface RestoredSingleCalculatorState {
   inputs: BondInputs;
   envelope: SingleBondCalculationEnvelope | null;
   selectedSeriesId: string | null;
