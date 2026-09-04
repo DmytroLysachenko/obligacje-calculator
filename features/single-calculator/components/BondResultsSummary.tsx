@@ -185,7 +185,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           <ScenarioFactsBlock
             title={t('bonds.results.scenario_facts_title')}
             description={t('bonds.results.scenario_facts_description')}
-            actions={<MathDeepDive results={results} trigger={<HelpButton />} />}
+            actions={<MathDeepDive results={results} trigger={<CalculationDetailsTrigger />} />}
             items={scenarioFacts}
           />
         </div>
@@ -193,22 +193,23 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     </div>
   );
 };
-const HelpButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<'button'>>(
-  function HelpButton(props, ref) {
-    const { t } = useAppI18n();
-    return (
-      <button
-        ref={ref}
-        className="ui-focus-ring group rounded-sm"
-        type="button"
-        aria-label={t('bonds.results.show_calculation_details')}
-        {...props}
-      >
-        <Info
-          className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
-          aria-hidden="true"
-        />
-      </button>
-    );
-  },
-);
+export const CalculationDetailsTrigger = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentPropsWithoutRef<'button'>
+>(function CalculationDetailsTrigger(props, ref) {
+  const { t } = useAppI18n();
+  return (
+    <button
+      ref={ref}
+      className="ui-focus-ring group rounded-sm"
+      type="button"
+      aria-label={t('bonds.results.show_calculation_details')}
+      {...props}
+    >
+      <Info
+        className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
+        aria-hidden="true"
+      />
+    </button>
+  );
+});
