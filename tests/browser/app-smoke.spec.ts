@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+import { ScenarioKind } from '@/features/bond-core/types/scenarios';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+
 import {
   expectNoBrowserDiagnostics,
   installBrowserDiagnostics,
@@ -93,21 +96,29 @@ test('trusted-core routes: accessible education, calculator, and economic journe
 
   await page.goto('/education', { waitUntil: 'domcontentloaded' });
   await expect(page.getByRole('link', { name: /official|oficjal/i })).toBeVisible();
-  await expect(page.getByRole('link', { name: /calculate|oblicz/i }).first()).toBeVisible();
+  await expect(page.getByRole('link', { name: /calculate|oblicz|policz/i }).first()).toBeVisible();
 
   await page.goto('/single-calculator', { waitUntil: 'domcontentloaded' });
-  await page
-    .getByRole('button', { name: /calculate|oblicz/i })
-    .first()
-    .focus();
-  await expect(page.getByRole('button', { name: /calculate|oblicz/i }).first()).toBeFocused();
+  const calculateButton = page.getByRole('button', { name: /calculate|oblicz/i }).first();
+  await calculateButton.focus();
+  await expect(calculateButton).toBeFocused();
+  const calculationResponse = page.waitForResponse(
+    (response) =>
+      response.url().includes(getCalculationEndpoint(ScenarioKind.SINGLE_BOND)) && response.ok(),
+  );
+  await calculateButton.click();
+  await calculationResponse;
+  await expect(page.getByText(/results current|wyniki aktualne/i)).toBeVisible();
 
   await page.goto('/economic-data', { waitUntil: 'domcontentloaded' });
   await page.getByRole('button', { name: /CPI/i }).press('Tab');
   await expect(page.getByRole('button', { name: 'NBP' })).toBeFocused();
   await page.getByRole('button', { name: 'NBP' }).press('Enter');
   await expect(page.getByRole('button', { name: 'NBP' })).toHaveAttribute('aria-pressed', 'true');
-  await page.getByText(/status dashboard|stan danych/i).click();
+  await expect(page).toHaveURL(/series=nbp/);
+  await page.goBack();
+  await expect(page.getByRole('button', { name: /CPI/i })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByText(/coverage and freshness|pokrycie i świeżość/i).click();
   await expect(page.getByText(/source|źródło/i).first()).toBeVisible();
 
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
