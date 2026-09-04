@@ -41,7 +41,7 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
   if (isLoading) {
     return <Skeleton className="h-[470px] w-full rounded-lg" />;
   }
-  if (isError) {
+  if (isError && !response) {
     return (
       <div
         className="flex h-[400px] w-full items-center justify-center text-destructive"
