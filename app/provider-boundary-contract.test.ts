@@ -39,6 +39,7 @@ describe('provider boundary contract', () => {
     expectContains(layout, '<ClientAppProviders');
     expectNotContains(layout, 'NextIntlClientProvider');
     expectContains(providers, '<NextIntlClientProvider');
+    expectContains(providers, 'timeZone={appTimeZone}');
     expectContains(providers, '<AppLocaleProvider>');
     expectContains(providers, '<ThemeProvider>');
     expectContains(providers, '<ErrorBoundary>');
