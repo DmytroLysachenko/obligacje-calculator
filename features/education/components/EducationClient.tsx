@@ -30,6 +30,7 @@ import {
 } from '@/features/education/constants/education-content';
 import { useAppI18n } from '@/i18n/client';
 import { OfferProvenance } from '@/shared/components/data/OfferProvenance';
+import { PageHeader } from '@/shared/components/page/PageHeader';
 import { PageTransition } from '@/shared/components/page/PageTransition';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
@@ -62,29 +63,25 @@ export default function EducationClient({
   return (
     <PageTransition>
       <div className="ui-page-flow">
-        <header className="ui-page-header max-w-4xl space-y-5">
-          <p className="inline-flex items-center gap-2 border-l-2 border-border px-3 py-1 ui-eyebrow">
-            <BookOpen className="size-3.5 text-foreground" aria-hidden="true" />
-            {t('nav.education')}
-          </p>
-          <div className="space-y-3">
-            <h1 className="ui-page-title max-w-3xl xl:text-[46px]">{t('education.hero_title')}</h1>
-            <p className="ui-body ui-pretty max-w-3xl text-muted-foreground md:text-base md:leading-8">
-              {t('education.subtitle')}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg">
-              <Link href="#choose-a-path">
-                {t('education.hero_primary_cta')}
-                <ArrowDown className="size-4" aria-hidden="true" />
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="#current-offers">{t('education.hero_secondary_cta')}</Link>
-            </Button>
-          </div>
-        </header>
+        <PageHeader
+          icon={<BookOpen className="size-5" />}
+          eyebrow={t('nav.education')}
+          title={t('education.hero_title')}
+          description={t('education.subtitle')}
+          action={
+            <div className="ui-action-row">
+              <Button asChild size="lg">
+                <Link href="#choose-a-path">
+                  {t('education.hero_primary_cta')}
+                  <ArrowDown className="size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="#current-offers">{t('education.hero_secondary_cta')}</Link>
+              </Button>
+            </div>
+          }
+        />
 
         <section
           id="choose-a-path"
