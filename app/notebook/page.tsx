@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
 import { auth } from '@/auth';
 import { NotebookContainer } from '@/features/notebook/components/NotebookContainer';
@@ -10,7 +11,15 @@ export async function generateMetadata() {
   return getLocalizedPageMetadata('notebook');
 }
 
-export default async function PortfolioNotebookPage() {
+export default function PortfolioNotebookPage() {
+  return (
+    <Suspense fallback={null}>
+      <PortfolioNotebookPageContent />
+    </Suspense>
+  );
+}
+
+async function PortfolioNotebookPageContent() {
   const session = await auth();
 
   if (!session?.user?.id) {

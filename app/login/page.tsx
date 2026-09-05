@@ -1,6 +1,7 @@
 import { ArrowRight, LockKeyhole, ShieldCheck, WalletCards } from 'lucide-react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
 
 import { signIn } from '@/auth';
 import { Button } from '@/components/ui/button';
@@ -30,7 +31,15 @@ const workspaceBenefits = [
   },
 ] as const;
 
-export default async function LoginPage() {
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginPageContent />
+    </Suspense>
+  );
+}
+
+async function LoginPageContent() {
   const t = await getTranslations();
   const providers = getConfiguredOAuthProviders();
 

@@ -67,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang={defaultLocale} suppressHydrationWarning>
+    <html lang={defaultLocale} data-scroll-behavior="smooth" suppressHydrationWarning>
       <React.Suspense fallback={<RootLayoutFallback />}>
         <RequestAwareBody>{children}</RequestAwareBody>
       </React.Suspense>

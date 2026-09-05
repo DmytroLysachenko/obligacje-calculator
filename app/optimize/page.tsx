@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
 
 import BondOptimizerClient from '@/features/optimizer/components/BondOptimizerClient';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
@@ -9,7 +10,15 @@ export async function generateMetadata() {
   return getLocalizedPageMetadata('optimize');
 }
 
-export default async function BondOptimizerPage() {
+export default function BondOptimizerPage() {
+  return (
+    <Suspense fallback={null}>
+      <BondOptimizerPageContent />
+    </Suspense>
+  );
+}
+
+async function BondOptimizerPageContent() {
   const t = await getTranslations('optimizer_page');
   return (
     <PageTransition>

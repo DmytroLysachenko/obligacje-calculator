@@ -4,6 +4,7 @@ import { HomeOfferProvenance } from '@/features/home/components/HomeOfferProvena
 import { LandingDashboardClient } from '@/features/home/components/LandingDashboardClient';
 import { getGlobalDataFreshness } from '@/lib/data/market-data';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
+import { LocalizedMetadataMarker } from '@/shared/components/page/LocalizedMetadataMarker';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('home');
@@ -17,14 +18,17 @@ async function HomeOfferProvenanceBoundary() {
 
 export default function LandingDashboardPage() {
   return (
-    <LandingDashboardClient
-      offerProvenance={
-        <Suspense
-          fallback={<div className="h-[68px] animate-pulse border-y border-border bg-muted/40" />}
-        >
-          <HomeOfferProvenanceBoundary />
-        </Suspense>
-      }
-    />
+    <>
+      <LandingDashboardClient
+        offerProvenance={
+          <Suspense
+            fallback={<div className="h-[68px] animate-pulse border-y border-border bg-muted/40" />}
+          >
+            <HomeOfferProvenanceBoundary />
+          </Suspense>
+        }
+      />
+      <LocalizedMetadataMarker />
+    </>
   );
 }

@@ -11,7 +11,21 @@ export async function generateMetadata() {
   return getLocalizedPageMetadata('single_calculator');
 }
 
-export default async function SingleCalculatorPage({
+export default function SingleCalculatorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ bond?: string | string[] }>;
+}) {
+  return (
+    <PageTransition>
+      <Suspense fallback={<PageSuspenseFallback />}>
+        <SingleCalculatorContent searchParams={searchParams} />
+      </Suspense>
+    </PageTransition>
+  );
+}
+
+async function SingleCalculatorContent({
   searchParams,
 }: {
   searchParams: Promise<{ bond?: string | string[] }>;
@@ -20,12 +34,8 @@ export default async function SingleCalculatorPage({
   const initialBondType = parseBondType(Array.isArray(bond) ? bond[0] : bond);
 
   return (
-    <PageTransition>
-      <Suspense fallback={<PageSuspenseFallback />}>
-        <BondDefinitionsBoundary>
-          <BondCalculatorContainer initialBondType={initialBondType} />
-        </BondDefinitionsBoundary>
-      </Suspense>
-    </PageTransition>
+    <BondDefinitionsBoundary>
+      <BondCalculatorContainer initialBondType={initialBondType} />
+    </BondDefinitionsBoundary>
   );
 }

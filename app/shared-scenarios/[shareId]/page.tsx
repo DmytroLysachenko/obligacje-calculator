@@ -38,7 +38,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SharedScenarioPage({ params }: Props) {
+export default function SharedScenarioPage({ params }: Props) {
+  return (
+    <Suspense fallback={<PageSuspenseFallback />}>
+      <SharedScenarioContent params={params} />
+    </Suspense>
+  );
+}
+
+async function SharedScenarioContent({ params }: Props) {
   const { shareId } = await params;
 
   const scenario = await getSharedSingleScenarioPageData(shareId);
@@ -49,14 +57,12 @@ export default async function SharedScenarioPage({ params }: Props) {
 
   return (
     <PageTransition>
-      <Suspense fallback={<PageSuspenseFallback />}>
-        <BondDefinitionsBoundary>
-          <BondCalculatorContainer
-            initialInputs={scenario.inputs}
-            sharedScenarioTitle={scenario.title}
-          />
-        </BondDefinitionsBoundary>
-      </Suspense>
+      <BondDefinitionsBoundary>
+        <BondCalculatorContainer
+          initialInputs={scenario.inputs}
+          sharedScenarioTitle={scenario.title}
+        />
+      </BondDefinitionsBoundary>
     </PageTransition>
   );
 }

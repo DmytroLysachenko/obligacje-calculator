@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import { EconomicDataPageClient } from '@/features/economic-data/components/EconomicDataPageClient';
 import { type EconomicView, parseEconomicView } from '@/features/economic-data/lib/economic-view';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
@@ -7,7 +9,19 @@ export async function generateMetadata() {
   return getLocalizedPageMetadata('economic_data');
 }
 
-export default async function EconomicDataPage({
+export default function EconomicDataPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <EconomicDataContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function EconomicDataContent({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

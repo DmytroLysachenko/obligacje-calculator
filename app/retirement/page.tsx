@@ -12,7 +12,15 @@ export async function generateMetadata() {
   return getLocalizedPageMetadata('retirement');
 }
 
-export default async function RetirementPlannerPage() {
+export default function RetirementPlannerPage() {
+  return (
+    <Suspense fallback={<PageSuspenseFallback />}>
+      <RetirementPlannerPageContent />
+    </Suspense>
+  );
+}
+
+async function RetirementPlannerPageContent() {
   const t = await getTranslations('retirement');
   return (
     <PageTransition>
@@ -26,9 +34,7 @@ export default async function RetirementPlannerPage() {
             supportedBondTypes: RETIREMENT_SUPPORTED_BOND_TYPES.join(', '),
           })}
         </FeatureStatusNotice>
-        <Suspense fallback={<PageSuspenseFallback />}>
-          <RetirementPlannerContainer />
-        </Suspense>
+        <RetirementPlannerContainer />
       </div>
     </PageTransition>
   );

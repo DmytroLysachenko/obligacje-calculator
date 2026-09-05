@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
 
 import { PortfolioDetails } from '@/features/notebook/components/PortfolioDetails';
 import { portfolioApplication } from '@/lib/server/portfolio/application';
@@ -27,7 +28,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function SharedPortfolioPage({ params }: Props) {
+export default function SharedPortfolioPage({ params }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <SharedPortfolioContent params={params} />
+    </Suspense>
+  );
+}
+
+async function SharedPortfolioContent({ params }: Props) {
   const page = await getTranslations('shared_portfolio_page');
   const { shareId } = await params;
   const portfolio = await portfolioApplication.loadSharedPortfolio(shareId);
