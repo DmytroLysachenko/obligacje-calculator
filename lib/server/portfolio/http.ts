@@ -42,6 +42,14 @@ export function withPortfolioOwnerResponse(response: NextResponse, owner: Portfo
   return applyPortfolioOwnerCookie(response, owner);
 }
 
+/** Resolves an owner once and consistently propagates the guest-owner cookie. */
+export async function withPortfolioRead(
+  handler: (owner: PortfolioOwnerContext) => Promise<NextResponse> | NextResponse,
+) {
+  const { owner } = await getPortfolioRouteContext();
+  return withPortfolioOwnerResponse(await handler(owner), owner);
+}
+
 export async function withAuthenticatedPortfolioOwner(
   request: NextRequest,
   handler: (owner: PortfolioOwnerContext) => Promise<NextResponse> | NextResponse,
@@ -57,6 +65,12 @@ export async function withAuthenticatedPortfolioOwner(
 
   return withPortfolioOwnerResponse(response, owner);
 }
+
+/**
+ * Command routes share mutation-origin enforcement, authenticated ownership,
+ * and owner-cookie propagation. Keep schemas and domain errors in each route.
+ */
+export const withPortfolioCommand = withAuthenticatedPortfolioOwner;
 
 export function portfolioDomainErrorResponse(error: unknown, owner?: PortfolioOwnerContext) {
   if (!(error instanceof PortfolioServiceError)) {

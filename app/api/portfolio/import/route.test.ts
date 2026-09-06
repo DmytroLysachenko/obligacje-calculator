@@ -3,14 +3,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   importPortfolio: vi.fn(),
-  withAuthenticatedPortfolioOwner: vi.fn(),
+  withPortfolioCommand: vi.fn(),
 }));
 
 vi.mock('@/lib/server/portfolio/application', () => ({
   portfolioApplication: { importPortfolio: mocks.importPortfolio },
 }));
 vi.mock('@/lib/server/portfolio/http', () => ({
-  withAuthenticatedPortfolioOwner: mocks.withAuthenticatedPortfolioOwner,
+  withPortfolioCommand: mocks.withPortfolioCommand,
 }));
 
 import { POST } from './route';
@@ -25,7 +25,7 @@ const valid = {
 describe('portfolio import endpoint', () => {
   beforeEach(() => {
     mocks.importPortfolio.mockReset();
-    mocks.withAuthenticatedPortfolioOwner.mockImplementation(async (_request, handler) =>
+    mocks.withPortfolioCommand.mockImplementation(async (_request, handler) =>
       handler({ ownerId: 'owner-1' }),
     );
   });

@@ -6,21 +6,20 @@ import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
 import { portfolioApplication } from '@/lib/server/portfolio/application';
 import {
-  getPortfolioRouteContext,
   portfolioDomainErrorResponse,
-  withAuthenticatedPortfolioOwner,
-  withPortfolioOwnerResponse,
+  withPortfolioCommand,
+  withPortfolioRead,
 } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async () => {
-  const { owner } = await getPortfolioRouteContext();
-  const portfolios = await portfolioApplication.listPortfolios(owner.ownerId);
-
-  return withPortfolioOwnerResponse(okJson(portfolios), owner);
+  return withPortfolioRead(async (owner) => {
+    const portfolios = await portfolioApplication.listPortfolios(owner.ownerId);
+    return okJson(portfolios);
+  });
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(req, async (owner) => {
+  return withPortfolioCommand(req, async (owner) => {
     const validated = await readJsonBody(req, PortfolioSchema);
     const newPortfolio = await portfolioApplication.createPortfolio(owner.ownerId, validated);
 
@@ -29,7 +28,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
 });
 
 export const DELETE = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(req, async (owner) => {
+  return withPortfolioCommand(req, async (owner) => {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
