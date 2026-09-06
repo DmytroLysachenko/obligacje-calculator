@@ -3,25 +3,14 @@
 import { useEffect } from 'react';
 
 import { shouldReportWebVital } from '@/shared/lib/telemetry-controls';
+import { toWebVitalPayload, type WebVitalPayload } from '@/shared/lib/web-vitals-payload';
 
-type VitalName = 'CLS' | 'INP' | 'LCP';
-
-interface VitalPayload {
-  name: VitalName;
-  value: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  path: string;
-  navigationType: string;
-}
-
-function send(payload: Omit<VitalPayload, 'path' | 'navigationType'>) {
+function send(metric: Omit<WebVitalPayload, 'path' | 'navigationType'>) {
   const navigation = performance.getEntriesByType('navigation')[0] as
     PerformanceNavigationTiming | undefined;
-  const body = JSON.stringify({
-    ...payload,
-    path: window.location.pathname,
-    navigationType: navigation?.type ?? 'navigate',
-  });
+  const body = JSON.stringify(
+    toWebVitalPayload(metric, window.location.pathname, navigation?.type ?? 'navigate'),
+  );
 
   if (navigator.sendBeacon) {
     navigator.sendBeacon(
