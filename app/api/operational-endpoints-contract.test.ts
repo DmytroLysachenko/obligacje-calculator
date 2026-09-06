@@ -94,11 +94,11 @@ describe('operational endpoint contracts', () => {
     expect(calculationRoute).not.toContain('createSuccessResponse');
   });
 
-  it('keeps portfolio access raw response delegated to a pure payload helper', () => {
+  it('keeps portfolio access enveloped and delegated to a pure payload helper', () => {
     const route = read('app/api/portfolio/access/route.ts');
     const payload = read('lib/server/portfolio/access-payload.ts');
 
-    expect(route).toContain('rawJson(createPortfolioAccessPayload(owner))');
+    expect(route).toContain('okJson(createPortfolioAccessPayload(owner))');
     expect(route).toContain("from '@/lib/server/portfolio/access-payload'");
     expect(route).not.toContain(`NextResponse${'.json'}`);
     expect(route).not.toContain('canManageWorkspace:');

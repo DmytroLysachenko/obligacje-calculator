@@ -20,6 +20,19 @@ describe('portfolio client', () => {
     expect(apiGet).toHaveBeenCalledWith('/api/portfolio');
   });
 
+  it('reads workspace access through the standard enveloped API client', async () => {
+    vi.mocked(apiGet).mockResolvedValueOnce({
+      ownerId: 'owner-1',
+      isGuest: false,
+      authMode: 'authenticated',
+      canManageWorkspace: true,
+    });
+
+    await portfolioClient.getAccess();
+
+    expect(apiGet).toHaveBeenCalledWith('/api/portfolio/access');
+  });
+
   it('routes portfolio lot creation through the shared API client', async () => {
     const input = {
       portfolioId: 'p1',
