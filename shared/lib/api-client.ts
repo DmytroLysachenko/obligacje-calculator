@@ -1,4 +1,8 @@
-import { ApiResponse } from '@/shared/types/api';
+import {
+  ApiEnvelopeError,
+  decodeEnvelopeResponse,
+  decodeRawResponse,
+} from '@/shared/lib/api-response-codec';
 
 export class ApiClientError extends Error {
   constructor(
@@ -17,45 +21,45 @@ interface ApiRequestOptions {
   headers?: HeadersInit;
 }
 
-async function parseApiResponse<T>(response: Response): Promise<T> {
-  const payload = (await response.json()) as ApiResponse<T>;
+type ResponseDecoder<T> = (response: Response) => Promise<T>;
 
-  if (!response.ok || payload.error) {
-    throw new ApiClientError(
-      payload.error?.message ?? `Request failed with status ${response.status}`,
-      response.status,
-      payload.error?.code,
-      payload.error?.details,
-    );
+async function requestJson<T>(
+  url: string,
+  init: RequestInit,
+  decoder: ResponseDecoder<T> = decodeEnvelopeResponse,
+): Promise<{ data: T; response: Response }> {
+  const response = await fetch(url, init);
+
+  try {
+    return { data: await decoder(response), response };
+  } catch (error) {
+    if (error instanceof ApiEnvelopeError) {
+      throw new ApiClientError(error.message, error.status, error.code, error.details);
+    }
+
+    throw error;
   }
-
-  return payload.data as T;
 }
 
 export async function apiGet<T>(url: string, options: ApiRequestOptions = {}): Promise<T> {
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: options.headers,
-    signal: options.signal,
-  });
-
-  return parseApiResponse<T>(response);
+  return (
+    await requestJson<T>(url, {
+      method: 'GET',
+      headers: options.headers,
+      signal: options.signal,
+    })
+  ).data;
 }
 
 export async function apiGetWithResponse<T>(
   url: string,
   options: ApiRequestOptions = {},
 ): Promise<{ data: T; response: Response }> {
-  const response = await fetch(url, {
+  return requestJson<T>(url, {
     method: 'GET',
     headers: options.headers,
     signal: options.signal,
   });
-
-  return {
-    data: await parseApiResponse<T>(response),
-    response,
-  };
 }
 
 export async function apiPost<T>(
@@ -63,17 +67,17 @@ export async function apiPost<T>(
   payload: unknown,
   options: ApiRequestOptions = {},
 ): Promise<T> {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    body: JSON.stringify(payload),
-    signal: options.signal,
-  });
-
-  return parseApiResponse<T>(response);
+  return (
+    await requestJson<T>(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      body: JSON.stringify(payload),
+      signal: options.signal,
+    })
+  ).data;
 }
 
 export async function apiPatch<T>(
@@ -81,25 +85,39 @@ export async function apiPatch<T>(
   payload: unknown,
   options: ApiRequestOptions = {},
 ): Promise<T> {
-  const response = await fetch(url, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    body: JSON.stringify(payload),
-    signal: options.signal,
-  });
-
-  return parseApiResponse<T>(response);
+  return (
+    await requestJson<T>(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      body: JSON.stringify(payload),
+      signal: options.signal,
+    })
+  ).data;
 }
 
 export async function apiDelete<T>(url: string, options: ApiRequestOptions = {}): Promise<T> {
-  const response = await fetch(url, {
-    method: 'DELETE',
-    headers: options.headers,
-    signal: options.signal,
-  });
+  return (
+    await requestJson<T>(url, {
+      method: 'DELETE',
+      headers: options.headers,
+      signal: options.signal,
+    })
+  ).data;
+}
 
-  return parseApiResponse<T>(response);
+export async function apiGetRaw<T>(url: string, options: ApiRequestOptions = {}): Promise<T> {
+  return (
+    await requestJson<T>(
+      url,
+      {
+        method: 'GET',
+        headers: options.headers,
+        signal: options.signal,
+      },
+      decodeRawResponse,
+    )
+  ).data;
 }

@@ -1,4 +1,4 @@
-import { ApiResponse } from '../types/api';
+import { ApiEnvelopeError, decodeEnvelopeResponse } from '../lib/api-response-codec';
 
 import { CalculationWorkerControllerRegistry } from './calculation-worker-controller-registry';
 
@@ -54,26 +54,31 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
       signal: controller.signal,
     });
 
-    const result: ApiResponse<unknown> = await response.json();
+    try {
+      const data = await decodeEnvelopeResponse<unknown>(response);
+      const successMessage: WorkerSuccessMessage<unknown> = {
+        id,
+        ok: true,
+        data,
+      };
+      self.postMessage(successMessage);
+    } catch (error) {
+      if (!(error instanceof ApiEnvelopeError)) {
+        throw error;
+      }
 
-    if (!response.ok || result.error) {
       const errorMessage: WorkerErrorMessage = {
         id,
         ok: false,
-        error: result.error?.message ?? 'Calculation failed',
-        code: result.error?.code,
-        details: result.error?.details,
+        error:
+          error.message === `Request failed with status ${response.status}`
+            ? 'Calculation failed'
+            : error.message,
+        code: error.code,
+        details: error.details,
       };
       self.postMessage(errorMessage);
-      return;
     }
-
-    const successMessage: WorkerSuccessMessage<unknown> = {
-      id,
-      ok: true,
-      data: result.data,
-    };
-    self.postMessage(successMessage);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       return;
