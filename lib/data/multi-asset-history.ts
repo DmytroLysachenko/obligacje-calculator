@@ -17,40 +17,12 @@ import {
   setCache,
   SP500_SLUGS,
 } from './market-data-cache';
-
-interface MultiAssetSeriesAvailability {
-  sp500: boolean;
-  gold: boolean;
-  inflation: boolean;
-  nbpRate: boolean;
-}
-
-interface MultiAssetHistoryEnvelope {
-  data: MonthlyReturn[];
-  source: 'database' | 'fallback';
-  usedFallback: boolean;
-  coverageStart: string;
-  coverageEnd: string;
-  lastSyncedAt?: string;
-  seriesAvailability?: MultiAssetSeriesAvailability;
-}
-
-const buildMonthlyPercentChangeMap = (series: { date: string; value: number }[]) => {
-  const result = new Map<string, number>();
-
-  for (let i = 0; i < series.length; i += 1) {
-    const current = series[i];
-    const previous = series[i - 1];
-    if (!previous || previous.value === 0) {
-      result.set(current.date, 0);
-      continue;
-    }
-
-    result.set(current.date, ((current.value - previous.value) / previous.value) * 100);
-  }
-
-  return result;
-};
+import {
+  buildMultiAssetHistory,
+  getMultiAssetSeriesAvailability,
+  type MultiAssetHistoryEnvelope,
+  type MultiAssetSeriesAvailability,
+} from './multi-asset-history-projection';
 
 const EMPTY_MULTI_ASSET_AVAILABILITY: MultiAssetSeriesAvailability = {
   sp500: false,
@@ -125,71 +97,20 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
     const inflationPoints = cpiId ? pointsBySeries[cpiId] || [] : [];
     const nbpPoints = nbpId ? pointsBySeries[nbpId] || [] : [];
 
-    const seriesAvailability = {
-      sp500: sp500Points.length >= 2,
-      gold: goldPoints.length >= 2,
-      inflation: inflationPoints.length > 0,
-      nbpRate: nbpPoints.length > 0,
+    const source = {
+      sp500: sp500Points,
+      gold: goldPoints,
+      inflation: inflationPoints,
+      nbpRate: nbpPoints,
     };
+    const seriesAvailability = getMultiAssetSeriesAvailability(source);
+    const result = buildMultiAssetHistory(source);
 
-    if (sp500Points.length < 2 || goldPoints.length < 2 || inflationPoints.length === 0) {
+    if (!result) {
       const fallbackResult = createFallbackMultiAssetHistory(seriesAvailability);
       setCache(cacheKey, fallbackResult);
       return fallbackResult;
     }
-
-    const sp500Returns = buildMonthlyPercentChangeMap(sp500Points);
-    const goldReturns = buildMonthlyPercentChangeMap(goldPoints);
-    const inflationMap = new Map(inflationPoints.map((point) => [point.date, point.value]));
-    const nbpMap = new Map(nbpPoints.map((point) => [point.date, point.value]));
-
-    const dates = Array.from(
-      new Set([
-        ...sp500Returns.keys(),
-        ...goldReturns.keys(),
-        ...inflationMap.keys(),
-        ...nbpMap.keys(),
-      ]),
-    ).sort();
-
-    const data = dates
-      .filter((date) => inflationMap.has(date))
-      .map((date) => {
-        const nbpRate = nbpMap.get(date) ?? 0;
-        const annualSavingsRate = Math.max(0, nbpRate + 1);
-        const monthlySavingsRate = (Math.pow(1 + annualSavingsRate / 100, 1 / 12) - 1) * 100 * 0.81;
-
-        return {
-          date,
-          sp500: sp500Returns.get(date) ?? 0,
-          gold: goldReturns.get(date) ?? 0,
-          savings: monthlySavingsRate,
-          inflation: inflationMap.get(date) ?? 0,
-          nbpRate,
-        };
-      });
-
-    if (data.length === 0) {
-      const fallbackResult = createFallbackMultiAssetHistory(seriesAvailability);
-      setCache(cacheKey, fallbackResult);
-      return fallbackResult;
-    }
-
-    const lastSyncedAt = [sp500Points, goldPoints, inflationPoints, nbpPoints]
-      .flat()
-      .map((point) => point.date)
-      .sort()
-      .at(-1);
-
-    const result: MultiAssetHistoryEnvelope = {
-      data,
-      source: 'database',
-      usedFallback: nbpPoints.length === 0,
-      coverageStart: data[0].date,
-      coverageEnd: data[data.length - 1].date,
-      lastSyncedAt,
-      seriesAvailability,
-    };
     setCache(cacheKey, result);
     return result;
   } catch {
