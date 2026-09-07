@@ -57,7 +57,7 @@ export function useRegularInvestmentCalculator() {
   }, [runRemoteCalculation]);
 
   const updateInput = useCallback(
-    (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
+    <K extends keyof RegularInvestmentInputs>(key: K, value: RegularInvestmentInputs[K]) => {
       if (isRegularInvestmentMacroInputKey(key)) hasTouchedMacroAssumptionsRef.current = true;
       updateDraft((previous) =>
         normalizeRegularInvestmentInputs(previous, {

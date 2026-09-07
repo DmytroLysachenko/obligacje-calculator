@@ -17,10 +17,11 @@ import {
   ProjectionModeButtons,
 } from '@/shared/components/market-assumptions/AssumptionSectionControls';
 import { AssumptionSetupMode } from '@/shared/lib/market-assumptions-form-model';
+import { type FieldUpdater } from '@/shared/types/field-updater';
 
-type UpdateHandler = {
-  bivarianceHack: (key: string, value: unknown) => void;
-}['bivarianceHack'];
+import type { MarketAssumptionFields } from '../MarketAssumptionsForm';
+
+type UpdateHandler = FieldUpdater<MarketAssumptionFields>;
 
 interface InflationAssumptionSectionProps {
   compact: boolean;

@@ -11,13 +11,14 @@ import { InfoTooltip } from '@/shared/components/feedback/InfoTooltip';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { DeferredMarketAssumptionsForm } from '@/shared/components/market-assumptions/DeferredMarketAssumptionsForm';
+import { type FieldUpdater } from '@/shared/types/field-updater';
 
 type AdvancedSettingsSectionProps = {
   inputs: RegularInvestmentInputs;
   currentDef: BondDefinition;
   showCustomTax: boolean;
   onShowCustomTaxChange: (value: boolean) => void;
-  onUpdate: (key: keyof RegularInvestmentInputs | string, value: unknown) => void;
+  onUpdate: FieldUpdater<RegularInvestmentInputs>;
   t: (key: string) => string;
 };
 

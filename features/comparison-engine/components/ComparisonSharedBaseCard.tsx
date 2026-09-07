@@ -27,14 +27,13 @@ import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useNumberFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { toDateString } from '@/shared/lib/date-timing';
+import { type FieldUpdater } from '@/shared/types/field-updater';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
 
 export interface ComparisonSharedBaseCardProps {
   sharedConfig: SharedConfig;
-  onUpdateSharedConfig: {
-    bivarianceHack: (key: keyof SharedConfig | string, value: unknown) => void;
-  }['bivarianceHack'];
+  onUpdateSharedConfig: FieldUpdater<SharedConfig>;
 }
 
 export function ComparisonSharedBaseCard({

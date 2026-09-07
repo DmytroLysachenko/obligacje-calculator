@@ -35,7 +35,6 @@ import {
   applyScenarioCustomHorizonMonths,
   applyScenarioOverrideUpdate,
   applySharedComparisonConfigUpdate,
-  type ComparisonUpdateValue,
   isSharedComparisonMacroUpdate,
 } from '../lib/comparison-update-actions';
 
@@ -163,19 +162,22 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     }
   }, [session]);
 
-  const updateSharedConfig = (key: keyof SharedComparisonConfig, value: ComparisonUpdateValue) => {
+  const updateSharedConfig = <K extends keyof SharedComparisonConfig>(
+    key: K,
+    value: SharedComparisonConfig[K],
+  ) => {
     if (isSharedComparisonMacroUpdate(key)) hasTouchedMacroAssumptions.current = true;
     updateDraft((previous) => ({
       ...previous,
       sharedConfig: applySharedComparisonConfigUpdate(previous.sharedConfig, key, value),
     }));
   };
-  const updateScenarioA = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) =>
+  const updateScenarioA = <K extends keyof ScenarioOverride>(key: K, value: ScenarioOverride[K]) =>
     updateDraft((previous) => ({
       ...previous,
       scenarioA: applyScenarioOverrideUpdate(previous.scenarioA, key, value),
     }));
-  const updateScenarioB = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) =>
+  const updateScenarioB = <K extends keyof ScenarioOverride>(key: K, value: ScenarioOverride[K]) =>
     updateDraft((previous) => ({
       ...previous,
       scenarioB: applyScenarioOverrideUpdate(previous.scenarioB, key, value),

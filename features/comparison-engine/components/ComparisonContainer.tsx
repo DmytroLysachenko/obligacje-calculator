@@ -219,12 +219,7 @@ export const ComparisonContainer: React.FC = () => {
               hasResults={!!resultsA && !!resultsB}
               isCalculating={isCalculating}
               onCalculate={calculate}
-              onUpdateSharedConfig={
-                onSharedConfigChange as (
-                  key: keyof typeof sharedConfig | string,
-                  value: unknown,
-                ) => void
-              }
+              onUpdateSharedConfig={onSharedConfigChange}
               scenarioA={{
                 title: t('comparison.scenario_a'),
                 colorClass: 'scenario-a',

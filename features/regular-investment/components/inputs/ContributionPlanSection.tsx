@@ -4,7 +4,11 @@ import React from 'react';
 
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { InvestmentFrequency, TaxStrategy } from '@/features/bond-core/types';
+import {
+  InvestmentFrequency,
+  RegularInvestmentInputs,
+  TaxStrategy,
+} from '@/features/bond-core/types';
 import {
   bondQuantityFromInvestment,
   investmentFromBondQuantity,
@@ -15,13 +19,14 @@ import { FormField } from '@/shared/components/forms/FormField';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RangeField } from '@/shared/components/forms/RangeField';
 import { useNumberFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { type FieldUpdater } from '@/shared/types/field-updater';
 
 type ContributionPlanSectionProps = {
   contributionAmount: number;
   language: Language;
   frequency: InvestmentFrequency;
   taxStrategy: TaxStrategy;
-  onUpdate: (key: string, value: unknown) => void;
+  onUpdate: FieldUpdater<RegularInvestmentInputs>;
   t: (key: string) => string;
 };
 

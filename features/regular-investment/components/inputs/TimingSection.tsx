@@ -7,12 +7,14 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { LazyCalendar } from '@/components/ui/lazy-calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { type RegularInvestmentInputs } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
 import { FormField } from '@/shared/components/forms/FormField';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { RangeField } from '@/shared/components/forms/RangeField';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { toDateString } from '@/shared/lib/date-timing';
+import { type FieldUpdater } from '@/shared/types/field-updater';
 
 type TimingSectionProps = {
   timingMode?: 'general' | 'exact';
@@ -20,7 +22,7 @@ type TimingSectionProps = {
   withdrawalDate: string;
   investmentHorizonYears: number;
   dateLocale: Locale;
-  onUpdate: (key: string, value: unknown) => void;
+  onUpdate: FieldUpdater<RegularInvestmentInputs>;
   t: (key: string) => string;
 };
 

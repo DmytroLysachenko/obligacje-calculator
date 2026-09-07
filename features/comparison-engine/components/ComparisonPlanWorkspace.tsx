@@ -1,6 +1,7 @@
 'use client';
 
 import type { BondType } from '@/features/bond-core/types';
+import type { FieldUpdater } from '@/shared/types/field-updater';
 
 import type { ScenarioOverride, SharedComparisonConfig } from '../lib/comparison-calculator-state';
 
@@ -12,7 +13,7 @@ import {
 } from './ComparisonSharedBaseCard';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
 
-type SharedConfigUpdate = (key: keyof SharedComparisonConfig | string, value: unknown) => void;
+type SharedConfigUpdate = FieldUpdater<SharedComparisonConfig>;
 
 interface ComparisonScenarioControls {
   colorClass: 'scenario-a' | 'scenario-b';

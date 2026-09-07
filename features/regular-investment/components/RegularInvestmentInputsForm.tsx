@@ -8,6 +8,7 @@ import { ParameterSummary } from '@/shared/components/results/ParameterSummary';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getHorizonMonths } from '@/shared/lib/date-timing';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { type FieldUpdater } from '@/shared/types/field-updater';
 
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
 
@@ -18,9 +19,7 @@ import { TimingSection } from './inputs/TimingSection';
 
 interface RegularInvestmentInputsFormProps {
   inputs: RegularInvestmentInputs;
-  onUpdate: {
-    bivarianceHack: (key: keyof RegularInvestmentInputs | string, value: unknown) => void;
-  }['bivarianceHack'];
+  onUpdate: FieldUpdater<RegularInvestmentInputs>;
   onBondTypeChange: (type: BondType) => void;
   action?: React.ReactNode;
 }

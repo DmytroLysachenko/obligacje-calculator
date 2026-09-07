@@ -100,7 +100,7 @@ export function buildScenarioInputs(
 export function updateSharedComparisonConfig(
   previous: SharedComparisonConfig,
   key: keyof SharedComparisonConfig,
-  value: string | number | boolean | undefined,
+  value: string | number | boolean | number[] | undefined,
 ) {
   const next = { ...previous, [key]: value };
 

@@ -3,6 +3,8 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
+import type { FieldUpdater } from '@/shared/types/field-updater';
+
 import type { ScenarioOverride, SharedComparisonConfig } from '../lib/comparison-calculator-state';
 import { type ComparisonUrlState, withComparisonUrlState } from '../lib/comparison-deep-link';
 import {
@@ -11,17 +13,16 @@ import {
   applyScenarioCustomHorizonMonths,
   applyScenarioOverrideUpdate,
   applySharedComparisonConfigUpdate,
-  type ComparisonUpdateValue,
 } from '../lib/comparison-update-actions';
 
 type ScenarioKey = 'A' | 'B';
 
 interface ComparisonUrlActions {
-  updateSharedConfig: (key: keyof SharedComparisonConfig, value: ComparisonUpdateValue) => void;
-  updateScenario: (
+  updateSharedConfig: FieldUpdater<SharedComparisonConfig>;
+  updateScenario: <K extends keyof ScenarioOverride>(
     scenario: ScenarioKey,
-    key: keyof ScenarioOverride,
-    value: ComparisonUpdateValue,
+    key: K,
+    value: ScenarioOverride[K],
   ) => void;
   updateBondType: (scenario: ScenarioKey, bondType: ScenarioOverride['bondType']) => void;
   updateCustomHorizon: (
@@ -63,7 +64,7 @@ export function useComparisonUrlState({
     [pathname, router, searchParams],
   );
   const onSharedConfigChange = useCallback(
-    (key: keyof SharedComparisonConfig, value: ComparisonUpdateValue) => {
+    <K extends keyof SharedComparisonConfig>(key: K, value: SharedComparisonConfig[K]) => {
       const nextSharedConfig = applySharedComparisonConfigUpdate(sharedConfig, key, value);
       updateSharedConfig(key, value);
       sync({ ...currentState, sharedConfig: nextSharedConfig });
@@ -71,7 +72,11 @@ export function useComparisonUrlState({
     [currentState, sharedConfig, sync, updateSharedConfig],
   );
   const onScenarioChange = useCallback(
-    (scenario: ScenarioKey, key: keyof ScenarioOverride, value: ComparisonUpdateValue) => {
+    <K extends keyof ScenarioOverride>(
+      scenario: ScenarioKey,
+      key: K,
+      value: ScenarioOverride[K],
+    ) => {
       const currentScenario = scenario === 'A' ? scenarioA : scenarioB;
       const nextScenario = applyScenarioOverrideUpdate(currentScenario, key, value);
       updateScenario(scenario, key, value);

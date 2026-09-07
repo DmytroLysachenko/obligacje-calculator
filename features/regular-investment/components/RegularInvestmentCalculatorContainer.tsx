@@ -91,7 +91,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         controls={
           <RegularInvestmentInputsForm
             inputs={inputs}
-            onUpdate={updateInput as (key: string, value: unknown) => void}
+            onUpdate={updateInput}
             onBondTypeChange={setBondType}
           />
         }
