@@ -27,7 +27,7 @@ import {
 } from '../lib/single-calculator-persistence';
 import { resolveSingleCalculatorRestoration } from '../lib/single-calculator-restoration';
 
-interface UseBondCalculatorEffectsInput {
+export interface SingleCalculatorSessionState {
   inputs: BondInputs;
   envelope: SingleBondCalculationEnvelope | null;
   selectedSeriesId: string | null;
@@ -35,6 +35,21 @@ interface UseBondCalculatorEffectsInput {
   isDirty: boolean;
   isCalculating: boolean;
   isPersistenceReady: boolean;
+}
+
+export interface SingleCalculatorSessionActions {
+  setInputs: React.Dispatch<React.SetStateAction<BondInputs>>;
+  setEnvelope: React.Dispatch<React.SetStateAction<SingleBondCalculationEnvelope | null>>;
+  setSelectedSeriesId: React.Dispatch<React.SetStateAction<string | null>>;
+  setLastCommittedInputs: React.Dispatch<React.SetStateAction<BondInputs | null>>;
+  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsPersistenceReady: React.Dispatch<React.SetStateAction<boolean>>;
+  setAvailableSeries: React.Dispatch<React.SetStateAction<BondSeriesMetadata[]>>;
+}
+
+interface UseBondCalculatorEffectsInput {
+  session: SingleCalculatorSessionState;
+  actions: SingleCalculatorSessionActions;
   initialInputs: BondInputs | undefined;
   bondFromUrl?: BondType | null;
   fallbackInputs: BondInputs;
@@ -45,23 +60,27 @@ interface UseBondCalculatorEffectsInput {
   hasAutoCalculatedSharedScenarioRef: React.MutableRefObject<boolean>;
   restoredFromPersistenceRef: React.MutableRefObject<boolean>;
   hasTouchedMacroAssumptionsRef: React.MutableRefObject<boolean>;
-  setInputs: React.Dispatch<React.SetStateAction<BondInputs>>;
-  setEnvelope: React.Dispatch<React.SetStateAction<SingleBondCalculationEnvelope | null>>;
-  setSelectedSeriesId: React.Dispatch<React.SetStateAction<string | null>>;
-  setLastCommittedInputs: React.Dispatch<React.SetStateAction<BondInputs | null>>;
-  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsPersistenceReady: React.Dispatch<React.SetStateAction<boolean>>;
-  setAvailableSeries: React.Dispatch<React.SetStateAction<BondSeriesMetadata[]>>;
 }
 
 export function useBondCalculatorEffects({
-  inputs,
-  envelope,
-  selectedSeriesId,
-  lastCommittedInputs,
-  isDirty,
-  isCalculating,
-  isPersistenceReady,
+  session: {
+    inputs,
+    envelope,
+    selectedSeriesId,
+    lastCommittedInputs,
+    isDirty,
+    isCalculating,
+    isPersistenceReady,
+  },
+  actions: {
+    setInputs,
+    setEnvelope,
+    setSelectedSeriesId,
+    setLastCommittedInputs,
+    setIsDirty,
+    setIsPersistenceReady,
+    setAvailableSeries,
+  },
   initialInputs,
   bondFromUrl,
   fallbackInputs,
@@ -72,13 +91,6 @@ export function useBondCalculatorEffects({
   hasAutoCalculatedSharedScenarioRef,
   restoredFromPersistenceRef,
   hasTouchedMacroAssumptionsRef,
-  setInputs,
-  setEnvelope,
-  setSelectedSeriesId,
-  setLastCommittedInputs,
-  setIsDirty,
-  setIsPersistenceReady,
-  setAvailableSeries,
 }: UseBondCalculatorEffectsInput) {
   const applyMacroDefaults = useEffectEvent((defaults: MacroDefaults) => {
     setInputs((previous) => {

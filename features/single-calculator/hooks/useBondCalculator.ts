@@ -90,13 +90,24 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
   );
 
   useBondCalculatorEffects({
-    inputs,
-    envelope,
-    selectedSeriesId,
-    lastCommittedInputs,
-    isDirty,
-    isCalculating,
-    isPersistenceReady,
+    session: {
+      inputs,
+      envelope,
+      selectedSeriesId,
+      lastCommittedInputs,
+      isDirty,
+      isCalculating,
+      isPersistenceReady,
+    },
+    actions: {
+      setInputs,
+      setEnvelope,
+      setSelectedSeriesId,
+      setLastCommittedInputs,
+      setIsDirty,
+      setIsPersistenceReady,
+      setAvailableSeries,
+    },
     initialInputs,
     bondFromUrl,
     fallbackInputs,
@@ -107,13 +118,6 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
     hasAutoCalculatedSharedScenarioRef: hasAutoCalculatedSharedScenario,
     restoredFromPersistenceRef: restoredFromPersistence,
     hasTouchedMacroAssumptionsRef: hasTouchedMacroAssumptions,
-    setInputs,
-    setEnvelope,
-    setSelectedSeriesId,
-    setLastCommittedInputs,
-    setIsDirty,
-    setIsPersistenceReady,
-    setAvailableSeries,
   });
 
   const results = envelope?.result || null;
