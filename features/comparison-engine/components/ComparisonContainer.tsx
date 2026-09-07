@@ -2,7 +2,7 @@
 import { Scale } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { ChartStep } from '@/features/bond-core/types';
 import { bondQuantityFromInvestment } from '@/features/bond-core/utils/bond-quantity';
@@ -14,6 +14,7 @@ import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 
 import { useComparison } from '../hooks/useComparison';
+import { useComparisonPlanVisibility } from '../hooks/useComparisonPlanVisibility';
 import { useComparisonUrlState } from '../hooks/useComparisonUrlState';
 import { buildDefaultSharedConfig } from '../lib/comparison-calculator-state';
 import { buildComparisonContainerViewModel } from '../lib/comparison-container-model';
@@ -65,9 +66,7 @@ export const ComparisonContainer: React.FC = () => {
   const { t, locale: language } = useAppI18n();
   const [chartStep, setChartStep] = useState<ChartStep>('yearly');
   const hasComparisonResults = isPersistenceReady && !!resultsA && !!resultsB;
-  const [isPlanOpen, setIsPlanOpen] = useState(!hasComparisonResults);
-  const previousHasResults = useRef(hasComparisonResults);
-  const previousIsDirty = useRef(isDirty);
+  const { isPlanOpen, setIsPlanOpen } = useComparisonPlanVisibility(hasComparisonResults, isDirty);
   const { onBondTypeChange, onCustomHorizonChange, onScenarioChange, onSharedConfigChange } =
     useComparisonUrlState({
       sharedConfig,
@@ -150,20 +149,6 @@ export const ComparisonContainer: React.FC = () => {
     ],
   );
   const durationMismatchText = durationMismatch ? t('comparison.auto_rollover_notice') : null;
-
-  useEffect(() => {
-    const receivedFirstResult = !previousHasResults.current && hasComparisonResults;
-    const committedEditedPlan = previousIsDirty.current && !isDirty && hasComparisonResults;
-
-    if (!hasComparisonResults) {
-      setIsPlanOpen(true);
-    } else if (receivedFirstResult || committedEditedPlan) {
-      setIsPlanOpen(false);
-    }
-
-    previousHasResults.current = hasComparisonResults;
-    previousIsDirty.current = isDirty;
-  }, [hasComparisonResults, isDirty]);
 
   const planSummary = [
     {
