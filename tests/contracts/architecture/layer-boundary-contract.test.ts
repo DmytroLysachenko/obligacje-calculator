@@ -61,10 +61,13 @@ describe('layer boundary contract', () => {
       expect(source, client).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
     }
 
+    const notebookController = read('features/notebook/hooks/useNotebookWorkspaceController.ts');
     const notebookContainer = read('features/notebook/components/NotebookContainer.tsx');
 
-    expect(notebookContainer).toContain("from '@/shared/hooks/usePortfolioAccess'");
-    expect(notebookContainer).toContain("from '@/shared/hooks/useWorkspacePortfolios'");
+    expect(notebookController).toContain("from '@/shared/hooks/useWorkspacePortfolios'");
+    expect(notebookContainer).toContain(
+      "from '@/features/notebook/hooks/useNotebookWorkspaceController'",
+    );
     expect(notebookContainer).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
   });
 

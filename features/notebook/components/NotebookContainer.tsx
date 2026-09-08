@@ -1,15 +1,12 @@
 'use client';
 import { BookOpen } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import { useNotebookContainerWorkspace } from '@/features/notebook/hooks/useNotebookContainerWorkspace';
-import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
+import { useNotebookWorkspaceController } from '@/features/notebook/hooks/useNotebookWorkspaceController';
 import {
   buildNotebookFeedbackLabels,
   buildNotebookPortfolioListLabels,
-  buildNotebookWorkspaceActionLabels,
 } from '@/features/notebook/lib/notebook-container-labels';
-import { buildNotebookWorkspaceViewModel } from '@/features/notebook/lib/notebook-workspace-model';
 import { useAppI18n } from '@/i18n/client';
 import { Notice } from '@/shared/components/feedback/Notice';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
@@ -17,7 +14,6 @@ import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
-import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 
 import { NotebookPortfolioListSection, NotebookScopeNote } from './NotebookContainerPanels';
 import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';
@@ -33,64 +29,29 @@ export const NotebookContainer: React.FC = () => {
     portfolios,
     selectedPortfolio,
     isLoading,
-    requestError,
     refetch: fetchPortfolios,
     setSelectedPortfolioId,
     upsertPortfolio: mergePortfolioIntoState,
-    removePortfolio: removePortfolioFromState,
-  } = useWorkspacePortfolios();
-  const {
     portfolioPendingDelete,
     setPortfolioPendingDelete,
     detailPortfolioId,
     importRef,
-    clearDetailPortfolio,
     handleImportClick,
     handleOpenPortfolio,
     handleClosePortfolioDetails,
-  } = useNotebookContainerWorkspace({
-    fetchPortfolios,
-    setSelectedPortfolioId,
-  });
-  const {
+    detailPortfolio,
+    emptyStateSteps,
+    notebookIntro,
+    notebookStats,
     error,
-    setError,
     statusMessage,
     setStatusMessage,
     isMutating,
-    resolvePortfolioError,
     handleCreateDefault,
     handleCreateDemo,
     handleImportFile,
     handleDeletePortfolio,
-  } = useNotebookWorkspaceActions({
-    labels: buildNotebookWorkspaceActionLabels(t),
-    fetchPortfolios,
-    mergePortfolioIntoState,
-    removePortfolioFromState,
-    setSelectedPortfolioId,
-    clearDetailPortfolio,
-  });
-  useEffect(() => {
-    if (requestError) {
-      setError(
-        resolvePortfolioError(
-          requestError as {
-            error?: string;
-            code?: string;
-          },
-        ),
-      );
-      return;
-    }
-    setError(null);
-  }, [requestError, resolvePortfolioError, setError]);
-  const { detailPortfolio, emptyStateSteps, notebookIntro, notebookStats } =
-    buildNotebookWorkspaceViewModel({
-      portfolios,
-      detailPortfolioId,
-      t,
-    });
+  } = useNotebookWorkspaceController(t);
 
   if (detailPortfolioId && canManageWorkspace) {
     return detailPortfolio ? (
