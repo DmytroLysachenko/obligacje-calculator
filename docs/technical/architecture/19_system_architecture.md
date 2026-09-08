@@ -74,11 +74,13 @@ The portfolio stack is moving toward the same boundary model:
 
 Architecture rules are executable where practical:
 
+- `docs/technical/architecture/00_developer_guide.md` is the concise entrypoint for feature placement and delivery checks.
 - `shared/lib/calculation-endpoints.test.ts` locks scenario endpoint mapping.
 - `lib/server/portfolio/portfolio-service-boundary.test.ts` checks portfolio route facade usage.
 - `lib/data/bond-definition-repository-contract.test.ts` checks bond definition repository shape.
 - `features/notebook/notebook-portfolio-gateway-contract.test.ts` checks notebook portfolio gateway usage.
 - `tests/contracts/architecture/layer-boundary-contract.test.ts` checks cross-layer endpoint, gateway, route, and response-helper boundaries.
+- `tests/contracts/architecture/clean-code-contract.test.ts` checks browser transport, route parsing, and client logging policy.
 
 When changing architecture, update both the implementation and the relevant contract test.
 

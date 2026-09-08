@@ -30,6 +30,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 
 ### 2. Technical Architecture
 
+- [Developer Architecture Guide](./technical/architecture/00_developer_guide.md) - Where new code belongs and how to verify it.
 - [System Architecture](./technical/architecture/19_system_architecture.md) - High-level technical design.
 - [Handler Pattern Orchestration](./technical/architecture/25_handler_pattern_orchestration.md) - **[NEW]** Decoupled calculation logic.
 - [Information Architecture](./technical/architecture/12_information_architecture.md) - Structural map.
