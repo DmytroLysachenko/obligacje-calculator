@@ -81,3 +81,14 @@ Architecture rules are executable where practical:
 - `tests/contracts/architecture/layer-boundary-contract.test.ts` checks cross-layer endpoint, gateway, route, and response-helper boundaries.
 
 When changing architecture, update both the implementation and the relevant contract test.
+
+## Architecture test execution
+
+`pnpm test:architecture` runs the two architecture suites through
+`vitest.architecture.config.ts`, independently of the default suite exclusions.
+The release script also invokes this gate. The current server composition
+imports in `application-service.ts`, `handlers/regular-investment.ts`, and
+`handlers/resolved-inputs.ts`, plus the type-only portfolio schema barrel, are
+explicit baseline exceptions. Additional matching imports fail the gate.
+Removing those existing dependencies remains audit roadmap R09; this regex
+check does not establish transitive dependency isolation.

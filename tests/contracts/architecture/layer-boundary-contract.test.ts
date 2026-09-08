@@ -50,7 +50,7 @@ describe('layer boundary contract', () => {
     const clients = [
       'shared/hooks/useWorkspacePortfolios.ts',
       'shared/hooks/usePortfolioAccess.ts',
-      'features/single-calculator/components/BondCalculatorContainer.tsx',
+      'features/single-calculator/lib/single-calculator-actions.ts',
       'features/notebook/hooks/usePortfolioDetailsWorkspace.ts',
     ];
 
@@ -71,7 +71,23 @@ describe('layer boundary contract', () => {
     expect(notebookContainer).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
   });
 
-  it('keeps portfolio route controllers on command and query facades', () => {
+  it('prevents new browser and feature server dependencies', () => {
+    const forbiddenImports = /from ['"]@\/(?:db|lib\/server)(?:\/|['"])/;
+    const matches = listMatchingFiles(forbiddenImports)
+      .filter((file) => file.startsWith('features/') || file.startsWith('shared/'))
+      .filter((file) => !file.endsWith('.test.ts') && !file.endsWith('.test.tsx'));
+
+    // Existing server composition debt is tracked by audit roadmap R09.
+    // The type-only schema barrel is the documented current DTO exception.
+    expect(matches.sort()).toEqual([
+      'features/bond-core/application-service.ts',
+      'features/bond-core/handlers/regular-investment.ts',
+      'features/bond-core/handlers/resolved-inputs.ts',
+      'shared/types/portfolio.ts',
+    ]);
+  });
+
+  it('keeps portfolio route controllers on the application interface', () => {
     const routeFiles = [
       'app/api/portfolio/route.ts',
       'app/api/portfolio/lots/route.ts',
@@ -88,9 +104,7 @@ describe('layer boundary contract', () => {
       const source = read(routeFile);
 
       expect(source, routeFile).not.toMatch(/from ['"]@\/lib\/server\/portfolio\/service['"]/);
-      expect(source, routeFile).toMatch(
-        /from ['"]@\/lib\/server\/portfolio\/(?:commands|queries)['"]/,
-      );
+      expect(source, routeFile).toMatch(/from ['"]@\/lib\/server\/portfolio\/application['"]/);
     }
   });
 
