@@ -43,6 +43,8 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Deployment & DevOps](./technical/architecture/24_deployment_and_devops.md) - CI/CD strategy.
 - [Engineering and Coding Rules](./technical/architecture/26_engineering_and_coding_rules.md) - Strict repo rules for i18n, component structure, code hygiene, and maintainability.
 - [HTTP Boundary Contract](./technical/architecture/33_http_boundary_contract.md) - Request identity, rate limits, correlation, telemetry, and administrative route rules.
+- [Modularity Refactoring Audit](./technical/architecture/34_modularity_refactoring_audit.md) - Proven refactoring seams and reusable dashboard baseline.
+- [Full-Stack Architecture Audit](./technical/architecture/35_full_stack_architecture_audit.md) - Read-only audit snapshot covering ownership, server correctness, dependency direction, enforcement gaps, and dashboard-template reuse.
 - [Project Map](./technical/architecture/28_project_map.md) - Repository ownership map for app, feature, shared, server, data, sync, and docs layers.
 
 ### 3. Domain Knowledge
