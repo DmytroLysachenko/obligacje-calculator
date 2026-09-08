@@ -1,6 +1,5 @@
 'use client';
 
-import { addDays, isAfter, parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
@@ -10,6 +9,8 @@ import { logClientError } from '@/shared/lib/client-logger';
 import { downloadJsonFile } from '@/shared/lib/csv-utils';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { UserInvestmentLot, UserPortfolio } from '@/shared/types/portfolio';
+
+import { buildPortfolioDetailProjection } from '../lib/portfolio-detail-projection';
 
 export type MaturityWindow = 30 | 90 | 180;
 
@@ -81,52 +82,16 @@ export function usePortfolioDetailsWorkspace({
     void runSimulation();
   }, [runSimulation]);
 
-  const totalValue = useMemo(
-    () => lots.reduce((sum, lot) => sum + Number(lot.amount) * 100, 0),
-    [lots],
+  const projection = useMemo(
+    () =>
+      buildPortfolioDetailProjection({
+        lots,
+        definitions,
+        now: new Date(),
+        maturityWindowDays,
+      }),
+    [definitions, lots, maturityWindowDays],
   );
-
-  const upcomingMaturities = useMemo(() => {
-    if (!lots.length || !definitions) {
-      return [];
-    }
-
-    return lots
-      .map((lot) => {
-        const definition = definitions[lot.bondType as BondType];
-        if (!definition) {
-          return null;
-        }
-
-        const maturityDate = addDays(
-          parseISO(lot.purchaseDate),
-          Math.round(definition.duration * 365),
-        );
-
-        return {
-          ...lot,
-          maturityDate,
-          value: Number(lot.amount) * 100,
-        };
-      })
-      .filter(
-        (item): item is NonNullable<typeof item> =>
-          item !== null && isAfter(item.maturityDate, new Date()),
-      )
-      .sort((left, right) => left.maturityDate.getTime() - right.maturityDate.getTime());
-  }, [definitions, lots]);
-
-  const filteredMaturities = useMemo(() => {
-    const cutoff = addDays(new Date(), maturityWindowDays);
-    return upcomingMaturities.filter((item) => item.maturityDate <= cutoff);
-  }, [maturityWindowDays, upcomingMaturities]);
-
-  const upcomingCashflow = useMemo(
-    () => filteredMaturities.reduce((sum, item) => sum + item.value, 0),
-    [filteredMaturities],
-  );
-
-  const nextMaturity = upcomingMaturities[0] ?? null;
 
   const handleToggleShare = useCallback(async () => {
     setIsSharing(true);
@@ -179,11 +144,7 @@ export function usePortfolioDetailsWorkspace({
     justCopied,
     maturityWindowDays,
     setMaturityWindowDays,
-    totalValue,
-    upcomingMaturities,
-    filteredMaturities,
-    upcomingCashflow,
-    nextMaturity,
+    ...projection,
     fetchLots,
     handleToggleShare,
     copyToClipboard,
