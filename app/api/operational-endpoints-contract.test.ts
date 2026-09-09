@@ -16,13 +16,13 @@ describe('operational endpoint contracts', () => {
 
     expect(statusRoute).toContain("from '@/lib/server/admin/service'");
     expect(statusRoute).toContain('getAdminStatusSnapshot');
-    expect(statusRoute).toContain('assertAdminSyncAuthorization');
+    expect(statusRoute).toContain('assertAdminSessionAuthorization');
     expect(statusRoute).toContain('okJson(statusSnapshot)');
     expect(statusRoute).not.toContain('db.query');
 
     expect(syncRoute).toContain('createAdminSyncCommand');
-    expect(syncRoute).toContain('createAdminSyncSuccessEnvelope');
-    expect(syncRoute).toContain('getAdminSyncEndpointInfo');
+    expect(syncRoute).toContain('enqueueFinancialDataSync');
+    expect(syncRoute).toContain('{ status: 202 }');
     expect(syncRoute).toContain('readOptionalJsonBody');
     expect(syncRoute).not.toContain('z.object');
   });

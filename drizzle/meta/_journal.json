@@ -64,6 +64,13 @@
       "when": 1773856281997,
       "tag": "0008_web_vital_aggregates",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1773856281998,
+      "tag": "0009_portfolio_series_transactions",
+      "breakpoints": true
     }
   ]
 }

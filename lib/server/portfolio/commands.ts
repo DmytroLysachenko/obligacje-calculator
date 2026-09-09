@@ -100,6 +100,7 @@ export async function updateOwnerLot(
     bondType: string;
     purchaseDate: string;
     amount: number;
+    selectedSeriesId: string | null;
     isRebought: boolean;
     notes?: string;
   }>,
@@ -118,7 +119,31 @@ export async function updateOwnerLot(
     }
   }
 
-  const updateData: Record<string, unknown> = { ...input };
+  const { selectedSeriesId, ...columns } = input;
+  const updateData: Parameters<typeof updateLotByOwner>[2] = {
+    ...columns,
+    amount: input.amount === undefined ? undefined : String(input.amount),
+  };
+  if (
+    input.bondType !== undefined ||
+    input.purchaseDate !== undefined ||
+    selectedSeriesId !== undefined
+  ) {
+    const resolved = await resolveStoredBondLotContext(
+      (input.bondType ?? existingLot.bondType) as BondType,
+      input.purchaseDate ?? existingLot.purchaseDate,
+      selectedSeriesId,
+    );
+    if (!resolved.bondTypeId || (selectedSeriesId && !resolved.bondSeriesId)) {
+      throw new PortfolioServiceError(
+        'Selected bond series is unavailable',
+        422,
+        'INVALID_BOND_SERIES',
+      );
+    }
+    updateData.bondTypeId = resolved.bondTypeId;
+    updateData.bondSeriesId = resolved.bondSeriesId;
+  }
 
   if (input.amount !== undefined) {
     updateData.amount = input.amount.toString();
