@@ -28,7 +28,7 @@ describe('shared scenario page boundary', () => {
     expect(service).toContain('findSharedSingleScenarioRecord');
     expect(service).not.toContain("from '@/db'");
     expect(service).not.toContain('db.query');
-    expect(service).toContain('parseSharedSingleScenarioPayload');
+    expect(service).toContain('BondInputsSchema.parse(parsed.inputs)');
     expect(repository).toContain('db.query.sharedSingleScenarios.findFirst');
   });
 });

@@ -7,7 +7,7 @@ export async function getPublicSharedPortfolioByShareId(shareId: string) {
     return null;
   }
 
-  return portfolio;
+  return { name: portfolio.name, description: portfolio.description };
 }
 
 export async function getPublicSharedPortfolioPageData(shareId: string) {

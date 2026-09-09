@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 
-import { PortfolioDetails } from '@/features/notebook/components/PortfolioDetails';
+import { PublicPortfolioView } from '@/features/notebook/components/PublicPortfolioView';
 import { portfolioApplication } from '@/lib/server/portfolio/application';
 import { buildSharedPortfolioPageMetadata } from '@/lib/server/portfolio/queries';
 
@@ -53,7 +53,7 @@ async function SharedPortfolioContent({ params }: Props) {
           {page('read_only')}
         </div>
       </div>
-      <PortfolioDetails portfolio={portfolio} onBack={() => {}} />
+      <PublicPortfolioView portfolio={portfolio} />
     </div>
   );
 }
