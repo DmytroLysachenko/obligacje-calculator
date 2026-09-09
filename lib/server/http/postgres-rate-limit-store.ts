@@ -1,12 +1,19 @@
-import { sql } from 'drizzle-orm';
+import { type SQL, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 
 import type { SharedRateLimitStore } from './rate-limiter';
 
-export const postgresRateLimitStore: SharedRateLimitStore = {
-  async consume({ bucketKey, now, resetAt }) {
-    const result = await db.execute<{ count: number; reset_at: Date }>(sql`
+/** Minimal persistence seam; connection choice remains internal to HTTP policy. */
+type RateLimitQueryExecutor = (query: SQL) => Promise<Array<{ count: number; reset_at: Date }>>;
+
+/** PostgreSQL upsert adapter: one statement owns increment and window reset. */
+export function createPostgresRateLimitStore(
+  executor: RateLimitQueryExecutor,
+): SharedRateLimitStore {
+  return {
+    async consume({ bucketKey, now, resetAt }) {
+      const rows = await executor(sql`
       insert into rate_limit_windows (bucket_key, count, reset_at, updated_at)
       values (${bucketKey}, 1, ${resetAt}, ${now})
       on conflict (bucket_key) do update set
@@ -15,8 +22,14 @@ export const postgresRateLimitStore: SharedRateLimitStore = {
         updated_at = ${now}
       returning count, reset_at
     `);
-    const row = result.rows[0];
-    if (!row) throw new Error('RATE_LIMIT_COUNTER_MISSING');
-    return { count: Number(row.count), resetAt: new Date(row.reset_at) };
-  },
-};
+      const row = rows[0];
+      if (!row) throw new Error('RATE_LIMIT_COUNTER_MISSING');
+      return { count: Number(row.count), resetAt: new Date(row.reset_at) };
+    },
+  };
+}
+
+export const postgresRateLimitStore = createPostgresRateLimitStore(async (query) => {
+  const result = await db.execute<{ count: number; reset_at: Date }>(query);
+  return result.rows;
+});
