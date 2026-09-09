@@ -12,10 +12,13 @@ import {
 } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async () => {
-  return withPortfolioRead(async (owner) => {
-    const portfolios = await portfolioApplication.listPortfolios(owner.ownerId);
-    return okJson(portfolios);
-  });
+  return withPortfolioRead(
+    async (owner) => {
+      const portfolios = await portfolioApplication.listPortfolios(owner.ownerId);
+      return okJson(portfolios);
+    },
+    () => okJson([]),
+  );
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
