@@ -27,7 +27,7 @@ import {
 } from '../lib/single-calculator-persistence';
 import { resolveSingleCalculatorRestoration } from '../lib/single-calculator-restoration';
 
-export interface SingleCalculatorSessionState {
+interface SingleCalculatorSessionState {
   inputs: BondInputs;
   envelope: SingleBondCalculationEnvelope | null;
   selectedSeriesId: string | null;
@@ -37,7 +37,7 @@ export interface SingleCalculatorSessionState {
   isPersistenceReady: boolean;
 }
 
-export interface SingleCalculatorSessionActions {
+interface SingleCalculatorSessionActions {
   setInputs: React.Dispatch<React.SetStateAction<BondInputs>>;
   setEnvelope: React.Dispatch<React.SetStateAction<SingleBondCalculationEnvelope | null>>;
   setSelectedSeriesId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -194,9 +194,10 @@ export function useBondCalculatorEffects({
   ]);
 
   useEffect(() => {
+    let obsolete = false;
     const timer = setTimeout(() => {
       void fetchSeries(inputs.bondType).then((series) => {
-        if (!series) {
+        if (obsolete || !series) {
           return;
         }
         setAvailableSeries(series);
@@ -214,7 +215,10 @@ export function useBondCalculatorEffects({
         }
       });
     }, 0);
-    return () => clearTimeout(timer);
+    return () => {
+      obsolete = true;
+      clearTimeout(timer);
+    };
   }, [
     definitions,
     inputs.bondType,

@@ -95,7 +95,11 @@ async function RequestAwareBody({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <body className="bg-background text-foreground antialiased" data-locale={language}>
+    <body
+      lang={language}
+      className="bg-background text-foreground antialiased"
+      data-locale={language}
+    >
       <script
         nonce={nonce}
         suppressHydrationWarning

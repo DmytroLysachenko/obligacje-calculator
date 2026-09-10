@@ -28,7 +28,12 @@ function applyTheme(theme: AppTheme) {
 
 function readStoredTheme(): AppTheme {
   if (typeof window === 'undefined') return 'system';
-  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  let storedTheme: string | null = null;
+  try {
+    storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  } catch {
+    /* Storage is optional. */
+  }
   return storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system'
     ? storedTheme
     : 'system';
@@ -45,20 +50,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     React.useState<Exclude<AppTheme, 'system'>>(readAppliedTheme);
 
   React.useEffect(() => {
-    const initialTheme = readStoredTheme();
-    setThemeState(initialTheme);
-    setResolvedTheme(applyTheme(initialTheme));
+    setResolvedTheme(applyTheme(theme));
 
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const onChange = () => {
-      if (initialTheme === 'system') setResolvedTheme(applyTheme('system'));
+      if (theme === 'system') setResolvedTheme(applyTheme('system'));
     };
     media.addEventListener('change', onChange);
     return () => media.removeEventListener('change', onChange);
-  }, []);
+  }, [theme]);
 
   const setTheme = React.useCallback((nextTheme: AppTheme) => {
-    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+    } catch {
+      /* Apply preferences even when storage is unavailable. */
+    }
     setThemeState(nextTheme);
     setResolvedTheme(applyTheme(nextTheme));
   }, []);
