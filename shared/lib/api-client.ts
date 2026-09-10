@@ -10,6 +10,7 @@ export class ApiClientError extends Error {
     public readonly status?: number,
     public readonly code?: string,
     public readonly details?: unknown,
+    public readonly requestId?: string,
   ) {
     super(message);
     this.name = 'ApiClientError';
@@ -34,7 +35,13 @@ async function requestJson<T>(
     return { data: await decoder(response), response };
   } catch (error) {
     if (error instanceof ApiEnvelopeError) {
-      throw new ApiClientError(error.message, error.status, error.code, error.details);
+      throw new ApiClientError(
+        error.message,
+        error.status,
+        error.code,
+        error.details,
+        error.requestId,
+      );
     }
 
     throw error;

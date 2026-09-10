@@ -1,6 +1,7 @@
 import { ApiEnvelopeError, decodeEnvelopeResponse } from '../lib/api-response-codec';
 
 import { CalculationWorkerControllerRegistry } from './calculation-worker-controller-registry';
+import { calculationWorkerFailure } from './calculation-worker-message';
 
 type WorkerRequestMessage = {
   id: string;
@@ -16,14 +17,6 @@ type WorkerSuccessMessage<T> = {
   data: T;
 };
 
-type WorkerErrorMessage = {
-  id: string;
-  ok: false;
-  error: string;
-  code?: string;
-  details?: unknown;
-};
-
 const activeControllers = new CalculationWorkerControllerRegistry();
 
 self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
@@ -36,9 +29,9 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
 
   const controller = activeControllers.start(id);
   if (!controller) {
-    const errorMessage: WorkerErrorMessage = {
+    const errorMessage = {
       id,
-      ok: false,
+      ok: false as const,
       error: 'Calculation worker is at capacity. Please retry.',
       code: 'CALCULATION_CAPACITY_EXCEEDED',
     };
@@ -67,16 +60,10 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
         throw error;
       }
 
-      const errorMessage: WorkerErrorMessage = {
-        id,
-        ok: false,
-        error:
-          error.message === `Request failed with status ${response.status}`
-            ? 'Calculation failed'
-            : error.message,
-        code: error.code,
-        details: error.details,
-      };
+      const errorMessage = calculationWorkerFailure(id, error);
+      if (errorMessage.error === `Request failed with status ${response.status}`) {
+        errorMessage.error = 'Calculation failed';
+      }
       self.postMessage(errorMessage);
     }
   } catch (error) {
@@ -84,11 +71,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
       return;
     }
 
-    const errorMessage: WorkerErrorMessage = {
-      id,
-      ok: false,
-      error: error instanceof Error ? error.message : 'Worker calculation failed',
-    };
+    const errorMessage = calculationWorkerFailure(id, error);
     self.postMessage(errorMessage);
   } finally {
     activeControllers.finish(id);
