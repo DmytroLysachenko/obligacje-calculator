@@ -31,10 +31,11 @@
     "check:bundle-budgets": "tsx scripts/check-route-bundle-budgets.ts",
     "test": "vitest",
     "test:browser": "playwright test tests/browser/app-smoke.spec.ts --project=chromium --project=mobile-chromium",
-    "test:browser:ci": "playwright test tests/browser/app-smoke.spec.ts tests/browser/home-page.spec.ts tests/browser/education.spec.ts tests/browser/web-vitals.spec.ts --project=chromium --project=mobile-chromium --workers=1",
+    "test:browser:ci": "playwright test tests/browser/app-smoke.spec.ts tests/browser/home-page.spec.ts tests/browser/education.spec.ts tests/browser/web-vitals.spec.ts tests/browser/audited-workflows.spec.ts tests/browser/preferences.spec.ts --project=chromium --project=mobile-chromium --workers=1",
     "test:browser:matrix": "playwright test tests/browser/app-smoke.spec.ts tests/browser/accessibility.spec.ts --project=firefox --project=webkit --workers=1",
     "test:browser:firefox-csp": "playwright test tests/browser/app-smoke.spec.ts --project=firefox-csp --workers=1 --grep 'single calculator'",
     "test:browser:visual": "playwright test tests/browser/visual-regression.spec.ts --project=chromium --workers=1",
+    "test:browser:integration": "playwright test --config playwright.integration.config.ts",
     "test:home": "playwright test tests/browser/home-page.spec.ts",
     "test:web-vitals": "playwright test tests/browser/web-vitals.spec.ts --project=chromium --project=mobile-chromium --workers=1",
     "test:a11y": "playwright test tests/browser/accessibility.spec.ts --project=chromium --project=mobile-chromium",
@@ -42,11 +43,11 @@
     "test:quality": "pnpm test:a11y && pnpm test:web-vitals && pnpm test:lighthouse",
     "test:ci": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:db": "vitest run db/postgres-migrations.integration.test.ts",
+    "test:db": "vitest run db/postgres-migrations.integration.test.ts db/portfolio-repository.integration.test.ts db/rate-limit-store.integration.test.ts --no-file-parallelism",
     "test:core": "vitest run features/bond-core",
     "test:trusted-core": "vitest run features/bond-core/tests/single-bond-edge-golden.test.ts features/bond-core/tests/trusted-core-definition-matrix.test.ts features/bond-core/tests/utils/engine/single-bond-engine.test.ts features/economic-data/tests/lib/economic-dashboard-model.test.ts features/economic-data/tests/economic-data-semantic.test.tsx features/economic-data/tests/economic-chart-failure.test.tsx features/education/tests/education-entry-semantic.test.tsx features/single-calculator/lib/input-guardrails.test.ts features/single-calculator/lib/single-calculator-actions.test.ts features/single-calculator/tests/lib/single-calculator-persistence.test.ts features/single-calculator/tests/lib/single-calculator-restoration.test.ts features/single-calculator/tests/single-result-semantic.test.tsx shared/lib/calculator-persistence.test.ts",
     "test:trusted-core:browser": "playwright test tests/browser/app-smoke.spec.ts --project=chromium --project=mobile-chromium --grep 'trusted-core routes'",
-    "test:release": "vitest run features/bond-core i18n/locale-parity.test.ts lib/data/bond-series.test.ts lib/data/macro-market-data.test.ts lib/data/market-data-cache.test.ts lib/page-metadata.test.ts lib/seo/app-json-ld.test.ts lib/sync/sync-engine.test.ts lib/sync/sync-start-year.test.ts shared/lib/data-freshness-display.test.ts shared/lib/regular-investment-display.test.ts shared/lib/bond-display.test.ts shared/lib/feature-catalog.test.ts shared/lib/theme-preferences.test.ts shared/workers/calculation-worker-contract.test.ts app/api/production-readiness-contract.test.ts app/api/operational-endpoints-contract.test.ts app/seo-metadata-contract.test.ts app/provider-boundary-contract.test.ts tests/contracts/ui/interactive-trigger-markup-contract.test.ts tests/contracts/deployment/deployment-contract.test.ts tests/contracts/architecture/clean-code-contract.test.ts tests/contracts/architecture/layer-boundary-contract.test.ts tests/contracts/documentation/documentation-integrity.test.ts scripts/check-production-config.test.ts scripts/verify-production.test.ts scripts/lighthouse-summary.test.ts tests/browser/browser-diagnostics.test.ts package-scripts-contract.test.ts && pnpm test:architecture",
+    "test:release": "vitest run features/bond-core i18n/locale-parity.test.ts lib/data/bond-series.test.ts lib/data/macro-market-data.test.ts lib/data/market-data-cache.test.ts lib/page-metadata.test.ts lib/seo/app-json-ld.test.ts lib/sync/sync-engine.test.ts lib/sync/sync-start-year.test.ts shared/lib/data-freshness-display.test.ts shared/lib/regular-investment-display.test.ts shared/lib/bond-display.test.ts shared/lib/feature-catalog.test.ts shared/lib/theme-preferences.test.ts shared/workers/calculation-worker-contract.test.ts app/api/production-readiness-contract.test.ts app/api/operational-endpoints-contract.test.ts app/seo-metadata-contract.test.ts app/provider-boundary-contract.test.ts tests/contracts/ui/interactive-trigger-markup-contract.test.ts tests/contracts/deployment/deployment-contract.test.ts tests/contracts/architecture/clean-code-contract.test.ts tests/contracts/architecture/layer-boundary-contract.test.ts tests/contracts/documentation/documentation-integrity.test.ts scripts/check-production-config.test.ts scripts/verify-production.test.ts scripts/lighthouse-summary.test.ts tests/browser/browser-diagnostics.test.ts package-scripts-contract.test.ts && pnpm test:contracts",
     "check:types": "tsc --noEmit",
     "check:push": "pnpm check:types && pnpm test:core",
     "check:release": "pnpm check:types && pnpm lint && pnpm test:release && pnpm build",
@@ -66,7 +67,9 @@
     "sync:bond-offers": "tsx lib/sync/run-full-sync.ts",
     "sync:full": "tsx lib/sync/run-full-sync.ts",
     "prepare": "husky",
-    "test:architecture": "vitest run --config vitest.architecture.config.ts"
+    "test:architecture": "vitest run --config vitest.architecture.config.ts",
+    "test:contracts": "vitest run --config vitest.contracts.config.ts",
+    "check:test-discovery": "tsx scripts/check-test-discovery.ts"
   },
   "lint-staged": {
     "*": [

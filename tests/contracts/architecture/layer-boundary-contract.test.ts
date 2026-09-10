@@ -63,11 +63,15 @@ describe('layer boundary contract', () => {
 
     const notebookController = read('features/notebook/hooks/useNotebookWorkspaceController.ts');
     const notebookContainer = read('features/notebook/components/NotebookContainer.tsx');
+    const workspaceResource = read('shared/hooks/useWorkspacePortfolios.ts');
 
     expect(notebookController).toContain("from '@/shared/hooks/useWorkspacePortfolios'");
+    expect(workspaceResource).toContain('canManageWorkspace: access.canManageWorkspace');
+    expect(notebookController).toContain('canManageWorkspace: workspace.canManageWorkspace');
     expect(notebookContainer).toContain(
       "from '@/features/notebook/hooks/useNotebookWorkspaceController'",
     );
+    expect(notebookContainer).not.toContain("from '@/shared/hooks/usePortfolioAccess'");
     expect(notebookContainer).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
   });
 
@@ -79,12 +83,7 @@ describe('layer boundary contract', () => {
 
     // Existing server composition debt is tracked by audit roadmap R09.
     // The type-only schema barrel is the documented current DTO exception.
-    expect(matches.sort()).toEqual([
-      'features/bond-core/application-service.ts',
-      'features/bond-core/handlers/regular-investment.ts',
-      'features/bond-core/handlers/resolved-inputs.ts',
-      'shared/types/portfolio.ts',
-    ]);
+    expect(matches.sort()).toEqual(['shared/types/portfolio.ts']);
   });
 
   it('keeps portfolio route controllers on the application interface', () => {
