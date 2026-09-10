@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { calculationService } from '../application-service';
+import { calculationService } from '@/lib/server/calculation/composition';
+
 import { BondType, TaxStrategy } from '../types';
 import { PortfolioSimulationResult, ScenarioKind } from '../types/scenarios';
 import { calculationCache } from '../utils/calculation-cache';

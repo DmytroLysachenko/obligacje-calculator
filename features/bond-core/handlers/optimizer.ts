@@ -52,6 +52,7 @@ export class OptimizerHandler
       }
 
       const { inputs: resolvedInputs } = await resolveScenarioInputs({
+        data: this.data,
         inputs: {
           bondType,
           purchaseDate: payload.purchaseDate,

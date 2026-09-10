@@ -1,5 +1,3 @@
-import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
-
 import { RegularInvestmentInputs, RegularInvestmentResult } from '../types';
 import { RegularInvestmentCalculationEnvelope, ScenarioKind } from '../types/scenarios';
 import { RegularInvestmentInputsSchema } from '../types/schemas';
@@ -19,7 +17,7 @@ export class RegularInvestmentHandler
   ): Promise<RegularInvestmentCalculationEnvelope> {
     const validatedInputs = RegularInvestmentInputsSchema.parse(payload);
     const def = context.dbDefinitions[validatedInputs.bondType];
-    const resolvedOffer = await resolveBondOfferTerms(
+    const resolvedOffer = await this.data.resolveBondOfferTerms(
       validatedInputs.bondType,
       validatedInputs.purchaseDate,
       context.dbDefinitions,

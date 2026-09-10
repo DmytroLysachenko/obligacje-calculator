@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { calculationService } from '@/lib/server/calculation/composition';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
-import { calculationService } from '../application-service';
 import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 import { BondType, CalculationResult, TaxStrategy } from '../types';
 import { ScenarioKind } from '../types/scenarios';

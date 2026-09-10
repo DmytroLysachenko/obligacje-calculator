@@ -1,6 +1,6 @@
 import { ScenarioKind } from '../types/scenarios';
 
-import { ScenarioHandler } from './base';
+import { HandlerData, ScenarioHandler } from './base';
 import { ComparisonHandler } from './comparison';
 import { OptimizerHandler } from './optimizer';
 import { PortfolioSimulationHandler } from './portfolio-simulation';
@@ -17,22 +17,28 @@ export * from './retirement-planner';
 export * from './single-bond';
 
 export class HandlerFactory {
-  private static handlers: Map<ScenarioKind, ScenarioHandler<unknown, unknown>> = new Map();
+  private handlers: Map<ScenarioKind, ScenarioHandler<unknown, unknown>> = new Map();
 
-  static {
-    this.register(new SingleBondHandler() as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(new RegularInvestmentHandler() as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(new ComparisonHandler() as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(new PortfolioSimulationHandler() as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(new OptimizerHandler() as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(new RetirementPlannerHandler() as unknown as ScenarioHandler<unknown, unknown>);
+  constructor(data: HandlerData) {
+    this.register(new SingleBondHandler(data) as unknown as ScenarioHandler<unknown, unknown>);
+    this.register(
+      new RegularInvestmentHandler(data) as unknown as ScenarioHandler<unknown, unknown>,
+    );
+    this.register(new ComparisonHandler(data) as unknown as ScenarioHandler<unknown, unknown>);
+    this.register(
+      new PortfolioSimulationHandler(data) as unknown as ScenarioHandler<unknown, unknown>,
+    );
+    this.register(new OptimizerHandler(data) as unknown as ScenarioHandler<unknown, unknown>);
+    this.register(
+      new RetirementPlannerHandler(data) as unknown as ScenarioHandler<unknown, unknown>,
+    );
   }
 
-  static register(handler: ScenarioHandler<unknown, unknown>) {
+  register(handler: ScenarioHandler<unknown, unknown>) {
     this.handlers.set(handler.kind, handler);
   }
 
-  static getHandler(kind: ScenarioKind): ScenarioHandler<unknown, unknown> {
+  getHandler(kind: ScenarioKind): ScenarioHandler<unknown, unknown> {
     const handler = this.handlers.get(kind);
     if (!handler) {
       throw new Error(`Unsupported scenario kind: ${kind}`);

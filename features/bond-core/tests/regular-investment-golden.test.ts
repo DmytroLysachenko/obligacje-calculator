@@ -1,9 +1,9 @@
 import { differenceInMonths, parseISO } from 'date-fns';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { calculationService } from '@/lib/server/calculation/composition';
 import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
-import { calculationService } from '../application-service';
 import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 import { BondType, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from '../types';
 import { ScenarioKind } from '../types/scenarios';

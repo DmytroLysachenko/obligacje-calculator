@@ -1,11 +1,5 @@
-import {
-  getBondDefinitionsMap,
-  getGlobalDataFreshness,
-  getTaxRulesRevision,
-} from '@/lib/data/market-data';
-import { createServerLogger } from '@/lib/server/logging';
-
 import { BondDefinition } from './constants/bond-definitions';
+import type { ScenarioHandler } from './handlers/base';
 import {
   CalculationDataFreshness,
   CalculationEnvelopeForKind,
@@ -17,10 +11,8 @@ import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
 import { CalculationCachePolicy } from './calculation-cache-policy';
 import { CalculationContextProvider } from './calculation-context';
-import { HandlerFactory, MODEL_VERSION, ScenarioHandler } from './handlers';
+import { MODEL_VERSION } from './model-version';
 import { BondType } from './types';
-
-const logger = createServerLogger('CalculationService');
 
 export interface CalculationServiceDependencies {
   cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set' | 'invalidateNamespace'>;
@@ -28,20 +20,11 @@ export interface CalculationServiceDependencies {
   getTaxRulesRevision: () => Promise<string>;
   getDefinitions: () => Promise<Record<BondType, BondDefinition>>;
   getHandler: (kind: ScenarioKind) => ScenarioHandler<unknown, unknown>;
+  onFailure?: (kind: ScenarioKind, error: unknown) => void;
 }
 
-const defaultDependencies: CalculationServiceDependencies = {
-  cache: calculationCache,
-  getDataFreshness: getGlobalDataFreshness,
-  getTaxRulesRevision,
-  getDefinitions: getBondDefinitionsMap,
-  getHandler: (kind) => HandlerFactory.getHandler(kind),
-};
-
 export class CalculationApplicationService {
-  constructor(
-    private readonly dependencies: CalculationServiceDependencies = defaultDependencies,
-  ) {}
+  constructor(private readonly dependencies: CalculationServiceDependencies) {}
 
   /**
    * Main entry point for all calculation requests.
@@ -84,7 +67,7 @@ export class CalculationApplicationService {
         },
       })) as CalculationEnvelopeForKind<TRequest['kind']>;
     } catch (error) {
-      logger.error(`FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
+      this.dependencies.onFailure?.(request.kind, error);
       throw error;
     }
   }
@@ -96,5 +79,3 @@ export class CalculationApplicationService {
     }).invalidate(namespace);
   }
 }
-
-export const calculationService = new CalculationApplicationService();

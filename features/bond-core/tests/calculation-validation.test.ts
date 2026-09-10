@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { calculationService } from '../application-service';
+import { calculationService } from '@/lib/server/calculation/composition';
+
 import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 import {
   BondInputs,

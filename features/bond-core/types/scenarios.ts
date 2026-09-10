@@ -19,7 +19,7 @@ export enum ScenarioKind {
   RETIREMENT_PLANNER = 'retirement-planner',
 }
 
-export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
+type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
 type BondOfferSource = 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
 type BondOfferSyncStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
 

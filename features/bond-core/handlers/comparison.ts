@@ -143,6 +143,7 @@ export class ComparisonHandler
     return Promise.all(
       request.bondTypes.map(async (type) => {
         const { inputs: resolvedInputs } = await resolveScenarioInputs({
+          data: this.data,
           inputs: {
             bondType: type,
             purchaseDate: request.purchaseDate,
@@ -176,6 +177,7 @@ export class ComparisonHandler
   ): Promise<BondInputs> {
     const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
     const { inputs: resolvedInputs } = await resolveScenarioInputs({
+      data: this.data,
       inputs: {
         bondType: scenario.bondType,
         purchaseDate,

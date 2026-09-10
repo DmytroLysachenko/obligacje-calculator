@@ -1,23 +1,23 @@
-import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
-
 import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 import { BondInputs } from '../types';
 
-import { HandlerContext } from './base';
+import { HandlerContext, HandlerData } from './base';
 
 interface ResolveScenarioInputsArgs {
   inputs: Partial<BondInputs> & Pick<BondInputs, 'bondType' | 'purchaseDate'>;
   context: HandlerContext;
   selectedSeriesId?: string | null;
+  data: HandlerData;
 }
 
 export async function resolveScenarioInputs({
   inputs,
   context,
   selectedSeriesId,
+  data,
 }: ResolveScenarioInputsArgs) {
   const definition = context.dbDefinitions[inputs.bondType] ?? BOND_DEFINITIONS[inputs.bondType];
-  const resolvedOffer = await resolveBondOfferTerms(
+  const resolvedOffer = await data.resolveBondOfferTerms(
     inputs.bondType,
     inputs.purchaseDate,
     context.dbDefinitions,

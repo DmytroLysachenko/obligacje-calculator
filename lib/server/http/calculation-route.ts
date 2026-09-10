@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-import { calculationService } from '@/features/bond-core/application-service';
 import { BondInputs, RegularInvestmentInputs } from '@/features/bond-core/types';
 import {
   BondOptimizerPayload,
@@ -17,6 +16,7 @@ import {
   RegularInvestmentInputsSchema,
   RetirementPlannerPayloadSchema,
 } from '@/features/bond-core/types/schemas';
+import { calculationService } from '@/lib/server/calculation/composition';
 
 import { apiHandler } from './api-handler';
 import { calculationRateLimitPolicy } from './rate-limiter';

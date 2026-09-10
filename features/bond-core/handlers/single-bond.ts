@@ -1,7 +1,5 @@
 import { getYear, parseISO } from 'date-fns';
 
-import { getHistoricalAverages, getTaxRulesForYear } from '@/lib/data/market-data';
-
 import { BondInputs, CalculationResult, TaxStrategy } from '../types';
 import { ScenarioKind, SingleBondCalculationEnvelope } from '../types/scenarios';
 import { BondInputsSchema } from '../types/schemas';
@@ -27,6 +25,7 @@ export class SingleBondHandler
       resolvedOffer,
       inputs: inputsWithDefaults,
     } = await resolveScenarioInputs({
+      data: this.data,
       inputs: validatedInputs,
       context,
       selectedSeriesId: validatedInputs.selectedSeriesId,
@@ -50,7 +49,7 @@ export class SingleBondHandler
         inputsToCalculate.taxStrategy === TaxStrategy.IKZE)
     ) {
       const purchaseYear = getYear(parseISO(inputsToCalculate.purchaseDate));
-      const rules = await getTaxRulesForYear(purchaseYear);
+      const rules = await this.data.getTaxRulesForYear(purchaseYear);
       const limitValue =
         inputsToCalculate.taxStrategy === TaxStrategy.IKE
           ? parseFloat(rules?.ikeLimit || '0')
@@ -108,7 +107,7 @@ export class SingleBondHandler
       result.taxSavings = standardResult.totalTax - result.totalTax;
     }
 
-    const historicalAverages = await getHistoricalAverages();
+    const historicalAverages = await this.data.getHistoricalAverages();
 
     return this.createEnvelope(
       result,
@@ -193,7 +192,7 @@ export class SingleBondHandler
     const warnings = this.collectHistoricalWarnings([inputs.historicalData]);
     const assumptions = this.generateAssumptions(inputs);
 
-    const historicalAverages = await getHistoricalAverages();
+    const historicalAverages = await this.data.getHistoricalAverages();
 
     return this.createEnvelope(
       aggregatedResult,
