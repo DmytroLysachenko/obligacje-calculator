@@ -72,6 +72,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [10. Security, Resilience, and Adversarial Evidence Audit](./plans/10_security_resilience_evidence_audit.md) - Threat model, endpoint authorization matrix, adversarial runtime evidence, migration and supply-chain verification, load results, cross-browser/accessibility findings, and security acceptance criteria.
 - [11. Codebase Simplification and Cleanup Audit](./plans/11_codebase_simplification_cleanup_audit.md) - Evidence-led, no-behavior-change plan for removing dead code, reducing brittle tests and duplicate orchestration, and keeping React/Next bundle work measurable.
 - [12. Trusted-Core Release Scorecard](./plans/12_trusted_core_release_scorecard.md) - Repository evidence required for education, the single calculator, and economic-data admission.
+- [13. Incremental Feature Folder Improvement Plan](./plans/13_incremental_feature_folder_improvement_plan.md) - Small, behavior-led subfeature folders that improve search without remaking the architecture.
 
 ### 6. Archived Plans
 
