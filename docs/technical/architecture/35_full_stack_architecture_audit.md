@@ -676,6 +676,8 @@ The new integration config must run against an isolated configured deployment wi
 
 ### R02 — P0: Make portfolio transaction guarantees executable
 
+**Implementation status (2026-09-07): Local adapter/migration slice completed.** `TEST_DATABASE_URL=<isolated database> pnpm test:db` passes 10 tests, including actual adapter success and rollback for both writes. Additive migration 0009 supplies schema omitted from the original journal. Deployment connectivity and browser validation remain open; the overall item is in progress.
+
 **Goal/files:** Fix F2 in `lib/server/portfolio/repository.ts`, specifically `createLotWithBuyTransaction` and `importPortfolioAtomically`; add an internal transaction-capable adapter and explicit connection construction under `db/`. Update `db/postgres-migrations.integration.test.ts` and new repository integration tests.
 
 **Before → after interface:** Callback transactions on an unsupported runtime driver → unchanged portfolio operations backed by a supported atomic adapter.
@@ -746,6 +748,8 @@ pnpm test:a11y
 **Done:** Anonymous public viewing works with no ownership confusion, serialization errors, or mutation controls. **Classification:** Current-app fix.
 
 ### R05 — P0: Contain HTTP policy failures and verify ingress identity
+
+**Implementation status (2026-09-07): In progress.** Failure-containment slice completed: `api-handler.test.ts` passes all 6 tests, including rejected identity/limiter dependencies. Ingress policy and store proof remain open. See [implementation ledger](./36_implementation_ledger.md).
 
 **Goal/files:** Fix F5 in `lib/server/http/api-handler.ts`, `client-identity.ts`, rate-limit store/composition, runtime configuration and deployment checks.
 
