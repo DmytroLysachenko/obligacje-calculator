@@ -106,14 +106,15 @@ describe('CalculationApplicationService dependencies', () => {
       payload: basePayload,
     });
 
-    expect(dependencies.cache.generateKey).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dataRevision: JSON.stringify({
-          dataFreshness: freshness,
-          taxRulesRevision: '2026:revision',
-        }),
-      }),
-    );
+    const cacheInput = vi.mocked(dependencies.cache.generateKey).mock.calls[0][0] as {
+      dataRevision: string;
+    };
+    const dataRevision = JSON.parse(cacheInput.dataRevision) as Record<string, unknown>;
+    expect(dataRevision).toMatchObject({
+      dataFreshness: freshness,
+      taxRulesRevision: '2026:revision',
+    });
+    expect(dataRevision.definitions).toEqual(expect.any(String));
     expect(handler.handle).not.toHaveBeenCalled();
     expect(dependencies.cache.set).not.toHaveBeenCalled();
   });
