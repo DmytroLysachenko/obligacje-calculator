@@ -12,8 +12,6 @@ import {
   toggleScenarioCustomHorizon,
 } from './comparison-scenario-state';
 
-export type ComparisonUpdateValue = string | number | boolean | number[] | undefined;
-
 export function applySharedComparisonConfigUpdate<K extends keyof SharedComparisonConfig>(
   previous: SharedComparisonConfig,
   key: K,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { useNotebookContainerWorkspace } from '@/features/notebook/hooks/useNotebookContainerWorkspace';
 import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
@@ -43,5 +43,47 @@ export function useNotebookWorkspaceController(t: Translate) {
     t,
   });
 
-  return { ...workspace, ...navigation, ...actions, ...view };
+  const cancelPendingDelete = useCallback(() => {
+    navigation.setPortfolioPendingDelete(null);
+  }, [navigation]);
+
+  const confirmPendingDelete = useCallback(async () => {
+    const portfolio = navigation.portfolioPendingDelete;
+    if (!portfolio) return;
+    navigation.setPortfolioPendingDelete(null);
+    await actions.handleDeletePortfolio(portfolio);
+  }, [actions, navigation]);
+
+  return {
+    view: {
+      ...view,
+      canManageWorkspace: workspace.canManageWorkspace,
+      detailPortfolioId: navigation.detailPortfolioId,
+      error: actions.error,
+      isGuestWorkspace: workspace.isGuestWorkspace,
+      isLoading: workspace.isLoading,
+      isMutating: actions.isMutating,
+      portfolios: workspace.portfolios,
+      portfolioPendingDelete: navigation.portfolioPendingDelete,
+      selectedPortfolio: workspace.selectedPortfolio,
+      statusMessage: actions.statusMessage,
+    },
+    actions: {
+      cancelPendingDelete,
+      closePortfolio: navigation.handleClosePortfolioDetails,
+      confirmPendingDelete,
+      createDefault: actions.handleCreateDefault,
+      createDemo: actions.handleCreateDemo,
+      deletePortfolio: actions.handleDeletePortfolio,
+      importFile: actions.handleImportFile,
+      mergePortfolio: workspace.upsertPortfolio,
+      openPortfolio: navigation.handleOpenPortfolio,
+      requestDelete: navigation.setPortfolioPendingDelete,
+      selectPortfolio: workspace.setSelectedPortfolioId,
+      startImport: navigation.handleImportClick,
+      refresh: workspace.refetch,
+      dismissStatus: () => actions.setStatusMessage(null),
+    },
+    importRef: navigation.importRef,
+  };
 }
