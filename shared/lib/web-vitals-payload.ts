@@ -1,4 +1,6 @@
-export type WebVitalName = 'CLS' | 'INP' | 'LCP';
+import { telemetryRoute } from './telemetry-route';
+
+type WebVitalName = 'CLS' | 'INP' | 'LCP';
 
 export interface WebVitalPayload {
   name: WebVitalName;
@@ -23,7 +25,7 @@ export function toWebVitalPayload(
     name: metric.name,
     value: metric.value,
     rating: metric.rating,
-    path,
+    path: telemetryRoute(path),
     navigationType,
   };
 }
