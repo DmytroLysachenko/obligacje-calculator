@@ -14,10 +14,10 @@ import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 
+import { PortfolioDetails } from './portfolio-details/PortfolioDetails';
 import { NotebookPortfolioListSection, NotebookScopeNote } from './NotebookContainerPanels';
 import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';
 import { NotebookErrorNotice, NotebookWorkspaceFeedback } from './NotebookWorkspaceFeedback';
-import { PortfolioDetails } from './PortfolioDetails';
 import { WorkspaceActionStrip } from './WorkspaceActionStrip';
 import { WorkspaceStatusCard } from './WorkspaceStatusCard';
 export const NotebookContainer: React.FC = () => {

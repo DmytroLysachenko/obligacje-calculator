@@ -71,6 +71,7 @@ describe('layer boundary contract', () => {
     expect(notebookContainer).toContain(
       "from '@/features/notebook/hooks/useNotebookWorkspaceController'",
     );
+    expect(notebookContainer).toContain("from './portfolio-details/PortfolioDetails'");
     expect(notebookContainer).not.toContain("from '@/shared/hooks/usePortfolioAccess'");
     expect(notebookContainer).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
   });

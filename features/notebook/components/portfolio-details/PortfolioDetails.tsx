@@ -10,14 +10,11 @@ import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCurrencyFormatter, useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { UserPortfolio } from '@/shared/types/portfolio';
 
-import { PortfolioLotsTab } from './portfolio-details/PortfolioLotsTab';
-import { PortfolioOverviewHeader } from './portfolio-details/PortfolioOverviewHeader';
+import { PortfolioLotsTab } from './PortfolioLotsTab';
+import { PortfolioOverviewHeader } from './PortfolioOverviewHeader';
 
 const PortfolioAnalyticsTab = dynamic(
-  () =>
-    import('./portfolio-details/PortfolioAnalyticsTab').then(
-      (module) => module.PortfolioAnalyticsTab,
-    ),
+  () => import('./PortfolioAnalyticsTab').then((module) => module.PortfolioAnalyticsTab),
   {
     loading: () => (
       <div className="h-[360px] w-full animate-pulse rounded-lg bg-muted" role="status" />

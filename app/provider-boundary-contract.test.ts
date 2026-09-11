@@ -27,7 +27,7 @@ const providerConsumers = [
   'features/regular-investment/components/RegularInvestmentInputsForm.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
   'features/education/components/EducationClient.tsx',
-  'features/notebook/components/PortfolioDetails.tsx',
+  'features/notebook/components/portfolio-details/PortfolioDetails.tsx',
 ] as const;
 
 describe('provider boundary contract', () => {
