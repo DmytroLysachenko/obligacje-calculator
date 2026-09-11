@@ -22,9 +22,12 @@ const BondChart = dynamic(() => import('./BondChart').then((module) => module.Bo
     <div className="h-[360px] w-full animate-pulse rounded-md bg-muted md:h-[460px]" />
   ),
 });
-const BondTimeline = dynamic(() => import('./BondTimeline').then((module) => module.BondTimeline), {
-  loading: () => <div className="h-72 animate-pulse rounded-md bg-muted" />,
-});
+const BondTimeline = dynamic(
+  () => import('./timeline/BondTimeline').then((module) => module.BondTimeline),
+  {
+    loading: () => <div className="h-72 animate-pulse rounded-md bg-muted" />,
+  },
+);
 
 interface BondCalculatorDetailsContentProps {
   results: CalculationResult;

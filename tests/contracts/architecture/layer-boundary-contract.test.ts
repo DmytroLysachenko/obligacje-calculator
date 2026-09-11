@@ -76,6 +76,14 @@ describe('layer boundary contract', () => {
     expect(notebookContainer).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
   });
 
+  it('keeps the calculator timeline renderer behind its subfeature entry', () => {
+    const details = read('features/single-calculator/components/BondCalculatorDetailsContent.tsx');
+    const timeline = read('features/single-calculator/components/timeline/BondTimeline.tsx');
+
+    expect(details).toContain("import('./timeline/BondTimeline')");
+    expect(timeline).toContain("from '@/features/single-calculator/types/timeline'");
+  });
+
   it('prevents new browser and feature server dependencies', () => {
     const forbiddenImports = /from ['"]@\/(?:db|lib\/server)(?:\/|['"])/;
     const matches = listMatchingFiles(forbiddenImports)

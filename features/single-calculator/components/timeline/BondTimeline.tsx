@@ -4,6 +4,7 @@ import React, { useDeferredValue, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SimulationEventType } from '@/features/bond-core/types/simulation';
 import { BondTimelineProps } from '@/features/single-calculator/types/timeline';
 import { useAppI18n } from '@/i18n/client';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
@@ -19,8 +20,6 @@ import {
   getSimulationEventDisplayLabel,
 } from '@/shared/lib/bond-display';
 import { createCurrencyFormatter } from '@/shared/lib/formatters';
-
-import { SimulationEventType } from '../../bond-core/types/simulation';
 
 import { BondTimelineRows } from './BondTimelineRows';
 import { TimelineStat } from './BondTimelineValues';
