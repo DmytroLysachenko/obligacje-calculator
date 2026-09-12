@@ -144,13 +144,13 @@ export function PortfolioLotsTableSection({
                         )}
                       </TableCell>
                       <TableCell className="financial-number py-4 text-right">
-                        {lot.amount}
+                        {lot.bondQuantity}
                       </TableCell>
                       <TableCell className="py-4">
                         {formatIsoDate(lot.purchaseDate, language)}
                       </TableCell>
                       <TableCell className="financial-number py-4 text-right font-semibold">
-                        {formatCurrency(Number(lot.amount) * 100)}
+                        {formatCurrency(Number(lot.bondQuantity) * 100)}
                       </TableCell>
                       <TableCell className="py-4 text-right">
                         <Button variant="outline" size="icon" className="min-h-11 min-w-11" asChild>

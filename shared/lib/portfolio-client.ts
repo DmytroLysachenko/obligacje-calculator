@@ -19,7 +19,7 @@ export interface CreatePortfolioLotInput {
   bondType: string;
   selectedSeriesId?: string | null;
   purchaseDate: string;
-  amount: number;
+  bondQuantity: number;
   isRebought?: boolean;
 }
 

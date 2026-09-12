@@ -38,7 +38,7 @@ describe('portfolio client', () => {
       portfolioId: 'p1',
       bondType: 'EDO',
       purchaseDate: '2026-06-01',
-      amount: 10,
+      bondQuantity: 10,
       isRebought: false,
       selectedSeriesId: null,
     };
@@ -59,7 +59,7 @@ describe('portfolio client', () => {
     await portfolioClient.importPortfolio({ portfolio: { name: 'Import', lots: [] } });
     await portfolioClient.deletePortfolio('p1');
     await portfolioClient.listLots('p1');
-    await portfolioClient.updateLot('lot1', { amount: 12 });
+    await portfolioClient.updateLot('lot1', { bondQuantity: 12 });
     await portfolioClient.deleteLot('lot1');
     await portfolioClient.simulatePortfolio('p1');
     await portfolioClient.toggleSharing('p1', true);
@@ -69,7 +69,7 @@ describe('portfolio client', () => {
     });
     expect(apiDelete).toHaveBeenCalledWith('/api/portfolio?id=p1');
     expect(apiGet).toHaveBeenCalledWith('/api/portfolio/lots?portfolioId=p1');
-    expect(apiPatch).toHaveBeenCalledWith('/api/portfolio/lots/lot1', { amount: 12 });
+    expect(apiPatch).toHaveBeenCalledWith('/api/portfolio/lots/lot1', { bondQuantity: 12 });
     expect(apiDelete).toHaveBeenCalledWith('/api/portfolio/lots/lot1');
     expect(apiPost).toHaveBeenCalledWith('/api/portfolio/simulate', { portfolioId: 'p1' });
     expect(apiPost).toHaveBeenCalledWith('/api/portfolio/share', {

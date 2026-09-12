@@ -15,7 +15,7 @@ describe('buildPortfolioDetailProjection', () => {
           bondTypeId: null,
           bondSeriesId: null,
           purchaseDate: '2026-01-01',
-          amount: '10',
+          bondQuantity: '10',
           isRebought: false,
           notes: null,
           createdAt: new Date(),

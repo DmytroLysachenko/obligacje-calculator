@@ -33,7 +33,7 @@ export async function createPortfolioLot(
     portfolioId: string;
     bondType: string;
     purchaseDate: string;
-    amount: number;
+    bondQuantity: number;
     selectedSeriesId?: string | null;
     isRebought: boolean;
     notes?: string;
@@ -57,7 +57,7 @@ export async function createPortfolioLot(
     bondTypeId: resolvedLotContext.bondTypeId,
     bondSeriesId: resolvedLotContext.bondSeriesId,
     purchaseDate: input.purchaseDate,
-    amount: input.amount.toString(),
+    amount: input.bondQuantity.toString(),
     isRebought: input.isRebought,
     notes: input.notes,
   });
@@ -71,7 +71,7 @@ export async function createPortfolioLotWithBuyTransaction(
     portfolioId: string;
     bondType: string;
     purchaseDate: string;
-    amount: string | number;
+    bondQuantity: string | number;
     isRebought?: boolean;
     notes?: string;
   },
@@ -86,7 +86,7 @@ export async function createPortfolioLotWithBuyTransaction(
     portfolioId: input.portfolioId,
     bondType: input.bondType,
     purchaseDate: input.purchaseDate,
-    amount: String(input.amount),
+    amount: String(input.bondQuantity),
     isRebought: Boolean(input.isRebought),
     notes: input.notes,
   });
@@ -99,7 +99,7 @@ export async function updateOwnerLot(
     portfolioId: string;
     bondType: string;
     purchaseDate: string;
-    amount: number;
+    bondQuantity: number;
     selectedSeriesId: string | null;
     isRebought: boolean;
     notes?: string;
@@ -122,7 +122,7 @@ export async function updateOwnerLot(
   const { selectedSeriesId, ...columns } = input;
   const updateData: Parameters<typeof updateLotByOwner>[2] = {
     ...columns,
-    amount: input.amount === undefined ? undefined : String(input.amount),
+    amount: input.bondQuantity === undefined ? undefined : String(input.bondQuantity),
   };
   if (
     input.bondType !== undefined ||
@@ -145,8 +145,8 @@ export async function updateOwnerLot(
     updateData.bondSeriesId = resolved.bondSeriesId;
   }
 
-  if (input.amount !== undefined) {
-    updateData.amount = input.amount.toString();
+  if (input.bondQuantity !== undefined) {
+    updateData.amount = input.bondQuantity.toString();
   }
 
   const [updatedLot] = await updateLotByOwner(ownerId, lotId, updateData);
@@ -194,7 +194,7 @@ export async function importOwnerPortfolio(
     lots: Array<{
       bondType: string;
       purchaseDate: string;
-      amount: string | number;
+      bondQuantity: string | number;
       isRebought?: boolean;
       notes?: string;
     }>;
@@ -216,7 +216,7 @@ export async function importOwnerPortfolio(
         bondTypeId: resolvedLotContext.bondTypeId,
         bondSeriesId: resolvedLotContext.bondSeriesId,
         purchaseDate: lot.purchaseDate,
-        amount: String(lot.amount),
+        amount: String(lot.bondQuantity),
         isRebought: lot.isRebought ?? false,
         notes: lot.notes,
       };

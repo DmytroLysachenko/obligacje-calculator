@@ -17,7 +17,7 @@ export function buildPortfolioDetailProjection({
   now: Date;
   maturityWindowDays: number;
 }) {
-  const totalValue = lots.reduce((sum, lot) => sum + Number(lot.amount) * 100, 0);
+  const totalValue = lots.reduce((sum, lot) => sum + Number(lot.bondQuantity) * 100, 0);
   const upcomingMaturities: ProjectedMaturity[] = !definitions
     ? []
     : lots
@@ -30,7 +30,7 @@ export function buildPortfolioDetailProjection({
               parseISO(lot.purchaseDate),
               Math.round(definition.duration * 365),
             ),
-            value: Number(lot.amount) * 100,
+            value: Number(lot.bondQuantity) * 100,
           };
         })
         .filter(

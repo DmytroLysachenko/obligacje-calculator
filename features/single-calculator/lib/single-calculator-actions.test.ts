@@ -97,7 +97,7 @@ describe('single calculator result actions', () => {
       bondType: 'EDO',
       selectedSeriesId: null,
       purchaseDate: '2026-08-01',
-      amount: 10,
+      bondQuantity: 10,
       isRebought: false,
     });
     expect(setStatus).toHaveBeenCalledWith('success', 'notebook.current_lot_added_to_active');

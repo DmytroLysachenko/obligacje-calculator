@@ -46,7 +46,13 @@ describe('portfolio import endpoint', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mocks.importPortfolio).toHaveBeenCalledWith('owner-1', valid.portfolio);
+    expect(mocks.importPortfolio).toHaveBeenCalledWith('owner-1', {
+      ...valid.portfolio,
+      lots: valid.portfolio.lots.map(({ amount, ...lot }) => ({
+        ...lot,
+        bondQuantity: amount,
+      })),
+    });
     await expect(response.json()).resolves.toMatchObject({ data: { importedLots: 1 } });
   });
 

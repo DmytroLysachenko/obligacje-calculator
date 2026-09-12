@@ -3,22 +3,31 @@ import { z } from 'zod';
 import { BondType } from '@/features/bond-core/types';
 import { IsoCalendarDateSchema } from '@/features/bond-core/types/iso-calendar-date';
 
+const ImportedBondQuantitySchema = z
+  .union([z.string(), z.number()])
+  .refine(
+    (value) =>
+      /^\d+(\.\d{1,2})?$/.test(String(value)) && Number(value) > 0 && Number(value) <= 10_000_000,
+  );
+
 const ImportedLotSchema = z
   .object({
     bondType: z.enum(BondType),
     purchaseDate: IsoCalendarDateSchema,
-    amount: z
-      .union([z.string(), z.number()])
-      .refine(
-        (value) =>
-          /^\d+(\.\d{1,2})?$/.test(String(value)) &&
-          Number(value) > 0 &&
-          Number(value) <= 10_000_000,
-      ),
+    bondQuantity: ImportedBondQuantitySchema.optional(),
+    amount: ImportedBondQuantitySchema.optional(),
     isRebought: z.boolean().optional(),
     notes: z.string().trim().max(2_000).optional(),
   })
-  .strict();
+  .strict()
+  .refine((lot) => lot.bondQuantity !== undefined || lot.amount !== undefined, {
+    message: 'bondQuantity is required',
+    path: ['bondQuantity'],
+  })
+  .transform(({ amount, bondQuantity, ...lot }) => ({
+    ...lot,
+    bondQuantity: bondQuantity ?? amount!,
+  }));
 
 export const ImportPayloadSchema = z
   .object({
@@ -34,7 +43,7 @@ export const ImportPayloadSchema = z
   .superRefine(({ portfolio }, context) => {
     const seen = new Set<string>();
     portfolio.lots.forEach((lot, index) => {
-      const key = `${lot.bondType}:${lot.purchaseDate}:${lot.amount}`;
+      const key = `${lot.bondType}:${lot.purchaseDate}:${lot.bondQuantity}`;
       if (seen.has(key)) {
         context.addIssue({
           code: 'custom',

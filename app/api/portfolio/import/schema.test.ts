@@ -12,7 +12,15 @@ const valid = {
 
 describe('portfolio import schema', () => {
   it('accepts a bounded, well-formed import', () => {
-    expect(ImportPayloadSchema.parse(valid)).toEqual(valid);
+    expect(ImportPayloadSchema.parse(valid)).toEqual({
+      portfolio: {
+        ...valid.portfolio,
+        lots: valid.portfolio.lots.map(({ amount, ...lot }) => ({
+          ...lot,
+          bondQuantity: amount,
+        })),
+      },
+    });
   });
 
   it.each([

@@ -13,16 +13,14 @@ const logger = createServerLogger('PortfolioLotSaveApi');
 export const POST = apiHandler(async (req: NextRequest) => {
   return withPortfolioCommand(req, async (owner) => {
     try {
-      const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } = await readJsonBody(
-        req,
-        PortfolioLotTransactionSchema,
-      );
+      const { portfolioId, bondType, purchaseDate, bondQuantity, isRebought, notes } =
+        await readJsonBody(req, PortfolioLotTransactionSchema);
 
       const result = await portfolioApplication.createLotWithTransaction(owner.ownerId, {
         portfolioId,
         bondType,
         purchaseDate,
-        amount,
+        bondQuantity,
         isRebought,
         notes,
       });
