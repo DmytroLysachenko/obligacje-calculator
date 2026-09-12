@@ -7,6 +7,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 ### 0. Documentation Governance
 
 - [Documentation Architecture and Rules](./00_documentation_architecture_and_rules.md) - Structure, naming, numbering, and archive rules for the documentation system.
+- [ADR 0001: Holding-record workspace, not a transaction ledger](./adr/0001-holding-record-not-ledger.md) - The notebook's persisted-record model and explicit non-ledger limit.
 
 ### 1. Strategy & Vision (Product)
 
@@ -46,6 +47,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Modularity Refactoring Audit](./technical/architecture/34_modularity_refactoring_audit.md) - Proven refactoring seams and reusable dashboard baseline.
 - [Full-Stack Architecture Audit](./technical/architecture/35_full_stack_architecture_audit.md) - Read-only audit snapshot covering ownership, server correctness, dependency direction, enforcement gaps, and dashboard-template reuse.
 - [Architecture Implementation Ledger](./technical/architecture/36_implementation_ledger.md) - Implementation progress, decisions, and executed verification.
+- [Codebase Design and Domain Model Audit](./technical/architecture/37_codebase_design_and_domain_model_audit.md) - Current seam, terminology, and financial-model audit with prioritized remediation.
 - [Project Map](./technical/architecture/28_project_map.md) - Repository ownership map for app, feature, shared, server, data, sync, and docs layers.
 
 ### 3. Domain Knowledge
@@ -72,11 +74,11 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [10. Security, Resilience, and Adversarial Evidence Audit](./plans/10_security_resilience_evidence_audit.md) - Threat model, endpoint authorization matrix, adversarial runtime evidence, migration and supply-chain verification, load results, cross-browser/accessibility findings, and security acceptance criteria.
 - [11. Codebase Simplification and Cleanup Audit](./plans/11_codebase_simplification_cleanup_audit.md) - Evidence-led, no-behavior-change plan for removing dead code, reducing brittle tests and duplicate orchestration, and keeping React/Next bundle work measurable.
 - [12. Trusted-Core Release Scorecard](./plans/12_trusted_core_release_scorecard.md) - Repository evidence required for education, the single calculator, and economic-data admission.
-- [13. Incremental Feature Folder Improvement Plan](./plans/13_incremental_feature_folder_improvement_plan.md) - Small, behavior-led subfeature folders that improve search without remaking the architecture.
 
 ### 6. Archived Plans
 
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
+- [13. Incremental Feature Folder Improvement Plan](./archive/plans/13_incremental_feature_folder_improvement_plan.md) - Completed feature-folder organization work retained for historical reference.
 - [July 2026 UI Audit](./archive/ui/2026_07_ui_audit.md) - Superseded visual audit retained as historical evidence.
 
 ### 7. Operations
