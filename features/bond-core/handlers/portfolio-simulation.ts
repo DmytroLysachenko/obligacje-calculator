@@ -11,6 +11,7 @@ import {
 import { calculateBondInvestment } from '../utils/calculations';
 
 import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
+import { resolveScenarioInputs } from './resolved-inputs';
 
 function getEarliestPurchaseDate(investments: PortfolioSimulationPayload['investments']) {
   return investments.reduce(
@@ -66,29 +67,35 @@ export class PortfolioSimulationHandler
     context: HandlerContext,
   ): Promise<PortfolioSimulationCalculationEnvelope> {
     const items: PortfolioSimulationItem[] = [];
+    const unresolvedOfferWarnings: string[] = [];
     const allHistoricalData = await this.withHistoricalData({
       purchaseDate: getEarliestPurchaseDate(payload.investments),
       withdrawalDate: payload.withdrawalDate,
     });
 
     for (const inv of payload.investments) {
-      const def = context.dbDefinitions[inv.bondType];
+      const { inputs: resolvedInputs, offerIsUnresolved } = await resolveScenarioInputs({
+        data: this.data,
+        inputs: {
+          bondType: inv.bondType,
+          purchaseDate: inv.purchaseDate,
+        },
+        context,
+        selectedSeriesId: inv.selectedSeriesId,
+      });
+      if (offerIsUnresolved) {
+        unresolvedOfferWarnings.push(
+          `Issued series for ${inv.bondType} could not be verified; this projection uses a labelled family-rule estimate.`,
+        );
+      }
       const result = calculateBondInvestment({
-        bondType: inv.bondType,
+        ...resolvedInputs,
         initialInvestment: inv.amount,
-        firstYearRate: def.firstYearRate,
         expectedInflation: payload.expectedInflation,
         expectedNbpRate: payload.expectedNbpRate ?? 5.25,
-        margin: def.margin,
-        duration: def.duration,
-        earlyWithdrawalFee: def.earlyWithdrawalFee,
         taxRate: 19,
-        isCapitalized: def.isCapitalized,
-        payoutFrequency: def.payoutFrequency,
-        purchaseDate: inv.purchaseDate,
         withdrawalDate: payload.withdrawalDate,
         isRebought: inv.isRebought ?? false,
-        rebuyDiscount: def.rebuyDiscount,
         taxStrategy: inv.taxStrategy ?? TaxStrategy.STANDARD,
         rollover: inv.rollover ?? false,
         historicalData: allHistoricalData.historicalData as BondInputs['historicalData'],
@@ -147,7 +154,7 @@ export class PortfolioSimulationHandler
 
     return this.createEnvelope(
       result,
-      [],
+      unresolvedOfferWarnings,
       [
         'Portfolio simulation aggregates lot timelines by checkpoint date and carries the latest known lot value between sparse engine points.',
         'Total fees are reported as redemption fees, not early-exit payout values.',
