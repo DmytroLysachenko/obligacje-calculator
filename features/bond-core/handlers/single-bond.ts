@@ -1,8 +1,12 @@
 import { getYear, parseISO } from 'date-fns';
 
 import { BondInputs, CalculationResult, TaxStrategy } from '../types';
-import { ScenarioKind, SingleBondCalculationEnvelope } from '../types/scenarios';
-import { BondInputsSchema } from '../types/schemas';
+import {
+  ScenarioKind,
+  SingleBondCalculationEnvelope,
+  SingleBondCalculationIntent,
+} from '../types/scenarios';
+import { SingleBondCalculationIntentSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
 
 import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
@@ -11,15 +15,15 @@ import { shouldAutoRollover } from './rollover';
 
 export class SingleBondHandler
   extends BaseHandler
-  implements ScenarioHandler<BondInputs, CalculationResult>
+  implements ScenarioHandler<SingleBondCalculationIntent, CalculationResult>
 {
   kind = ScenarioKind.SINGLE_BOND;
 
   async handle(
-    payload: BondInputs,
+    payload: SingleBondCalculationIntent,
     context: HandlerContext,
   ): Promise<SingleBondCalculationEnvelope> {
-    const validatedInputs = BondInputsSchema.parse(payload);
+    const validatedInputs = SingleBondCalculationIntentSchema.parse(payload);
     const {
       definition: def,
       resolvedOffer,
@@ -65,6 +69,10 @@ export class SingleBondHandler
     const resolvedRollover = shouldAutoRollover(inputsToCalculate, def.duration);
     if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
       assumptions.push(`Issued series resolved: ${resolvedOffer.seriesCode}`);
+    } else if (resolvedOffer.source === 'unresolved') {
+      assumptions.push(
+        'The selected issued series could not be verified; family-rule terms are shown as an unresolved-offer estimate.',
+      );
     } else {
       assumptions.push(
         'Using the current generic bond definition because no issued series was resolved.',

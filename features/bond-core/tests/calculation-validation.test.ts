@@ -10,7 +10,7 @@ import {
   RegularInvestmentInputs,
   TaxStrategy,
 } from '../types';
-import { ScenarioKind } from '../types/scenarios';
+import { normalizeCalculationScenarioRequest, ScenarioKind } from '../types/scenarios';
 import {
   BondComparisonScenarioPayloadSchema,
   BondInputsSchema,
@@ -264,6 +264,29 @@ describe('calculation request validation hardening', () => {
       throw new Error('expected single-bond request');
     }
     expect('chartStep' in parsed.payload).toBe(false);
+    expect('firstYearRate' in parsed.payload).toBe(false);
+    expect('duration' in parsed.payload).toBe(false);
+    expect('earlyWithdrawalFee' in parsed.payload).toBe(false);
+  });
+
+  it('makes a legacy retirement request time-explicit before cache identity', () => {
+    const request = normalizeCalculationScenarioRequest(
+      {
+        kind: ScenarioKind.RETIREMENT_PLANNER,
+        payload: {
+          initialCapital: 500000,
+          monthlyWithdrawal: 2500,
+          expectedInflation: 3,
+          bondType: BondType.EDO,
+          horizonYears: 20,
+        },
+      },
+      '2026-05-30',
+    );
+
+    expect((request.payload as { projectionStartDate?: string }).projectionStartDate).toBe(
+      '2026-05-30',
+    );
   });
 
   it('keeps regular investment schema independent from chart display controls', () => {

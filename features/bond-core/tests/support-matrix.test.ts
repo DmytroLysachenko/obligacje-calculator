@@ -283,6 +283,10 @@ describe('Feature support matrix regression suite', () => {
       const withoutFamily = withoutFamilyEnvelope.result as BondOptimizerResult;
       const withFamily = withFamilyEnvelope.result as BondOptimizerResult;
 
+      expect(withoutFamilyEnvelope.assumptions).toContain(
+        'Ranking metric: Highest projected net payout after 5.0 years in this scenario.',
+      );
+
       for (const familyType of FAMILY_BOND_TYPES) {
         expect(withoutFamily.rankedBonds.some((item) => item.bondType === familyType)).toBe(false);
         expect(withFamily.rankedBonds.some((item) => item.bondType === familyType)).toBe(true);

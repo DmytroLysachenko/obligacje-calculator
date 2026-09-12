@@ -42,7 +42,10 @@ export class RetirementPlannerHandler
     context: HandlerContext,
   ): Promise<RetirementPlannerCalculationEnvelope> {
     const horizonMonths = payload.horizonYears * 12;
-    const purchaseDate = format(new Date(), 'yyyy-MM-dd');
+    // ApplicationService normalizes legacy requests before cache identity is
+    // computed. The fallback keeps direct handler tests deterministic only
+    // when they deliberately supply a date.
+    const purchaseDate = payload.projectionStartDate ?? format(new Date(), 'yyyy-MM-dd');
     const modeledAnnualRate = this.resolveModeledAnnualRate(payload, context);
 
     let currentBalance = payload.initialCapital;

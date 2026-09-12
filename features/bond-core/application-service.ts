@@ -4,6 +4,7 @@ import {
   CalculationDataFreshness,
   CalculationEnvelopeForKind,
   CalculationScenarioRequest,
+  normalizeCalculationScenarioRequest,
   ScenarioKind,
 } from './types/scenarios';
 import { parseCalculationScenarioRequest } from './types/schemas';
@@ -34,7 +35,9 @@ export class CalculationApplicationService {
   ): Promise<CalculationEnvelopeForKind<TRequest['kind']>> {
     // 1. Validate before any normalization so invalid scenarios are rejected,
     // not silently clamped into a different calculation.
-    const validatedRequest = parseCalculationScenarioRequest(request) as CalculationScenarioRequest;
+    const validatedRequest = normalizeCalculationScenarioRequest(
+      parseCalculationScenarioRequest(request) as CalculationScenarioRequest,
+    );
     const sanitizedPayload = sanitizeInputs(
       validatedRequest.payload as unknown as Record<string, unknown>,
     );

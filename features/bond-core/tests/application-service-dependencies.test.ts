@@ -7,6 +7,7 @@ import {
 import { BOND_DEFINITIONS, type BondDefinition } from '../constants/bond-definitions';
 import { BondType, InterestPayout, TaxStrategy } from '../types';
 import { CalculationDataFreshness, CalculationEnvelope, ScenarioKind } from '../types/scenarios';
+import { SingleBondCalculationIntentSchema } from '../types/schemas';
 
 const basePayload = {
   bondType: BondType.EDO,
@@ -64,10 +65,13 @@ describe('CalculationApplicationService dependencies', () => {
 
     expect(result).toBe(envelope);
     expect(dependencies.getHandler).toHaveBeenCalledWith(ScenarioKind.SINGLE_BOND);
-    expect(handler.handle).toHaveBeenCalledWith(basePayload, {
-      dataFreshness: freshness,
-      dbDefinitions: BOND_DEFINITIONS,
-    });
+    expect(handler.handle).toHaveBeenCalledWith(
+      SingleBondCalculationIntentSchema.parse(basePayload),
+      {
+        dataFreshness: freshness,
+        dbDefinitions: BOND_DEFINITIONS,
+      },
+    );
     expect(dependencies.cache.set).toHaveBeenCalledWith('cache-key', envelope, 5 * 60_000);
   });
 

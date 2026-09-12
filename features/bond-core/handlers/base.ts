@@ -37,9 +37,10 @@ export interface HandlerData {
   ) => Promise<{
     firstYearRate: number;
     margin: number;
-    source: 'series' | 'definition';
+    source: 'series' | 'definition' | 'unresolved';
     seriesCode?: string;
     emissionMonth?: string;
+    requestedSeriesId?: string;
   }>;
 }
 

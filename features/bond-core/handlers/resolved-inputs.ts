@@ -27,6 +27,7 @@ export async function resolveScenarioInputs({
   return {
     definition,
     resolvedOffer,
+    offerIsUnresolved: resolvedOffer.source === 'unresolved',
     inputs: {
       ...inputs,
       firstYearRate:

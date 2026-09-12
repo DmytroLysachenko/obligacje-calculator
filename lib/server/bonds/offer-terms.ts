@@ -15,9 +15,10 @@ const logger = createServerLogger('BondOfferTerms');
 export interface ResolvedBondOfferTerms {
   firstYearRate: number;
   margin: number;
-  source: 'series' | 'definition';
+  source: 'series' | 'definition' | 'unresolved';
   seriesCode?: string;
   emissionMonth?: string;
+  requestedSeriesId?: string;
 }
 
 export interface ResolvedStoredBondLotContext {
@@ -96,6 +97,15 @@ export async function resolveBondOfferTerms(
           emissionMonth: exactSeries.emissionMonth,
         };
       }
+
+      // A recorded or explicitly selected series is historical fact. Do not
+      // silently replace it with the active offer when the catalogue cannot
+      // verify it.
+      return {
+        ...fallback,
+        source: 'unresolved',
+        requestedSeriesId: selectedSeriesId,
+      };
     }
 
     const activeSeries = await findActiveBondSeriesForDate(bond.id, purchaseDate);

@@ -59,6 +59,35 @@ export const BondInputsSchema = withDateOrderValidation(
   );
 });
 
+/** HTTP/share-link compatibility decoder: drops issuer-controlled legacy keys. */
+export const SingleBondCalculationIntentSchema = withDateOrderValidation(
+  BaseInstrumentInputsSchema.extend({
+    initialInvestment: money('initialInvestment', 100),
+    bondType: z.nativeEnum(BondType),
+    expectedInflation: percent('expectedInflation', -20, 100),
+    expectedNbpRate: percent('expectedNbpRate', -10, 100).optional(),
+    isRebought: z.boolean(),
+    taxStrategy: z.nativeEnum(TaxStrategy),
+    savingsGoal: money('savingsGoal', 0).optional(),
+    customInflation: customPathSchema('customInflation', -20, 100),
+    customNbpRate: customPathSchema('customNbpRate', -10, 100),
+    rollover: z.boolean().optional(),
+    timingMode: z.enum(['general', 'exact']).optional(),
+    investmentHorizonMonths: horizonMonths(360).optional(),
+    useTaxWrapperLimit: z.boolean().optional(),
+    inflationScenario: z.enum(['low', 'base', 'high']).optional(),
+    selectedSeriesId: z.string().uuid().nullable().optional(),
+  }),
+).superRefine((value, ctx) => {
+  validatePathLengths(
+    value,
+    typeof value.investmentHorizonMonths === 'number'
+      ? value.investmentHorizonMonths / 12
+      : undefined,
+    ctx,
+  );
+});
+
 export const RegularInvestmentInputsSchema = withDateOrderValidation(
   DateRangeInputsSchema.extend({
     contributionAmount: money('contributionAmount', 100, 10_000_000),
@@ -79,6 +108,26 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(
     taxStrategy: z.nativeEnum(TaxStrategy),
     savingsGoal: money('savingsGoal', 0).optional(),
     historicalData: HistoricalDataMapSchema,
+    inflationScenario: z.enum(['low', 'base', 'high']).optional(),
+    customInflation: customPathSchema('customInflation', -20, 100),
+    customNbpRate: customPathSchema('customNbpRate', -10, 100),
+    timingMode: z.enum(['general', 'exact']).optional(),
+  }),
+).superRefine((value, ctx) => {
+  validatePathLengths(value, value.investmentHorizonMonths / 12, ctx);
+});
+
+export const RegularInvestmentCalculationIntentSchema = withDateOrderValidation(
+  DateRangeInputsSchema.extend({
+    contributionAmount: money('contributionAmount', 100, 10_000_000),
+    frequency: z.nativeEnum(InvestmentFrequency),
+    investmentHorizonMonths: horizonMonths(600),
+    bondType: z.nativeEnum(BondType),
+    expectedInflation: percent('expectedInflation', -20, 100),
+    expectedNbpRate: percent('expectedNbpRate', -10, 100).optional(),
+    isRebought: z.boolean(),
+    taxStrategy: z.nativeEnum(TaxStrategy),
+    savingsGoal: money('savingsGoal', 0).optional(),
     inflationScenario: z.enum(['low', 'base', 'high']).optional(),
     customInflation: customPathSchema('customInflation', -20, 100),
     customNbpRate: customPathSchema('customNbpRate', -10, 100),
@@ -176,6 +225,7 @@ export const RetirementPlannerPayloadSchema = z.object({
   bondType: z.nativeEnum(BondType),
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
   horizonYears: finiteNumber('horizonYears').int().min(1).max(50),
+  projectionStartDate: DateStringSchema.optional(),
 });
 
 export const BondOptimizerPayloadSchema = z
@@ -202,6 +252,7 @@ export const PortfolioSimulationPayloadSchema = z
           bondType: z.nativeEnum(BondType),
           amount: money('investment amount', 1),
           purchaseDate: DateStringSchema,
+          selectedSeriesId: z.string().uuid().nullable().optional(),
           isRebought: z.boolean().optional(),
           taxStrategy: z.nativeEnum(TaxStrategy).optional(),
           rollover: z.boolean().optional(),
@@ -228,11 +279,11 @@ export const PortfolioSimulationPayloadSchema = z
 const CalculationScenarioRequestSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal(ScenarioKind.SINGLE_BOND),
-    payload: BondInputsSchema,
+    payload: SingleBondCalculationIntentSchema,
   }),
   z.object({
     kind: z.literal(ScenarioKind.REGULAR_INVESTMENT),
-    payload: RegularInvestmentInputsSchema,
+    payload: RegularInvestmentCalculationIntentSchema,
   }),
   z.object({
     kind: z.literal(ScenarioKind.BOND_COMPARISON),

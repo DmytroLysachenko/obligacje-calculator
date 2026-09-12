@@ -9,11 +9,52 @@ import {
   TaxStrategy,
 } from './index';
 
+/** Caller-owned facts for a one-time bond projection. */
+export type SingleBondCalculationIntent = Pick<
+  BondInputs,
+  | 'bondType'
+  | 'initialInvestment'
+  | 'expectedInflation'
+  | 'expectedNbpRate'
+  | 'purchaseDate'
+  | 'withdrawalDate'
+  | 'isRebought'
+  | 'taxStrategy'
+  | 'savingsGoal'
+  | 'customInflation'
+  | 'customNbpRate'
+  | 'rollover'
+  | 'timingMode'
+  | 'investmentHorizonMonths'
+  | 'useTaxWrapperLimit'
+  | 'inflationScenario'
+  | 'selectedSeriesId'
+>;
+
+/** Caller-owned facts for a recurring bond-contribution projection. */
+export type RegularInvestmentCalculationIntent = Pick<
+  RegularInvestmentInputs,
+  | 'contributionAmount'
+  | 'frequency'
+  | 'investmentHorizonMonths'
+  | 'bondType'
+  | 'expectedInflation'
+  | 'expectedNbpRate'
+  | 'purchaseDate'
+  | 'withdrawalDate'
+  | 'isRebought'
+  | 'taxStrategy'
+  | 'savingsGoal'
+  | 'customInflation'
+  | 'customNbpRate'
+  | 'timingMode'
+  | 'inflationScenario'
+>;
+
 export enum ScenarioKind {
   SINGLE_BOND = 'single-bond',
   REGULAR_INVESTMENT = 'regular-investment',
   BOND_COMPARISON = 'bond-comparison',
-  MULTI_ASSET = 'multi-asset',
   PORTFOLIO_SIMULATION = 'portfolio-simulation',
   BOND_OPTIMIZER = 'bond-optimizer',
   RETIREMENT_PLANNER = 'retirement-planner',
@@ -65,12 +106,12 @@ export interface CalculationEnvelope<T> {
 
 interface SingleBondScenarioRequest {
   kind: ScenarioKind.SINGLE_BOND;
-  payload: BondInputs;
+  payload: SingleBondCalculationIntent;
 }
 
 interface RegularInvestmentScenarioRequest {
   kind: ScenarioKind.REGULAR_INVESTMENT;
-  payload: RegularInvestmentInputs;
+  payload: RegularInvestmentCalculationIntent;
 }
 
 export interface RetirementPlannerPayload {
@@ -81,6 +122,11 @@ export interface RetirementPlannerPayload {
   bondType: BondType;
   taxStrategy?: TaxStrategy;
   horizonYears: number;
+  /**
+   * Declared projection origin. Legacy callers may omit it; the application
+   * service supplies today's calendar date before cache-key construction.
+   */
+  projectionStartDate?: string;
 }
 
 interface RetirementPlannerRequest {
@@ -192,6 +238,8 @@ export interface PortfolioSimulationPayload {
     bondType: BondType;
     amount: number;
     purchaseDate: string;
+    /** Issued-series identity retained by a recorded holding when available. */
+    selectedSeriesId?: string | null;
     isRebought?: boolean;
     taxStrategy?: TaxStrategy;
     rollover?: boolean;
@@ -273,6 +321,27 @@ export type CalculationScenarioRequest =
   | PortfolioSimulationRequest
   | BondOptimizerRequest
   | RetirementPlannerRequest;
+
+/**
+ * Makes every time-dependent calculation explicit before it reaches caching
+ * or a handler. Kept compatible with existing retirement links/payloads.
+ */
+export function normalizeCalculationScenarioRequest<TRequest extends CalculationScenarioRequest>(
+  request: TRequest,
+  projectionStartDate = new Date().toISOString().slice(0, 10),
+): TRequest {
+  if (
+    request.kind === ScenarioKind.RETIREMENT_PLANNER &&
+    request.payload.projectionStartDate === undefined
+  ) {
+    return {
+      ...request,
+      payload: { ...request.payload, projectionStartDate },
+    } as TRequest;
+  }
+
+  return request;
+}
 
 export type SingleBondCalculationEnvelope = CalculationEnvelope<CalculationResult>;
 export type RegularInvestmentCalculationEnvelope = CalculationEnvelope<RegularInvestmentResult>;

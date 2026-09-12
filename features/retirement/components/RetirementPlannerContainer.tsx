@@ -76,6 +76,7 @@ export const RetirementPlannerContainer: React.FC = () => {
         (draft) => ({
           ...draft,
           bondType: getSupportedRetirementBondType(draft.bondType),
+          projectionStartDate: new Date().toISOString().slice(0, 10),
         }),
       );
     } catch (error) {
