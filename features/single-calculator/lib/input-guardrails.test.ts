@@ -47,4 +47,15 @@ describe('input guardrails', () => {
       applyGuardrailFix(issue!, { ...baseInputs, withdrawalDate: '2025-12-01' }).withdrawalDate,
     ).toBe('2026-02-01');
   });
+
+  it('blocks partial bond quantities and rounds to the supported denomination', () => {
+    const issue = getInputGuardrails({ ...baseInputs, initialInvestment: 1_250 }).find(
+      ({ id }) => id === 'whole-bond-quantity',
+    );
+
+    expect(issue?.severity).toBe('blocking');
+    expect(
+      applyGuardrailFix(issue!, { ...baseInputs, initialInvestment: 1_250 }).initialInvestment,
+    ).toBe(1_200);
+  });
 });
