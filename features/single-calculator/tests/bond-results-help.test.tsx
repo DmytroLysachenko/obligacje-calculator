@@ -27,7 +27,13 @@ describe('bond result calculation-details trigger', () => {
       netPayoutValue: 1180,
     } as CalculationResult;
 
-    render(<MathDeepDive results={results} trigger={<CalculationDetailsTrigger />} />);
+    render(
+      <MathDeepDive
+        results={results}
+        inputs={{ margin: 1.5, isCapitalized: true }}
+        trigger={<CalculationDetailsTrigger />}
+      />,
+    );
 
     const trigger = screen.getByRole('button', {
       name: 'bonds.results.show_calculation_details',
@@ -37,5 +43,6 @@ describe('bond result calculation-details trigger', () => {
     await user.keyboard('{Enter}');
 
     expect(await screen.findByText('bonds.how_calculated')).toBeTruthy();
+    expect(screen.getByText('bonds.how_interest_works')).toBeTruthy();
   });
 });

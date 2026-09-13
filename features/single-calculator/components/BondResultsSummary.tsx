@@ -185,7 +185,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           <ScenarioFactsBlock
             title={t('bonds.results.scenario_facts_title')}
             description={t('bonds.results.scenario_facts_description')}
-            actions={<MathDeepDive results={results} trigger={<CalculationDetailsTrigger />} />}
+            actions={
+              <MathDeepDive
+                results={results}
+                inputs={inputs}
+                trigger={<CalculationDetailsTrigger />}
+              />
+            }
             items={scenarioFacts}
           />
         </div>
