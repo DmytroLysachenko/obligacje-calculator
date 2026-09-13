@@ -156,6 +156,36 @@ describe('Regular investment golden regressions', () => {
     expect(quarterly.totalProfit).toBeGreaterThan(yearly.totalProfit);
   });
 
+  it('uses resolved issuer terms instead of caller-supplied rate fields', async () => {
+    const trusted = await getRegularResult(BondType.EDO, {
+      investmentHorizonMonths: 36,
+      purchaseDate: '2026-05-05',
+      withdrawalDate: '2029-05-05',
+      timingMode: 'exact',
+    });
+    const callerTamperedPayload = {
+      ...buildRegularPayload(BondType.EDO, {
+        investmentHorizonMonths: 36,
+        purchaseDate: '2026-05-05',
+        withdrawalDate: '2029-05-05',
+        timingMode: 'exact',
+      }),
+      firstYearRate: 99,
+      margin: 99,
+      duration: 99,
+      earlyWithdrawalFee: 0,
+    };
+    const envelope = await calculationService.calculate({
+      kind: ScenarioKind.REGULAR_INVESTMENT,
+      payload: callerTamperedPayload,
+    });
+    const sanitized = envelope.result as RegularInvestmentResult;
+
+    expect(sanitized.finalNominalValue).toBeCloseTo(trusted.finalNominalValue, 8);
+    expect(sanitized.totalProfit).toBeCloseTo(trusted.totalProfit, 8);
+    expect(sanitized.totalTax).toBeCloseTo(trusted.totalTax, 8);
+  });
+
   it('keeps the EDO wrapper spread ordered by tax treatment', async () => {
     const standard = await getRegularResult(BondType.EDO, {
       investmentHorizonMonths: 60,

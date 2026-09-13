@@ -289,13 +289,27 @@ describe('calculation request validation hardening', () => {
     );
   });
 
-  it('keeps regular investment schema independent from chart display controls', () => {
-    const parsed = RegularInvestmentInputsSchema.parse({
-      ...regularPayload(),
-      chartStep: 'yearly',
+  it('keeps regular investment intent independent from display and issuer fields', () => {
+    const parsed = parseCalculationScenarioRequest({
+      kind: ScenarioKind.REGULAR_INVESTMENT,
+      payload: {
+        ...regularPayload(),
+        chartStep: 'yearly',
+        firstYearRate: 99,
+        margin: 99,
+        duration: 99,
+        earlyWithdrawalFee: 99,
+      },
     });
 
-    expect('chartStep' in parsed).toBe(false);
+    if (parsed.kind !== ScenarioKind.REGULAR_INVESTMENT) {
+      throw new Error('expected regular-investment request');
+    }
+    expect('chartStep' in parsed.payload).toBe(false);
+    expect('firstYearRate' in parsed.payload).toBe(false);
+    expect('margin' in parsed.payload).toBe(false);
+    expect('duration' in parsed.payload).toBe(false);
+    expect('earlyWithdrawalFee' in parsed.payload).toBe(false);
   });
 
   it('rejects optimizer requests without any horizon definition', () => {
