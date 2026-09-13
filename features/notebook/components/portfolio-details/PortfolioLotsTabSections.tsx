@@ -83,8 +83,59 @@ export function PortfolioLotsTableSection({
                 {t('notebook.lots_count', { count: String(lots.length) })}
               </p>
             </div>
-            <TableScrollHint>{t('notebook.stored_lots_hint')}</TableScrollHint>
-            <div className="overflow-x-auto">
+            <div className="grid gap-px border-b border-border bg-border lg:hidden">
+              {lots.map((lot) => (
+                <article key={`mobile-${lot.id}`} className="space-y-4 bg-background p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-foreground">{lot.bondType}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {formatBondDuration(
+                          definitions[lot.bondType as BondType]?.duration ?? 1,
+                          language,
+                        )}
+                      </p>
+                    </div>
+                    <Button variant="outline" size="icon" className="min-h-11 min-w-11" asChild>
+                      <a
+                        href={`/single-calculator?bondType=${lot.bondType}&purchaseDate=${lot.purchaseDate}`}
+                        aria-label={t('notebook.open_lot_calculator', {
+                          bondType: lot.bondType,
+                        })}
+                      >
+                        <ExternalLink aria-hidden="true" className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                    <div>
+                      <dt className="text-muted-foreground">{t('notebook.column_amount')}</dt>
+                      <dd className="financial-number mt-1 font-semibold text-foreground">
+                        {lot.bondQuantity}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground">
+                        {t('notebook.column_nominal_value')}
+                      </dt>
+                      <dd className="financial-number mt-1 font-semibold text-foreground">
+                        {formatCurrency(Number(lot.bondQuantity) * 100)}
+                      </dd>
+                    </div>
+                    <div className="col-span-2">
+                      <dt className="text-muted-foreground">
+                        {t('notebook.column_purchase_date')}
+                      </dt>
+                      <dd className="mt-1 font-medium text-foreground">
+                        {formatIsoDate(lot.purchaseDate, language)}
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+            <div className="hidden overflow-x-auto lg:block">
+              <TableScrollHint>{t('notebook.stored_lots_hint')}</TableScrollHint>
               <Table
                 className="w-full table-fixed text-sm tabular-nums"
                 aria-label={t('notebook.stored_lots_hint')}
