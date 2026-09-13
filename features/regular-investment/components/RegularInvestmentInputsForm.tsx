@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';
@@ -33,10 +34,29 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
     if (isLoadingDefs || !definitions) {
       return (
         <section
-          className="ui-form-panel flex h-[600px] w-full items-center justify-center"
+          className="ui-form-panel w-full space-y-7"
           aria-busy="true"
+          aria-label={t('common.loading')}
         >
-          <p className="text-sm font-semibold text-muted-foreground">{t('common.loading')}</p>
+          <div className="space-y-3 border-b border-border pb-5">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-4 w-full max-w-md" />
+          </div>
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-11 w-full rounded-md" />
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-11 w-full rounded-md" />
+              <Skeleton className="h-10 w-full rounded-md" />
+            </div>
+            <div className="space-y-3">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-11 w-full rounded-md" />
+            </div>
+          </div>
         </section>
       );
     }
