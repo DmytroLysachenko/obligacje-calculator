@@ -57,12 +57,14 @@ export function TimingSection({
       >
         <FormField
           label={t('bonds.purchase_date')}
+          htmlFor="regular-purchase-date"
           tooltip={t('regular_form.start_date_help')}
           labelClassName="text-muted-foreground"
         >
           <Popover>
             <PopoverTrigger asChild>
               <Button
+                id="regular-purchase-date"
                 variant="outline"
                 className={cn(
                   'h-11 w-full justify-start px-3 text-left text-[15px] font-normal',
@@ -94,12 +96,14 @@ export function TimingSection({
         {timingMode === 'exact' ? (
           <FormField
             label={t('bonds.withdrawal_date')}
+            htmlFor="regular-withdrawal-date"
             tooltip={t('regular_form.withdrawal_date_help')}
             labelClassName="text-muted-foreground"
           >
             <Popover>
               <PopoverTrigger asChild>
                 <Button
+                  id="regular-withdrawal-date"
                   variant="outline"
                   className={cn(
                     'h-11 w-full justify-start px-3 text-left text-[15px] font-normal',
