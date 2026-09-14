@@ -11,6 +11,7 @@ import {
 } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { CalculatorLoadingState } from '@/shared/components/feedback/CalculatorLoadingState';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 
 import { InputGuardrailIssue } from '../lib/input-guardrails';
@@ -94,26 +95,7 @@ export function BondCalculatorResultsPanel({
         />
       ) : null}
 
-      {isCalculating && !results ? (
-        <div
-          className="ui-control-stack"
-          role="status"
-          aria-live="polite"
-          aria-label={t('common.loading')}
-        >
-          <div className="ui-surface-flush space-y-4 p-5 md:p-6">
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-11 w-2/3 max-w-sm" />
-            <Skeleton className="h-5 w-full max-w-xl" />
-          </div>
-          <div className="ui-metric-grid grid-cols-1 md:grid-cols-3">
-            <Skeleton className="h-28 w-full rounded-md" />
-            <Skeleton className="h-28 w-full rounded-md" />
-            <Skeleton className="h-28 w-full rounded-md" />
-          </div>
-          <Skeleton className="h-[300px] w-full rounded-md md:h-[420px]" />
-        </div>
-      ) : null}
+      {isCalculating && !results ? <CalculatorLoadingState label={t('common.loading')} /> : null}
 
       {results ? (
         <div

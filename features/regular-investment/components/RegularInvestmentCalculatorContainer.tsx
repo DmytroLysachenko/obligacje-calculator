@@ -6,6 +6,7 @@ import React, { useMemo, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { CalculatorLoadingState } from '@/shared/components/feedback/CalculatorLoadingState';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
@@ -26,14 +27,6 @@ const RegularInvestmentResultsSummary = dynamic(
 const RegularInvestmentDetails = dynamic(
   () => import('./RegularInvestmentDetails').then((module) => module.RegularInvestmentDetails),
   { loading: () => <Skeleton className="h-[320px] w-full rounded-md md:h-[420px]" /> },
-);
-const LoadingState = () => (
-  <div className="ui-control-stack" role="status" aria-live="polite">
-    <Skeleton className="h-28 w-full rounded-md md:h-32" />
-    <Skeleton className="h-[280px] w-full rounded-md md:h-[320px]" />
-    <Skeleton className="h-[320px] w-full rounded-md md:h-[420px]" />
-    <Skeleton className="h-[220px] w-full rounded-md md:h-[260px]" />
-  </div>
 );
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
   const {
@@ -133,7 +126,12 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
               />
             ) : null}
 
-            {isCalculating && !results ? <LoadingState /> : null}
+            {isCalculating && !results ? (
+              <CalculatorLoadingState
+                label={t('common.loading')}
+                chartClassName="h-[320px] md:h-[420px]"
+              />
+            ) : null}
 
             {results ? (
               <div

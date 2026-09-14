@@ -6,6 +6,7 @@ import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { CalculatorLoadingState } from '@/shared/components/feedback/CalculatorLoadingState';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
@@ -65,13 +66,6 @@ const LadderEmptyState = () => {
     </section>
   );
 };
-const LadderLoadingState = () => (
-  <div className="ui-control-stack" role="status">
-    <Skeleton className="h-28 w-full rounded-md" />
-    <Skeleton className="h-48 w-full rounded-md" />
-    <Skeleton className="h-[460px] w-full rounded-md" />
-  </div>
-);
 export const LadderContainer: React.FC = () => {
   const {
     inputs,
@@ -133,7 +127,13 @@ export const LadderContainer: React.FC = () => {
         results={
           <>
             {!results && !isCalculating ? <LadderEmptyState /> : null}
-            {isCalculating && !results ? <LadderLoadingState /> : null}
+            {isCalculating && !results ? (
+              <CalculatorLoadingState
+                label={t('common.loading')}
+                metricCount={1}
+                chartClassName="h-[460px]"
+              />
+            ) : null}
 
             {results ? (
               <div
