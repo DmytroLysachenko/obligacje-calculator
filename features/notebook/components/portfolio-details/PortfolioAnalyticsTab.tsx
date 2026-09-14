@@ -32,6 +32,7 @@ export function PortfolioAnalyticsTab({
   formatCurrency,
   t,
 }: PortfolioAnalyticsTabProps) {
+  const latestPoint = simulation?.aggregatedTimeline?.at(-1);
   return (
     <>
       <section className="space-y-4 border-t border-border py-5">
@@ -43,6 +44,34 @@ export function PortfolioAnalyticsTab({
           title={t('notebook.projection_read_title')}
           description={t('notebook.projection_read_desc')}
         />
+        {latestPoint ? (
+          <dl className="grid grid-cols-1 gap-px border-y border-border bg-border sm:grid-cols-3">
+            <div className="space-y-1 bg-background p-4">
+              <dt className="ui-meta font-semibold text-muted-foreground">
+                {t('notebook.total_value_label')}
+              </dt>
+              <dd className="financial-number text-lg font-semibold text-foreground">
+                {formatCurrency(latestPoint.totalNetValue)}
+              </dd>
+            </div>
+            <div className="space-y-1 bg-background p-4">
+              <dt className="ui-meta font-semibold text-muted-foreground">
+                {t('common.net_profit')}
+              </dt>
+              <dd className="financial-number text-lg font-semibold text-foreground">
+                {formatCurrency(latestPoint.totalProfit)}
+              </dd>
+            </div>
+            <div className="space-y-1 bg-background p-4">
+              <dt className="ui-meta font-semibold text-muted-foreground">
+                {t('comparison.table_tax_paid')}
+              </dt>
+              <dd className="financial-number text-lg font-semibold text-foreground">
+                {formatCurrency(latestPoint.totalTax)}
+              </dd>
+            </div>
+          </dl>
+        ) : null}
         {isSimulating ? (
           <div className="flex min-h-[320px] items-center justify-center gap-3 text-sm text-muted-foreground">
             <Loader2 className="h-5 w-5 animate-spin" />
