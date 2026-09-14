@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';
 import { ParameterSummary } from '@/shared/components/results/ParameterSummary';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
@@ -12,6 +13,7 @@ import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { type FieldUpdater } from '@/shared/types/field-updater';
 
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
+import { RegularInvestmentGuardrail } from '../lib/regular-investment-guardrails';
 
 import { AdvancedSettingsSection } from './inputs/AdvancedSettingsSection';
 import { BondSelectionSection } from './inputs/BondSelectionSection';
@@ -23,10 +25,12 @@ interface RegularInvestmentInputsFormProps {
   onUpdate: FieldUpdater<RegularInvestmentInputs>;
   onBondTypeChange: (type: BondType) => void;
   action?: React.ReactNode;
+  guardrails?: RegularInvestmentGuardrail[];
+  guardrailSummaryRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormProps> = React.memo(
-  ({ inputs, onUpdate, onBondTypeChange, action }) => {
+  ({ inputs, onUpdate, onBondTypeChange, action, guardrails = [], guardrailSummaryRef }) => {
     const { t, locale: language } = useAppI18n();
     const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
     const [showCustomTax, setShowCustomTax] = useState(false);
@@ -78,6 +82,24 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             {t('regular_investment_page.form_description')}
           </p>
         </div>
+        {guardrails.length > 0 ? (
+          <div
+            ref={guardrailSummaryRef}
+            tabIndex={-1}
+            className="ui-control-stack"
+            role="alert"
+            aria-live="assertive"
+          >
+            {guardrails.map((issue) => (
+              <FormInlineNotice
+                key={issue.id}
+                tone="warning"
+                title={`${issue.severity}: ${issue.title}`}
+                description={issue.description}
+              />
+            ))}
+          </div>
+        ) : null}
         <div className="ui-control-stack">
           <ScenarioFieldset
             title={t('regular_investment_page.core_plan_title')}

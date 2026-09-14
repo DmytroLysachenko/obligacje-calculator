@@ -1,7 +1,7 @@
 'use client';
 import { PiggyBank } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import React from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
@@ -12,6 +12,7 @@ import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShel
 import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
+import { getRegularInvestmentGuardrails } from '../lib/regular-investment-guardrails';
 
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 const RegularInvestmentResultsSummary = dynamic(
@@ -50,6 +51,9 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     hasPreviousOfferResult,
   } = useRegularInvestmentCalculator();
   const { t } = useAppI18n();
+  const guardrailSummaryRef = useRef<HTMLDivElement>(null);
+  const guardrails = useMemo(() => getRegularInvestmentGuardrails(inputs), [inputs]);
+  const hasBlockingGuardrails = guardrails.some((issue) => issue.severity === 'blocking');
   const readingGuide = [
     t('regular_investment_page.reading_guide.follow_contribution'),
     t('regular_investment_page.reading_guide.compare_lot_age'),
@@ -57,6 +61,10 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
   ];
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && (isDirty || !results)) {
+      if (hasBlockingGuardrails) {
+        guardrailSummaryRef.current?.focus();
+        return;
+      }
       calculate();
     }
   };
@@ -93,6 +101,8 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             inputs={inputs}
             onUpdate={updateInput}
             onBondTypeChange={setBondType}
+            guardrails={guardrails}
+            guardrailSummaryRef={guardrailSummaryRef}
           />
         }
         results={
@@ -171,7 +181,14 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         isDirty={isDirty}
         hasResults={!!results}
         loading={isCalculating}
-        onClick={() => calculate()}
+        disabled={hasBlockingGuardrails}
+        onClick={() => {
+          if (hasBlockingGuardrails) {
+            guardrailSummaryRef.current?.focus();
+            return;
+          }
+          calculate();
+        }}
       />
     </CalculatorPageShell>
   );
