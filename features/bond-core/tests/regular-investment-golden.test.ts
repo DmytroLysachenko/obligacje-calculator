@@ -314,4 +314,42 @@ describe('Regular investment golden regressions', () => {
       8,
     );
   });
+
+  it.each([
+    [BondType.OTS, 3, 3],
+    [BondType.ROR, 6, 6],
+    [BondType.COI, 12, 12],
+  ])(
+    'records one final withdrawal and no post-horizon contribution for %s',
+    async (bondType, investmentHorizonMonths, expectedLots) => {
+      const result = await getRegularResult(bondType, {
+        investmentHorizonMonths,
+        purchaseDate: '2026-05-05',
+        withdrawalDate: getWithdrawalDateFromMonths('2026-05-05', investmentHorizonMonths),
+        timingMode: 'exact',
+        rollover: false,
+      });
+
+      expect(result.lots).toHaveLength(expectedLots);
+      expect(result.timeline).toHaveLength(investmentHorizonMonths + 1);
+      expect(
+        result.timeline.at(-1)?.events?.filter((event) => event.type === 'WITHDRAWAL'),
+      ).toHaveLength(1);
+      expect(result.timeline.at(-1)?.totalInvested).toBe(expectedLots * 1000);
+    },
+  );
+
+  it('charges early-exit fees without reducing the recorded invested amount', async () => {
+    const result = await getRegularResult(BondType.EDO, {
+      investmentHorizonMonths: 12,
+      purchaseDate: '2026-05-05',
+      withdrawalDate: '2027-05-05',
+      timingMode: 'exact',
+      rollover: false,
+    });
+
+    expect(result.totalInvested).toBe(12_000);
+    expect(result.totalEarlyWithdrawalFees).toBeGreaterThan(0);
+    expect(result.finalNominalValue).toBeGreaterThan(0);
+  });
 });
