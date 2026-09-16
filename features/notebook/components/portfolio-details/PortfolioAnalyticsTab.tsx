@@ -45,13 +45,21 @@ export function PortfolioAnalyticsTab({
           description={t('notebook.projection_read_desc')}
         />
         {latestPoint ? (
-          <dl className="grid grid-cols-1 gap-px border-y border-border bg-border sm:grid-cols-3">
+          <dl className="grid grid-cols-1 gap-px border-y border-border bg-border sm:grid-cols-4">
             <div className="space-y-1 bg-background p-4">
               <dt className="ui-meta font-semibold text-muted-foreground">
                 {t('notebook.total_value_label')}
               </dt>
               <dd className="financial-number text-lg font-semibold text-foreground">
                 {formatCurrency(latestPoint.totalNetValue)}
+              </dd>
+            </div>
+            <div className="space-y-1 bg-background p-4">
+              <dt className="ui-meta font-semibold text-muted-foreground">
+                {t('bonds.real_value_inflation')}
+              </dt>
+              <dd className="financial-number text-lg font-semibold text-foreground">
+                {formatCurrency(latestPoint.totalRealValue)}
               </dd>
             </div>
             <div className="space-y-1 bg-background p-4">

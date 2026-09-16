@@ -14,6 +14,7 @@ import {
   calculateBondsPerformance,
   calculateSavingsPerformance,
 } from '../../bond-core/utils/asset-calculations';
+import { createMonthlyPriceIndexPath } from '../../bond-core/utils/engine/price-index';
 import { ASSETS_METADATA } from '../constants/multi-asset';
 import {
   buildMultiAssetDraftStateFromQuery,
@@ -166,19 +167,30 @@ export function useMultiAssetComparison() {
   );
 
   const purchasingPowerLoss = useMemo(() => {
-    let cumulativeInflation = 1;
-    let totalInvested = committed.initialSum;
+    if (filteredData.length === 0) return 0;
+
+    const priceIndexPath = createMonthlyPriceIndexPath(
+      filteredData.map((row) => ({
+        date: row.date,
+        changePercent: row.inflation,
+        kind: row.inflationKind ?? 'month_on_month',
+      })),
+    );
+    const startDate = new Date(`${filteredData[0].date}-01T00:00:00`);
+    let nominalContributions = committed.initialSum;
+    let realContributions = committed.initialSum;
 
     for (const row of filteredData) {
-      cumulativeInflation *= 1 + (row.inflation || 0) / 100;
-      totalInvested += committed.monthlyContribution;
+      // Monthly contributions are made at the beginning of their month, so
+      // their purchasing power is not deflated by that same month's CPI.
+      const contributionDate = new Date(`${row.date}-01T00:00:00`);
+      nominalContributions += committed.monthlyContribution;
+      realContributions += priceIndexPath
+        .deflate(committed.monthlyContribution, startDate, contributionDate)
+        .toNumber();
     }
 
-    if (cumulativeInflation <= 0) {
-      return 0;
-    }
-
-    return totalInvested - totalInvested / cumulativeInflation;
+    return nominalContributions - realContributions;
   }, [committed.initialSum, committed.monthlyContribution, filteredData]);
 
   const years = useMemo(() => {
@@ -221,6 +233,7 @@ export function useMultiAssetComparison() {
     usedFallbackHistory: historyResponse?.usedFallback ?? true,
     historyLastSyncedAt: historyResponse?.lastSyncedAt,
     historySeriesAvailability: historyResponse?.seriesAvailability,
+    priceIndexIsApproximate: sourceData.some((row) => row.inflationKind === 'year_over_year'),
     historyData: filteredData,
     committedScenario: committed,
   };

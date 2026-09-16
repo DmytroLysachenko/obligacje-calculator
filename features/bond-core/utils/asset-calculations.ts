@@ -1,8 +1,26 @@
+import { addMonths, parseISO } from 'date-fns';
+
 import { HISTORICAL_RETURNS, MonthlyReturn } from '../constants/historical-data';
 import { AssetMetadata, AssetPerformanceSeries, DataPoint } from '../types/assets';
 
+import { createMonthlyPriceIndexPath } from './engine/price-index';
+
 function sanitizePercent(value: number): number {
   return Number.isFinite(value) ? value : 0;
+}
+
+function historicalPricePath(data: MonthlyReturn[]) {
+  return createMonthlyPriceIndexPath(
+    data.map((row) => ({
+      date: row.date,
+      changePercent: row.inflation,
+      kind: row.inflationKind ?? 'month_on_month',
+    })),
+  );
+}
+
+function monthEnd(date: string) {
+  return addMonths(parseISO(`${date}-01`), 1);
 }
 
 /**
@@ -19,7 +37,8 @@ export function calculateAssetPerformance(
   const series: DataPoint[] = [];
   let currentValue = initialSum;
   let peakValue = initialSum;
-  let cumulativeInflation = 1;
+  const priceIndexPath = historicalPricePath(data);
+  const startDate = data[0] ? parseISO(`${data[0].date}-01`) : new Date(2000, 0, 1);
 
   // Initial Point
   series.push({
@@ -32,7 +51,6 @@ export function calculateAssetPerformance(
 
   for (const row of data) {
     const monthlyReturn = sanitizePercent(row[returnKey] as number);
-    const monthlyInflation = sanitizePercent(row.inflation);
 
     // 1. Add monthly contribution at start of month
     currentValue += monthlyContribution;
@@ -40,10 +58,7 @@ export function calculateAssetPerformance(
     // 2. Calculate Nominal Growth
     currentValue *= 1 + monthlyReturn / 100;
 
-    // 3. Track Cumulative Inflation
-    cumulativeInflation *= 1 + monthlyInflation / 100;
-
-    // 4. Calculate Drawdown
+    // 3. Calculate Drawdown
     if (currentValue > peakValue) {
       peakValue = currentValue;
     }
@@ -54,7 +69,7 @@ export function calculateAssetPerformance(
       value: currentValue,
       percentChange: monthlyReturn,
       drawdown: sanitizePercent(drawdown),
-      realValue: currentValue / cumulativeInflation,
+      realValue: priceIndexPath.deflate(currentValue, startDate, monthEnd(row.date)).toNumber(),
     });
   }
 
@@ -77,7 +92,8 @@ export function calculateBondsPerformance(
   const series: DataPoint[] = [];
   let currentValue = initialSum;
   let peakValue = initialSum;
-  let cumulativeInflation = 1;
+  const priceIndexPath = historicalPricePath(data);
+  const startDate = data[0] ? parseISO(`${data[0].date}-01`) : new Date(2000, 0, 1);
 
   // Initial Point
   series.push({
@@ -92,9 +108,6 @@ export function calculateBondsPerformance(
   const lots: { value: number; monthsHeld: number }[] = [{ value: initialSum, monthsHeld: 0 }];
 
   for (const row of data) {
-    const monthlyInflation = sanitizePercent(row.inflation);
-    cumulativeInflation *= 1 + monthlyInflation / 100;
-
     // Add new monthly contribution as a new lot
     if (monthlyContribution > 0) {
       lots.push({ value: monthlyContribution, monthsHeld: 0 });
@@ -126,7 +139,7 @@ export function calculateBondsPerformance(
       value: currentValue,
       percentChange: 0, // Simplified
       drawdown: sanitizePercent(drawdown),
-      realValue: currentValue / cumulativeInflation,
+      realValue: priceIndexPath.deflate(currentValue, startDate, monthEnd(row.date)).toNumber(),
     });
   }
 
@@ -150,7 +163,8 @@ export function calculateSavingsPerformance(
   const series: DataPoint[] = [];
   let currentValue = initialSum;
   let peakValue = initialSum;
-  let cumulativeInflation = 1;
+  const priceIndexPath = historicalPricePath(data);
+  const startDate = data[0] ? parseISO(`${data[0].date}-01`) : new Date(2000, 0, 1);
 
   // Initial Point
   series.push({
@@ -162,9 +176,6 @@ export function calculateSavingsPerformance(
   });
 
   for (const row of data) {
-    const monthlyInflation = sanitizePercent(row.inflation);
-    cumulativeInflation *= 1 + monthlyInflation / 100;
-
     // 1. Add contribution
     currentValue += monthlyContribution;
 
@@ -189,7 +200,7 @@ export function calculateSavingsPerformance(
       value: currentValue,
       percentChange: sanitizePercent(monthlyRate),
       drawdown: sanitizePercent(drawdown),
-      realValue: currentValue / cumulativeInflation,
+      realValue: priceIndexPath.deflate(currentValue, startDate, monthEnd(row.date)).toNumber(),
     });
   }
 

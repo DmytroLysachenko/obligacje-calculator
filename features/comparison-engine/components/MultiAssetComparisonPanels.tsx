@@ -29,6 +29,7 @@ interface MultiAssetHistoryStatePanelProps {
   historySourceLabel: string;
   historyAsOfLabel: string;
   availabilitySummary: string;
+  priceIndexIsApproximate: boolean;
   t: Translate;
 }
 
@@ -38,6 +39,7 @@ export function MultiAssetHistoryStatePanel({
   historySourceLabel,
   historyAsOfLabel,
   availabilitySummary,
+  priceIndexIsApproximate,
   t,
 }: MultiAssetHistoryStatePanelProps) {
   return (
@@ -82,6 +84,11 @@ export function MultiAssetHistoryStatePanel({
         <p className="text-sm text-muted-foreground">
           {t('multi_asset_page.history_state.available_series_label')}{' '}
           <span className="font-medium text-foreground">{availabilitySummary}</span>
+        </p>
+      ) : null}
+      {priceIndexIsApproximate ? (
+        <p className="text-sm text-warning">
+          {t('multi_asset_page.history_state.price_index_approximation')}
         </p>
       ) : null}
       {usedFallbackHistory ? (

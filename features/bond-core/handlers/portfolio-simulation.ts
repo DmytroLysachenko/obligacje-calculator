@@ -9,6 +9,7 @@ import {
   ScenarioKind,
 } from '../types/scenarios';
 import { calculateBondInvestment } from '../utils/calculations';
+import { priceIndexPathForProjection } from '../utils/engine/price-index';
 
 import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 import { resolveScenarioInputs } from './resolved-inputs';
@@ -58,9 +59,14 @@ function getProRatedFinalFee(item: PortfolioSimulationItem, currentDate: Date, m
 
 export class PortfolioSimulationHandler
   extends BaseHandler
-  implements ScenarioHandler<PortfolioSimulationPayload, PortfolioSimulationResult>
+  implements
+    ScenarioHandler<
+      ScenarioKind.PORTFOLIO_SIMULATION,
+      PortfolioSimulationPayload,
+      PortfolioSimulationResult
+    >
 {
-  kind = ScenarioKind.PORTFOLIO_SIMULATION;
+  readonly kind: ScenarioKind.PORTFOLIO_SIMULATION = ScenarioKind.PORTFOLIO_SIMULATION;
 
   async handle(
     payload: PortfolioSimulationPayload,
@@ -111,6 +117,11 @@ export class PortfolioSimulationHandler
     const aggregatedTimeline: PortfolioSimulationResult['aggregatedTimeline'] = [];
     const minDate = parseISO(allHistoricalData.purchaseDate);
     const maxDate = parseISO(payload.withdrawalDate);
+    // Portfolio aggregation must not sum each holding's already-deflated value:
+    // holdings begin on different dates. Deflate the aggregate once against a
+    // single portfolio anchor through the same price-index service as single
+    // and recurring calculations.
+    const priceIndexPath = priceIndexPathForProjection(minDate, payload.expectedInflation);
     let curr = minDate;
     while (!isBefore(maxDate, curr)) {
       const dateStr = format(curr, 'yyyy-MM-dd');
@@ -135,6 +146,8 @@ export class PortfolioSimulationHandler
         date: dateStr,
         totalNominalValue,
         totalNetValue,
+        totalRealValue: priceIndexPath.deflate(totalNetValue, minDate, curr).toNumber(),
+        priceIndexFactor: priceIndexPath.factorBetween(minDate, curr).toNumber(),
         totalProfit,
         totalTax,
         totalFees,
@@ -148,6 +161,7 @@ export class PortfolioSimulationHandler
       summary: {
         totalInvested: items.reduce((sum, item) => sum + item.amount, 0),
         totalNetValue: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalNetValue || 0,
+        totalRealValue: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalRealValue || 0,
         totalProfit: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalProfit || 0,
       },
     };

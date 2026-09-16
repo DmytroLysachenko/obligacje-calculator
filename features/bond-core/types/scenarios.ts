@@ -47,6 +47,7 @@ export type RegularInvestmentCalculationIntent = Pick<
   | 'savingsGoal'
   | 'customInflation'
   | 'customNbpRate'
+  | 'rollover'
   | 'timingMode'
   | 'inflationScenario'
 >;
@@ -267,6 +268,9 @@ export interface PortfolioSimulationResult {
     date: string;
     totalNominalValue: number;
     totalNetValue: number;
+    /** Net value in purchasing power of the portfolio's earliest purchase date. */
+    totalRealValue: number;
+    priceIndexFactor: number;
     totalProfit: number;
     totalTax: number;
     totalFees: number;
@@ -274,6 +278,7 @@ export interface PortfolioSimulationResult {
   summary: {
     totalInvested: number;
     totalNetValue: number;
+    totalRealValue: number;
     totalProfit: number;
   };
 }

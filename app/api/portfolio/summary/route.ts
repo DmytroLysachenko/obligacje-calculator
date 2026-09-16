@@ -13,7 +13,7 @@ export const GET = apiHandler(async () => {
       okJson({
         items: [],
         aggregatedTimeline: [],
-        summary: { totalInvested: 0, totalNetValue: 0, totalProfit: 0 },
+        summary: { totalInvested: 0, totalNetValue: 0, totalRealValue: 0, totalProfit: 0 },
       }),
   );
 });

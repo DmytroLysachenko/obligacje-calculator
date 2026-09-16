@@ -84,6 +84,7 @@ export function buildMultiAssetHistory(
         gold: goldReturns.get(date) ?? 0,
         savings: (Math.pow(1 + annualSavingsRate / 100, 1 / 12) - 1) * 100 * 0.81,
         inflation: inflationMap.get(date) ?? 0,
+        inflationKind: 'year_over_year' as const,
         nbpRate,
       };
     });

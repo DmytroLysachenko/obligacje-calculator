@@ -1171,7 +1171,8 @@
       "source_label": "Źródło",
       "as_of_label": "Stan na",
       "available_series_label": "Dostępne serie w tym zestawie:",
-      "fallback_warning": "Bieżące źródło historii jest węższe niż produkcyjny zestaw do testów historycznych. Trzymaj tę stronę w trybie referencyjnym."
+      "fallback_warning": "Bieżące źródło historii jest węższe niż produkcyjny zestaw do testów historycznych. Trzymaj tę stronę w trybie referencyjnym.",
+      "price_index_approximation": "Wartości realne używają przybliżenia wyprowadzonego z CPI rok do roku, ponieważ nie jest dostępny historyczny indeks cen miesiąc do miesiąca."
     },
     "metrics": {
       "committed_start_label": "Zatwierdzony start",

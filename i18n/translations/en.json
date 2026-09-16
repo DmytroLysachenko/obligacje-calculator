@@ -1285,7 +1285,8 @@
       "source_label": "Source",
       "as_of_label": "As of",
       "available_series_label": "Available series in this dataset:",
-      "fallback_warning": "Current history source is narrower than a production-grade backtest dataset. Keep this page in reference mode only."
+      "fallback_warning": "Current history source is narrower than a production-grade backtest dataset. Keep this page in reference mode only.",
+      "price_index_approximation": "Real values use an approximation derived from year-over-year CPI because a historical month-on-month price index is unavailable."
     },
     "metrics": {
       "committed_start_label": "Committed start",

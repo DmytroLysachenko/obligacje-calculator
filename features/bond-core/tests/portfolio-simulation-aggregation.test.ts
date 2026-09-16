@@ -161,7 +161,19 @@ describe('portfolio simulation aggregation', () => {
 
     expect(final).toBeDefined();
     expect(result.summary.totalNetValue).toBe(final?.totalNetValue);
+    expect(result.summary.totalRealValue).toBe(final?.totalRealValue);
     expect(result.summary.totalProfit).toBe(final?.totalProfit);
+  });
+
+  it('deflates the aggregate once from the portfolio anchor', async () => {
+    const result = await calculatePortfolio();
+    const final = result.aggregatedTimeline.at(-1);
+
+    expect(final?.priceIndexFactor).toBeGreaterThan(1);
+    expect(final?.totalRealValue).toBeCloseTo(
+      (final?.totalNetValue ?? 0) / (final?.priceIndexFactor ?? 1),
+      8,
+    );
   });
 
   it('keeps per-lot output traceable to original stored lots', async () => {

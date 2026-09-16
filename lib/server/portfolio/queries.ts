@@ -1,3 +1,4 @@
+import { MODEL_VERSION } from '@/features/bond-core/model-version';
 import { TaxStrategy } from '@/features/bond-core/types';
 import {
   PortfolioSimulationCalculationEnvelope,
@@ -22,6 +23,7 @@ const emptySimulationResult: PortfolioSimulationResult = {
   summary: {
     totalInvested: 0,
     totalNetValue: 0,
+    totalRealValue: 0,
     totalProfit: 0,
   },
 };
@@ -99,9 +101,9 @@ export async function exportOwnerPortfolio(
       : null;
 
   const exportData = {
-    version: '1.0',
+    version: '2.0',
     exportedAt: new Date().toISOString(),
-    appVersion: '2.7.0-db-driven-metadata',
+    appVersion: MODEL_VERSION,
     packageType: formatMode === 'package' ? 'portfolio-package' : 'portfolio-export',
     assumptions: {
       expectedInflation: macroDefaults.expectedInflation,
@@ -114,7 +116,6 @@ export async function exportOwnerPortfolio(
       name: portfolio.name,
       description: portfolio.description,
       lots: lots.map((lot) => ({
-        id: lot.id,
         bondType: lot.bondType,
         bondTypeId: lot.bondTypeId,
         bondSeriesId: lot.bondSeriesId,

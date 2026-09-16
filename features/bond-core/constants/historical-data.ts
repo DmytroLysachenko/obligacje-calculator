@@ -4,6 +4,8 @@ export interface MonthlyReturn {
   gold: number; // % change
   savings: number; // % change
   inflation: number; // % change
+  /** GUS import currently supplies YoY CPI, not a month-on-month index. */
+  inflationKind?: 'month_on_month' | 'year_over_year';
   nbpRate: number; // % annual
 }
 

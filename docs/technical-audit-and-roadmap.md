@@ -244,7 +244,9 @@ None; coordinate F02 for legal settlement-date conventions.
 **Type:** Bug  
 **Scope:** L
 
-### Current state
+**Status:** Completed (16 September 2026). A central date-based price-index path now serves single, recurring, portfolio and display calculations; the model version was intentionally advanced with the calendar/inflation work.
+
+### Original audit state
 
 inflation.ts compounds annualInflation times days/year each month. Twelve months at a stated 12% annual inflation gives 1.1268244976553364824 rather than 1.12. Single checkpoints pass differenceInMonths, discarding partial-month purchasing-power change. regular-investment-schedule.ts duplicates the monthly factor.
 

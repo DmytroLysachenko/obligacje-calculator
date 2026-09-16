@@ -58,6 +58,7 @@ export const MultiAssetComparisonContainer = () => {
     historySourceLabel,
     usedFallbackHistory,
     historySeriesAvailability,
+    priceIndexIsApproximate,
     committedScenario,
   } = useMultiAssetComparison();
   const { locale: language, t } = useAppI18n();
@@ -140,6 +141,7 @@ export const MultiAssetComparisonContainer = () => {
             historySourceLabel={historySourceLabel}
             historyAsOfLabel={historyAsOfLabel}
             availabilitySummary={availabilitySummary}
+            priceIndexIsApproximate={priceIndexIsApproximate}
             t={t}
           />
 
