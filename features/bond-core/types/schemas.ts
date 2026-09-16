@@ -1,3 +1,4 @@
+import { differenceInMonths, parseISO } from 'date-fns';
 import { z } from 'zod';
 
 import { BondType, InterestPayout, InvestmentFrequency, ScenarioKind, TaxStrategy } from './index';
@@ -21,6 +22,31 @@ const ComparisonMaturityModeSchema = z.enum([
   'cash_after_maturity',
   'align_to_shorter_duration',
 ]);
+
+function validateEffectiveHorizon(
+  value: { purchaseDate: string; withdrawalDate: string; investmentHorizonMonths?: number },
+  ctx: z.RefinementCtx,
+  maximumMonths: number,
+) {
+  const dateMonths = differenceInMonths(
+    parseISO(value.withdrawalDate),
+    parseISO(value.purchaseDate),
+  );
+  if (dateMonths > maximumMonths) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['withdrawalDate'],
+      message: `Effective calculation horizon must not exceed ${maximumMonths} months`,
+    });
+  }
+  if (value.investmentHorizonMonths !== undefined && value.investmentHorizonMonths !== dateMonths) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['investmentHorizonMonths'],
+      message: 'investmentHorizonMonths must match the supplied calendar-date range',
+    });
+  }
+}
 
 export const BondInputsSchema = withDateOrderValidation(
   BaseInstrumentInputsSchema.extend({
@@ -50,6 +76,7 @@ export const BondInputsSchema = withDateOrderValidation(
     selectedSeriesId: z.string().uuid().nullable().optional(),
   }),
 ).superRefine((value, ctx) => {
+  validateEffectiveHorizon(value, ctx, 360);
   validatePathLengths(
     value,
     typeof value.investmentHorizonMonths === 'number'
@@ -79,6 +106,7 @@ export const SingleBondCalculationIntentSchema = withDateOrderValidation(
     selectedSeriesId: z.string().uuid().nullable().optional(),
   }),
 ).superRefine((value, ctx) => {
+  validateEffectiveHorizon(value, ctx, 360);
   validatePathLengths(
     value,
     typeof value.investmentHorizonMonths === 'number'
@@ -111,9 +139,11 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(
     inflationScenario: z.enum(['low', 'base', 'high']).optional(),
     customInflation: customPathSchema('customInflation', -20, 100),
     customNbpRate: customPathSchema('customNbpRate', -10, 100),
+    rollover: z.boolean().optional(),
     timingMode: z.enum(['general', 'exact']).optional(),
   }),
 ).superRefine((value, ctx) => {
+  validateEffectiveHorizon(value, ctx, 600);
   validatePathLengths(value, value.investmentHorizonMonths / 12, ctx);
 });
 
@@ -131,6 +161,7 @@ export const RegularInvestmentCalculationIntentSchema = withDateOrderValidation(
     inflationScenario: z.enum(['low', 'base', 'high']).optional(),
     customInflation: customPathSchema('customInflation', -20, 100),
     customNbpRate: customPathSchema('customNbpRate', -10, 100),
+    rollover: z.boolean().optional(),
     timingMode: z.enum(['general', 'exact']).optional(),
   }),
 ).superRefine((value, ctx) => {

@@ -1,4 +1,4 @@
-import { addDays, isAfter, parseISO } from 'date-fns';
+import { addDays, addMonths, isAfter, parseISO } from 'date-fns';
 
 import { type BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { type BondType } from '@/features/bond-core/types';
@@ -26,9 +26,12 @@ export function buildPortfolioDetailProjection({
           if (!definition) return null;
           return {
             ...lot,
-            maturityDate: addDays(
+            // Bond terms are calendar-month terms, not a fixed number of
+            // days. This stays aligned with the engine at leap years and
+            // month ends.
+            maturityDate: addMonths(
               parseISO(lot.purchaseDate),
-              Math.round(definition.duration * 365),
+              Math.round(definition.duration * 12),
             ),
             value: Number(lot.bondQuantity) * 100,
           };
