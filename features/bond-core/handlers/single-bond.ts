@@ -15,9 +15,10 @@ import { shouldAutoRollover } from './rollover';
 
 export class SingleBondHandler
   extends BaseHandler
-  implements ScenarioHandler<SingleBondCalculationIntent, CalculationResult>
+  implements
+    ScenarioHandler<ScenarioKind.SINGLE_BOND, SingleBondCalculationIntent, CalculationResult>
 {
-  kind = ScenarioKind.SINGLE_BOND;
+  readonly kind: ScenarioKind.SINGLE_BOND = ScenarioKind.SINGLE_BOND;
 
   async handle(
     payload: SingleBondCalculationIntent,
@@ -69,6 +70,11 @@ export class SingleBondHandler
     const resolvedRollover = shouldAutoRollover(inputsToCalculate, def.duration);
     if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
       assumptions.push(`Issued series resolved: ${resolvedOffer.seriesCode}`);
+      if (!resolvedOffer.termsAreVerified) {
+        warnings.push(
+          'The issued series rate is known, but its redemption terms are not yet evidenced; the displayed fee is an estimate.',
+        );
+      }
     } else if (resolvedOffer.source === 'unresolved') {
       assumptions.push(
         'The selected issued series could not be verified; family-rule terms are shown as an unresolved-offer estimate.',

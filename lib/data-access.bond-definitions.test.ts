@@ -40,6 +40,10 @@ function makeSeries(overrides: Partial<BondSeries> = {}): BondSeries {
     maturityDate: '2027-05-01',
     firstYearRate: '4.00',
     baseMargin: '0.00',
+    earlyWithdrawalFee: null,
+    redemptionFeeCap: null,
+    termsSourceUrl: null,
+    termsRevision: null,
     createdAt: new Date('2026-05-01T00:00:00.000Z'),
     ...overrides,
   };

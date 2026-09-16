@@ -36,7 +36,12 @@ export async function resolveScenarioInputs({
       // Bond structure is issuer-defined. Never trust a persisted/client draft
       // to turn EDO into a payout bond or alter its statutory exit fee.
       duration: definition.duration,
-      earlyWithdrawalFee: definition.earlyWithdrawalFee,
+      earlyWithdrawalFee: resolvedOffer.earlyWithdrawalFee ?? definition.earlyWithdrawalFee,
+      redemptionFeeCap:
+        resolvedOffer.redemptionFeeCap === 'interest' ||
+        resolvedOffer.redemptionFeeCap === 'principal'
+          ? resolvedOffer.redemptionFeeCap
+          : undefined,
       isCapitalized: definition.isCapitalized,
       payoutFrequency: definition.payoutFrequency,
       rebuyDiscount: definition.rebuyDiscount,

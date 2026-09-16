@@ -1,4 +1,4 @@
-import { and, desc, eq, lte } from 'drizzle-orm';
+import { and, desc, eq, gte, lte } from 'drizzle-orm';
 
 import { db } from '@/db';
 import { bondSeries, polishBonds } from '@/db/schema';
@@ -16,9 +16,22 @@ export async function findBondSeriesByIdForBond(seriesId: string, bondTypeId: st
   });
 }
 
+export async function findBondSeriesByCodeForBond(seriesCode: string, bondTypeId: string) {
+  return db.query.bondSeries.findFirst({
+    where: and(eq(bondSeries.seriesCode, seriesCode), eq(bondSeries.bondTypeId, bondTypeId)),
+  });
+}
+
 export async function findActiveBondSeriesForDate(bondTypeId: string, purchaseDate: string) {
   return db.query.bondSeries.findFirst({
-    where: and(eq(bondSeries.bondTypeId, bondTypeId), lte(bondSeries.emissionMonth, purchaseDate)),
+    // An issued series is purchasable only during its actual sale window.
+    // Selecting the latest prior emission month incorrectly represented a
+    // missing month as an older offer still being for sale.
+    where: and(
+      eq(bondSeries.bondTypeId, bondTypeId),
+      lte(bondSeries.sellStartDate, purchaseDate),
+      gte(bondSeries.sellEndDate, purchaseDate),
+    ),
     orderBy: [desc(bondSeries.emissionMonth)],
   });
 }
@@ -49,6 +62,10 @@ export async function upsertBondSeriesOffer(offer: {
   maturityDate: string;
   firstYearRate: string;
   margin: string;
+  earlyWithdrawalFee?: string;
+  redemptionFeeCap?: string;
+  termsSourceUrl?: string;
+  termsRevision?: string;
 }) {
   await db
     .insert(bondSeries)
@@ -61,6 +78,10 @@ export async function upsertBondSeriesOffer(offer: {
       maturityDate: offer.maturityDate,
       firstYearRate: offer.firstYearRate,
       baseMargin: offer.margin,
+      earlyWithdrawalFee: offer.earlyWithdrawalFee,
+      redemptionFeeCap: offer.redemptionFeeCap,
+      termsSourceUrl: offer.termsSourceUrl,
+      termsRevision: offer.termsRevision,
     })
     .onConflictDoUpdate({
       target: bondSeries.seriesCode,
@@ -70,6 +91,10 @@ export async function upsertBondSeriesOffer(offer: {
         sellStartDate: offer.sellStartDate,
         sellEndDate: offer.sellEndDate,
         maturityDate: offer.maturityDate,
+        earlyWithdrawalFee: offer.earlyWithdrawalFee,
+        redemptionFeeCap: offer.redemptionFeeCap,
+        termsSourceUrl: offer.termsSourceUrl,
+        termsRevision: offer.termsRevision,
       },
     });
 }

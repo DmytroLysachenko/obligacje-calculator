@@ -9,6 +9,7 @@ export function calculateEarlyWithdrawalFee(
   totalInterestEarnedSoFar: Decimal,
   numberOfBonds: Decimal,
   earlyWithdrawalFee: number,
+  capBasis: 'interest' | 'principal' = 'interest',
 ): Decimal {
   if (!isEarlyWithdrawal && !isWithdrawalPeriod) return new Decimal(0);
 
@@ -18,6 +19,10 @@ export function calculateEarlyWithdrawalFee(
   }
 
   const totalMaxFee = numberOfBonds.times(earlyWithdrawalFee);
-  // Fee cannot exceed total interest earned
-  return Decimal.min(totalInterestEarnedSoFar, totalMaxFee);
+  // Some issued terms cap the fee at current interest; later ROR/DOR terms
+  // can expressly permit collection from principal. This is an issued-rule
+  // input, never a family-wide inference.
+  return capBasis === 'principal'
+    ? totalMaxFee
+    : Decimal.min(totalInterestEarnedSoFar, totalMaxFee);
 }

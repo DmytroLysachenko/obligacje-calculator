@@ -4,7 +4,11 @@ import { BondType, TaxStrategy } from '../../types';
 
 import { calculateRealValue } from './real-return';
 import { calculateEarlyWithdrawalFee } from './redemption';
-import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
+import {
+  calculateTaxAmount,
+  settlementPolicyFor,
+  shouldWithholdPeriodicTax,
+} from './tax-settlement';
 
 interface SingleBondCheckpointValuesInput {
   bondType: BondType;
@@ -14,6 +18,7 @@ interface SingleBondCheckpointValuesInput {
   totalInterestEarnedSoFar: Decimal;
   numberOfBonds: Decimal;
   earlyWithdrawalFee: number;
+  redemptionFeeCap?: 'interest' | 'principal';
   isCapitalized: boolean;
   currentNominalValue: Decimal;
   nominalStartingValue: Decimal;
@@ -33,6 +38,7 @@ export function resolveSingleBondCheckpointValues({
   totalInterestEarnedSoFar,
   numberOfBonds,
   earlyWithdrawalFee,
+  redemptionFeeCap,
   isCapitalized,
   currentNominalValue,
   nominalStartingValue,
@@ -51,6 +57,7 @@ export function resolveSingleBondCheckpointValues({
     totalInterestEarnedSoFar,
     numberOfBonds,
     earlyWithdrawalFee,
+    redemptionFeeCap,
   );
   const hypotheticalEarlyExitFee = isMaturity
     ? new Decimal(0)
@@ -61,8 +68,8 @@ export function resolveSingleBondCheckpointValues({
         totalInterestEarnedSoFar,
         numberOfBonds,
         earlyWithdrawalFee,
+        redemptionFeeCap,
       );
-  const useOfficialRounding = isWithdrawal;
   const currentGrossValue = isCapitalized
     ? currentNominalValue
     : nominalStartingValue.plus(totalInterestEarnedSoFar);
@@ -76,7 +83,7 @@ export function resolveSingleBondCheckpointValues({
             : totalInterestEarnedSoFar.minus(currentWithdrawalFee),
         ),
         taxStrategy,
-        useOfficialRounding,
+        settlementPolicyFor(taxStrategy),
         taxRate,
       );
   const liquidationValue = currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint);

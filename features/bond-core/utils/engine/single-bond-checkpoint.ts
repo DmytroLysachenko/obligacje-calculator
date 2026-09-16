@@ -4,7 +4,11 @@ import { BondType, RateSource, TaxStrategy, YearlyTimelinePoint } from '../../ty
 import { SimulationEvent } from '../../types/simulation';
 
 import { calculateEarlyWithdrawalFee } from './redemption';
-import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
+import {
+  calculateTaxAmount,
+  settlementPolicyFor,
+  shouldWithholdPeriodicTax,
+} from './tax-settlement';
 
 export function createSingleBondCheckpoint({
   totalMonthsSoFar,
@@ -98,6 +102,7 @@ export function resolveSingleBondCycleSettlement({
   totalInterestEarnedSoFar,
   numberOfBonds,
   earlyWithdrawalFee,
+  redemptionFeeCap,
   isCapitalized,
   currentNominalValue,
   nominalStartingValue,
@@ -111,6 +116,7 @@ export function resolveSingleBondCycleSettlement({
   totalInterestEarnedSoFar: Decimal;
   numberOfBonds: Decimal;
   earlyWithdrawalFee: number;
+  redemptionFeeCap?: 'interest' | 'principal';
   isCapitalized: boolean;
   currentNominalValue: Decimal;
   nominalStartingValue: Decimal;
@@ -127,6 +133,7 @@ export function resolveSingleBondCycleSettlement({
         totalInterestEarnedSoFar,
         numberOfBonds,
         earlyWithdrawalFee,
+        redemptionFeeCap,
       )
     : new Decimal(0);
   const cycleGrossValue = isCapitalized
@@ -142,7 +149,7 @@ export function resolveSingleBondCycleSettlement({
             : totalInterestEarnedSoFar.minus(cycleFee),
         ),
         taxStrategy,
-        true,
+        settlementPolicyFor(taxStrategy),
         taxRate,
       );
   const netProceeds = cycleGrossValue.minus(cycleFee).minus(cycleTax).plus(leftoverCash);

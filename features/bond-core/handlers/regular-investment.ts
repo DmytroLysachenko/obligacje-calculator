@@ -11,9 +11,14 @@ import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 
 export class RegularInvestmentHandler
   extends BaseHandler
-  implements ScenarioHandler<RegularInvestmentCalculationIntent, RegularInvestmentResult>
+  implements
+    ScenarioHandler<
+      ScenarioKind.REGULAR_INVESTMENT,
+      RegularInvestmentCalculationIntent,
+      RegularInvestmentResult
+    >
 {
-  kind = ScenarioKind.REGULAR_INVESTMENT;
+  readonly kind: ScenarioKind.REGULAR_INVESTMENT = ScenarioKind.REGULAR_INVESTMENT;
 
   async handle(
     payload: RegularInvestmentCalculationIntent,
@@ -32,7 +37,7 @@ export class RegularInvestmentHandler
       firstYearRate: resolvedOffer.firstYearRate ?? def.firstYearRate,
       margin: resolvedOffer.margin ?? def.margin,
       duration: def.duration,
-      earlyWithdrawalFee: def.earlyWithdrawalFee,
+      earlyWithdrawalFee: resolvedOffer.earlyWithdrawalFee ?? def.earlyWithdrawalFee,
       taxRate: 19,
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
@@ -51,6 +56,11 @@ export class RegularInvestmentHandler
     const assumptions = this.generateAssumptions(inputsToCalculate);
     if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
       assumptions.push(`Issued series resolved: ${resolvedOffer.seriesCode}`);
+      if (!resolvedOffer.termsAreVerified) {
+        warnings.push(
+          'The issued series rate is known, but its redemption terms are not yet evidenced; the displayed fee is an estimate.',
+        );
+      }
     } else if (resolvedOffer.source === 'unresolved') {
       assumptions.push(
         'The selected issued series could not be verified; family-rule terms are shown as an unresolved-offer estimate.',

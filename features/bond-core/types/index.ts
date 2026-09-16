@@ -45,6 +45,8 @@ export interface BondInputs {
   nominalValue?: number; // Added to decouple from hardcoded constants
   isInflationIndexed?: boolean; // Added to decouple from hardcoded constants
   earlyWithdrawalFee: number; // per bond (100 PLN)
+  /** Issued-series redemption rule; absent means the issue terms are unresolved. */
+  redemptionFeeCap?: 'interest' | 'principal';
   taxRate: number;
   isCapitalized: boolean;
   payoutFrequency: InterestPayout;
@@ -152,6 +154,8 @@ export interface LotBreakdown {
   earlyWithdrawalFee: number;
   grossValue: number;
   netValue: number;
+  /** Terminal proceeds moved into the simulation cash account. */
+  settledValue?: number;
 }
 
 export interface RegularInvestmentResult {
@@ -164,6 +168,18 @@ export interface RegularInvestmentResult {
   realAnnualizedReturn: number; // CAGR adjusted for inflation
   timeline: RegularTimelinePoint[];
   lots: LotBreakdown[];
+  /** Cash retained after purchases and maturity settlements. */
+  cashBalance: number;
+  /** External contributions, before any bond-price residuals. */
+  totalContributions: number;
+  /** Amount held in active bond lots, excluding cash. */
+  activeHoldingsValue: number;
+  /** Net amount paid out at the requested terminal withdrawal, if selected. */
+  terminalNetSettlement?: number;
+  /** Cash actually paid out by the terminal withdrawal, never active holdings. */
+  paidOutValue: number;
+  /** Active holdings plus retained cash; zero after a terminal withdrawal. */
+  terminalWealth: number;
 }
 
 export interface RegularTimelinePoint {
@@ -175,6 +191,7 @@ export interface RegularTimelinePoint {
   profit: number;
   tax: number;
   earlyWithdrawalFees: number;
+  cashBalance?: number;
   isProjected?: boolean;
   events?: import('./simulation').SimulationEvent[];
 }

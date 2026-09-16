@@ -56,4 +56,21 @@ describe('isValidSeriesCodeForEmission', () => {
     });
     expect(repository.findActiveBondSeriesForDate).not.toHaveBeenCalled();
   });
+
+  it('marks an explicitly selected series unresolved outside its sale window', async () => {
+    repository.findBondDefinitionBySymbol.mockResolvedValue({ id: 'ror-family' });
+    repository.findBondSeriesByIdForBond.mockResolvedValue({
+      seriesCode: 'ROR0827',
+      emissionMonth: '2026-08-01',
+      sellStartDate: '2026-08-01',
+      sellEndDate: '2026-08-31',
+      maturityDate: '2027-08-01',
+      firstYearRate: '4',
+      baseMargin: '0',
+    });
+
+    await expect(
+      resolveBondOfferTerms(BondType.ROR, '2026-09-01', BOND_DEFINITIONS, 'ror-august'),
+    ).resolves.toMatchObject({ source: 'unresolved', requestedSeriesId: 'ror-august' });
+  });
 });
