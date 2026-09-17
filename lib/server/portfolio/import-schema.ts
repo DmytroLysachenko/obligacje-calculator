@@ -6,8 +6,7 @@ import { IsoCalendarDateSchema } from '@/features/bond-core/types/iso-calendar-d
 const ImportedBondQuantitySchema = z
   .union([z.string(), z.number()])
   .refine(
-    (value) =>
-      /^\d+(\.\d{1,2})?$/.test(String(value)) && Number(value) > 0 && Number(value) <= 10_000_000,
+    (value) => /^\d+$/.test(String(value)) && Number(value) > 0 && Number(value) <= 10_000_000,
   );
 
 const ImportedLotSchema = z
@@ -16,6 +15,11 @@ const ImportedLotSchema = z
     purchaseDate: IsoCalendarDateSchema,
     bondQuantity: ImportedBondQuantitySchema.optional(),
     amount: ImportedBondQuantitySchema.optional(),
+    bondSeriesId: z.uuid().optional().nullable(),
+    seriesCode: z.string().trim().min(3).max(32).optional(),
+    // Export-only database relation. It is decoded for compatibility and
+    // intentionally discarded: imports resolve the public series identity.
+    bondTypeId: z.uuid().optional().nullable(),
     isRebought: z.boolean().optional(),
     notes: z.string().trim().max(2_000).optional(),
   })
@@ -24,22 +28,48 @@ const ImportedLotSchema = z
     message: 'bondQuantity is required',
     path: ['bondQuantity'],
   })
-  .transform(({ amount, bondQuantity, ...lot }) => ({
-    ...lot,
-    bondQuantity: bondQuantity ?? amount!,
+  .transform((input) => ({
+    bondType: input.bondType,
+    purchaseDate: input.purchaseDate,
+    bondSeriesId: input.bondSeriesId,
+    seriesCode: input.seriesCode,
+    isRebought: input.isRebought,
+    notes: input.notes,
+    bondQuantity: input.bondQuantity ?? input.amount!,
   }));
 
 export const ImportPayloadSchema = z
   .object({
+    version: z.literal('2.0').optional(),
+    packageType: z.enum(['portfolio-export', 'portfolio-package']).optional(),
+    exportedAt: z.string().datetime().optional(),
+    appVersion: z.string().min(1).max(120).optional(),
+    // Projection metadata is informative only and is never restored as a
+    // balance. It remains accepted so an exported package is importable.
+    assumptions: z.record(z.string(), z.unknown()).optional(),
+    summary: z.unknown().optional(),
     portfolio: z
       .object({
         name: z.string().trim().min(1).max(120),
         description: z.string().trim().max(2_000).optional(),
-        lots: z.array(ImportedLotSchema).min(1).max(500),
+        id: z.uuid().optional(),
+        lots: z.array(ImportedLotSchema).max(500),
       })
-      .strict(),
+      .strict()
+      .transform((portfolio) => ({
+        name: portfolio.name,
+        description: portfolio.description,
+        lots: portfolio.lots,
+      })),
   })
   .strict()
+  .transform((packageData) => ({
+    version: packageData.version,
+    packageType: packageData.packageType,
+    exportedAt: packageData.exportedAt,
+    appVersion: packageData.appVersion,
+    portfolio: packageData.portfolio,
+  }))
   .superRefine(({ portfolio }, context) => {
     const seen = new Set<string>();
     portfolio.lots.forEach((lot, index) => {

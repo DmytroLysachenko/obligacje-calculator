@@ -195,6 +195,8 @@ export async function importOwnerPortfolio(
       bondType: string;
       purchaseDate: string;
       bondQuantity: string | number;
+      bondSeriesId?: string | null;
+      seriesCode?: string;
       isRebought?: boolean;
       notes?: string;
     }>;
@@ -205,6 +207,8 @@ export async function importOwnerPortfolio(
       const resolvedLotContext = await resolveStoredBondLotContext(
         lot.bondType as BondType,
         lot.purchaseDate,
+        lot.bondSeriesId,
+        lot.seriesCode,
       );
 
       if (!resolvedLotContext.bondTypeId) {

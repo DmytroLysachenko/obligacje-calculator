@@ -6,7 +6,7 @@ const valid = {
   portfolio: {
     name: 'Long-term bonds',
     description: 'A sensible imported portfolio',
-    lots: [{ bondType: 'COI', purchaseDate: '2026-07-30', amount: '100.25' }],
+    lots: [{ bondType: 'COI', purchaseDate: '2026-07-30', amount: '100' }],
   },
 };
 
@@ -23,6 +23,23 @@ describe('portfolio import schema', () => {
     });
   });
 
+  it('accepts its versioned export envelope and preserves the issued-series identity', () => {
+    const parsed = ImportPayloadSchema.parse({
+      version: '2.0',
+      packageType: 'portfolio-export',
+      exportedAt: '2026-09-15T10:00:00.000Z',
+      appVersion: '3.0.0-tax-calendar-inflation',
+      portfolio: {
+        ...valid.portfolio,
+        lots: [
+          { ...valid.portfolio.lots[0], bondSeriesId: 'c1af1c0f-fb73-4e25-a1e1-7838b38703e1' },
+        ],
+      },
+    });
+
+    expect(parsed.portfolio.lots[0].bondSeriesId).toBe('c1af1c0f-fb73-4e25-a1e1-7838b38703e1');
+  });
+
   it.each([
     [
       'invalid date shape',
@@ -35,7 +52,7 @@ describe('portfolio import schema', () => {
       },
     ],
     [
-      'unsupported precision',
+      'fractional quantity',
       {
         ...valid,
         portfolio: { ...valid.portfolio, lots: [{ ...valid.portfolio.lots[0], amount: '1.001' }] },
@@ -102,19 +119,16 @@ describe('portfolio import schema', () => {
     },
   );
 
-  it.each(['1', '1.0', '1.00', 1, 10000000, '9999999.99'])(
-    'accepts permitted amount %s',
-    (amount) => {
-      expect(
-        ImportPayloadSchema.safeParse({
-          ...valid,
-          portfolio: { ...valid.portfolio, lots: [{ ...valid.portfolio.lots[0], amount }] },
-        }).success,
-      ).toBe(true);
-    },
-  );
+  it.each(['1', 1, 10000000, '9999999'])('accepts permitted amount %s', (amount) => {
+    expect(
+      ImportPayloadSchema.safeParse({
+        ...valid,
+        portfolio: { ...valid.portfolio, lots: [{ ...valid.portfolio.lots[0], amount }] },
+      }).success,
+    ).toBe(true);
+  });
 
-  it.each(['-1', '+1', '1e3', 'NaN', 'Infinity', '', ' 1', '1 ', '.5', '0.00'])(
+  it.each(['-1', '+1', '1e3', 'NaN', 'Infinity', '', ' 1', '1 ', '.5', '0.00', '1.0'])(
     'rejects unsafe amount encoding %s',
     (amount) => {
       expect(
@@ -160,7 +174,6 @@ describe('portfolio import schema', () => {
       {},
       { portfolio: null },
       { portfolio: {} },
-      { portfolio: { name: 'x', lots: [] } },
       { portfolio: { name: 'x', lots: 'not-an-array' } },
       { portfolio: { name: '', lots: valid.portfolio.lots } },
       { portfolio: { name: '   ', lots: valid.portfolio.lots } },
@@ -179,6 +192,12 @@ describe('portfolio import schema', () => {
     for (const payload of cases) {
       expect(ImportPayloadSchema.safeParse(payload).success).toBe(false);
     }
+  });
+
+  it('supports an empty portfolio backup', () => {
+    expect(ImportPayloadSchema.safeParse({ portfolio: { name: 'x', lots: [] } }).success).toBe(
+      true,
+    );
   });
 
   it('does not coerce unknown keys away', () => {
