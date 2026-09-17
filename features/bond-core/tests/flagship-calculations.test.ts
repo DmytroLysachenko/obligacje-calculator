@@ -258,7 +258,8 @@ describe('Flagship calculation regressions', () => {
 
       expect(result.totalInvested).toBe(48000);
       expect(result.finalNominalValue).toBeGreaterThan(48000);
-      expect(result.totalTax).toBeGreaterThan(700);
+      // COI tax now follows annual issuer coupon periods, not a monthly approximation.
+      expect(result.totalTax).toBeGreaterThan(650);
       expect(result.totalTax).toBeLessThan(1200);
       expect(result.totalProfit).toBeGreaterThan(2500);
       expect(result.totalProfit).toBeLessThan(4000);

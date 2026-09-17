@@ -308,7 +308,8 @@ describe('calculator truth QA scenarios', () => {
     expect(result.lots).toHaveLength(48);
     expect(result.timeline).toHaveLength(49);
     expect(result.totalProfit).toBeGreaterThan(2800);
-    expect(result.totalTax).toBeGreaterThan(700);
+    // Issuer-month settlements replace the old per-calendar-month estimate.
+    expect(result.totalTax).toBeGreaterThan(650);
     expect(result.totalEarlyWithdrawalFees).toBeGreaterThan(0);
   });
 

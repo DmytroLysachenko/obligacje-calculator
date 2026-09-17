@@ -18,6 +18,7 @@ const RATE_SOURCE_KEYS: Record<RateSource, string> = {
 };
 
 const EVENT_LABEL_KEYS: Record<SimulationEventType, string> = {
+  CONTRIBUTION: 'bonds.timeline_display.event.contribution',
   PURCHASE: 'bonds.timeline_display.event.purchase',
   RATE_RESET: 'bonds.timeline_display.event.rate_reset',
   INTEREST_ACCRUAL: 'bonds.timeline_display.event.interest_accrual',

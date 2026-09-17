@@ -863,6 +863,7 @@
         "projected_nbp": "Projected NBP + margin"
       },
       "event": {
+        "contribution": "Contribution",
         "purchase": "Purchase",
         "rate_reset": "Rate reset",
         "interest_accrual": "Interest accrual",
@@ -2016,7 +2017,11 @@
     "recent_description": "The latest purchases help verify timing, maturity dates, and per-lot net value.",
     "recent_note": "Start with the summary cards and yearly buckets. Individual lots are only a quick check of purchase timing and maturity dates.",
     "matures": "Matures",
-    "net_lot_value": "Net lot value"
+    "net_lot_value": "Net lot value",
+    "cash_balance": "Cash balance",
+    "cash_balance_helper": "Uninvested contributions and matured proceeds still held as cash.",
+    "active_holdings": "Active holdings",
+    "active_holdings_helper": "Value still held in active bond lots, excluding cash."
   },
   "ladder": {
     "description": "Build a bond ladder to ensure recurring liquidity and steady growth.",

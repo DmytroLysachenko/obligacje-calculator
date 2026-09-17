@@ -1,10 +1,15 @@
-import { differenceInMonths, isAfter, isBefore, parseISO } from 'date-fns';
+import { addMonths, differenceInDays, isAfter, isBefore, parseISO } from 'date-fns';
 import { Decimal } from 'decimal.js';
 
-import { BondType, LotBreakdown, RegularInvestmentInputs, TaxStrategy } from '../../types';
+import {
+  BondType,
+  InterestPayout,
+  LotBreakdown,
+  RegularInvestmentInputs,
+  TaxStrategy,
+} from '../../types';
 
-import { getExpectedInflationForYearIndex } from './inflation';
-import { determineInterestRate } from './rate-resolution';
+import { evaluateIssuerPeriod } from './issuer-period-evaluator';
 import { calculateEarlyWithdrawalFee } from './redemption';
 import {
   calculateTaxAmount,
@@ -15,7 +20,7 @@ import {
 export function updateRegularInvestmentLotsForMonth({
   lots,
   currentMonthDate,
-  startPurchaseDate,
+  isTerminalWithdrawal,
   bondDuration,
   bondType,
   firstYearRate,
@@ -23,11 +28,11 @@ export function updateRegularInvestmentLotsForMonth({
   expectedNbpRate,
   margin,
   isInflationIndexed,
-  currentLagInflation,
-  currentLagNbp,
   customInflation,
   customNbpRate,
+  historicalData,
   isCapitalized,
+  payoutFrequency,
   taxStrategy,
   taxRate,
   bondPrice,
@@ -37,7 +42,7 @@ export function updateRegularInvestmentLotsForMonth({
 }: {
   lots: LotBreakdown[];
   currentMonthDate: Date;
-  startPurchaseDate: Date;
+  isTerminalWithdrawal: boolean;
   bondDuration: number;
   bondType: BondType;
   firstYearRate: number;
@@ -45,11 +50,11 @@ export function updateRegularInvestmentLotsForMonth({
   expectedNbpRate: number;
   margin: number;
   isInflationIndexed: boolean;
-  currentLagInflation?: number;
-  currentLagNbp?: number;
   customInflation?: number[];
   customNbpRate?: number[];
+  historicalData?: RegularInvestmentInputs['historicalData'];
   isCapitalized: boolean;
+  payoutFrequency: InterestPayout;
   taxStrategy: TaxStrategy;
   taxRate: number;
   bondPrice: Decimal.Value;
@@ -68,63 +73,125 @@ export function updateRegularInvestmentLotsForMonth({
       return;
     }
 
-    const monthsHeld = differenceInMonths(currentMonthDate, lotPurchaseDate);
     const bondDurationMonths = Math.round(bondDuration * 12);
-    const dLotGrossValue = new Decimal(lot.grossValue);
-    const dLotAccumulatedInterest = new Decimal(lot.accumulatedInterest);
+    const issuerPeriodMonths =
+      bondType === BondType.ROR || bondType === BondType.DOR
+        ? 1
+        : bondType === BondType.OTS
+          ? 3
+          : 12;
+    const completedPeriods = lot.issuerCompletedPeriods ?? 0;
+    let nextCompletedPeriods = completedPeriods;
+    let nextPrincipal = new Decimal(lot.grossValue);
+    let completedInterest = new Decimal(lot.issuerAccruedInterest ?? 0);
     const dLotTax = new Decimal(lot.tax);
     const shouldWithholdTaxForLot = shouldWithholdPeriodicTax(taxStrategy, isCapitalized);
+    let nextTax = dLotTax;
 
-    if (monthsHeld <= bondDurationMonths) {
-      const monthIndex = monthsHeld - 1;
-      const globalMonthIndex = Math.max(0, differenceInMonths(currentMonthDate, startPurchaseDate));
-      const globalYearIndex = Math.floor(globalMonthIndex / 12);
-      const inflationResetYearIndex = Math.max(0, globalYearIndex - 1);
-      const projectedInflation = getExpectedInflationForYearIndex(
-        expectedInflation,
-        customInflation,
-        inflationResetYearIndex,
-      );
-      const currentInterestRate = determineInterestRate(
+    // Settle only newly completed natural issuer periods. The monthly plan
+    // merely asks for a valuation; it never converts annual products into
+    // monthly compounding. This is bounded by newly crossed periods, not by
+    // the age of every lot.
+    while (true) {
+      const periodStart = addMonths(lotPurchaseDate, nextCompletedPeriods * issuerPeriodMonths);
+      const scheduledEnd = addMonths(periodStart, issuerPeriodMonths);
+      const periodEnd = isAfter(scheduledEnd, lotMaturityDate) ? lotMaturityDate : scheduledEnd;
+      if (isAfter(periodEnd, currentMonthDate)) break;
+
+      const period = {
+        startDate: periodStart,
+        endDate: periodEnd,
+        daysInPeriod: differenceInDays(scheduledEnd, periodStart),
+        daysHeld: differenceInDays(periodEnd, periodStart),
+        isMaturity: periodEnd.getTime() === lotMaturityDate.getTime(),
+        isWithdrawal: false,
+        periodLabel: '',
+      };
+      const evaluated = evaluateIssuerPeriod({
+        period,
+        cyclePurchaseDate: lotPurchaseDate,
+        simulationStartDate: lotPurchaseDate,
         bondType,
-        monthIndex,
         firstYearRate,
-        projectedInflation,
+        expectedInflation,
         expectedNbpRate,
         margin,
         isInflationIndexed,
-        currentLagInflation,
-        currentLagNbp,
-        customInflation?.[inflationResetYearIndex],
-        customNbpRate?.[globalYearIndex],
-      );
-      const interestThisMonth = dLotGrossValue.times(
-        currentInterestRate.dividedBy(12).dividedBy(100),
-      );
-      const newAccumulatedInterest = dLotAccumulatedInterest.plus(interestThisMonth);
-
-      if (isCapitalized) {
-        // Issuer capitalization is annual for the relevant families. Monthly
-        // UI aggregation must not turn that into monthly compounding.
-        if (monthsHeld % 12 === 0) {
-          lot.grossValue = dLotGrossValue.plus(newAccumulatedInterest).toNumber();
-          lot.accumulatedInterest = 0;
-        } else {
-          lot.accumulatedInterest = newAccumulatedInterest.toNumber();
-        }
-      } else if (shouldWithholdTaxForLot) {
-        lot.accumulatedInterest = newAccumulatedInterest.toNumber();
-        const taxThisMonth = calculateTaxAmount(
-          interestThisMonth,
-          taxStrategy,
-          settlementPolicyFor(taxStrategy),
-          taxRate,
+        customInflation,
+        customNbpRate,
+        historicalData,
+        currentNominalValue: nextPrincipal,
+        payoutFrequency,
+      });
+      completedInterest = completedInterest.plus(evaluated.interestEarned);
+      if (isCapitalized) nextPrincipal = nextPrincipal.plus(evaluated.interestEarned);
+      if (
+        shouldWithholdTaxForLot &&
+        !(
+          isTerminalWithdrawal &&
+          !period.isMaturity &&
+          periodEnd.getTime() === currentMonthDate.getTime()
+        )
+      ) {
+        nextTax = nextTax.plus(
+          calculateTaxAmount(
+            evaluated.interestEarned,
+            taxStrategy,
+            settlementPolicyFor(taxStrategy),
+            taxRate,
+          ),
         );
-        lot.tax = dLotTax.plus(taxThisMonth).toNumber();
-      } else {
-        lot.accumulatedInterest = newAccumulatedInterest.toNumber();
       }
+      nextCompletedPeriods += 1;
+      lot.ratePeriodIndex = nextCompletedPeriods - 1;
+      lot.lockedAnnualRate = evaluated.rateContext.currentInterestRate.toNumber();
+      if (period.isMaturity) break;
     }
+
+    const previewStart = addMonths(lotPurchaseDate, nextCompletedPeriods * issuerPeriodMonths);
+    const previewEnd = isAfter(currentMonthDate, lotMaturityDate)
+      ? lotMaturityDate
+      : currentMonthDate;
+    let previewInterest = new Decimal(0);
+    if (isAfter(previewEnd, previewStart)) {
+      const scheduledEnd = addMonths(previewStart, issuerPeriodMonths);
+      const evaluated = evaluateIssuerPeriod({
+        period: {
+          startDate: previewStart,
+          endDate: previewEnd,
+          daysInPeriod: differenceInDays(scheduledEnd, previewStart),
+          daysHeld: differenceInDays(previewEnd, previewStart),
+          isMaturity: previewEnd.getTime() === lotMaturityDate.getTime(),
+          isWithdrawal: false,
+          periodLabel: '',
+        },
+        cyclePurchaseDate: lotPurchaseDate,
+        simulationStartDate: lotPurchaseDate,
+        bondType,
+        firstYearRate,
+        expectedInflation,
+        expectedNbpRate,
+        margin,
+        isInflationIndexed,
+        customInflation,
+        customNbpRate,
+        historicalData,
+        currentNominalValue: nextPrincipal,
+        payoutFrequency,
+      });
+      previewInterest = evaluated.interestEarned;
+      lot.ratePeriodIndex = nextCompletedPeriods;
+      lot.lockedAnnualRate = evaluated.rateContext.currentInterestRate.toNumber();
+    }
+
+    lot.issuerCompletedPeriods = nextCompletedPeriods;
+    lot.issuerAccruedInterest = completedInterest.toNumber();
+    lot.grossValue = nextPrincipal.toNumber();
+    lot.accumulatedInterest = (
+      isCapitalized ? previewInterest : completedInterest.plus(previewInterest)
+    ).toNumber();
+    lot.tax = nextTax.toNumber();
+    const totalInterest = completedInterest.plus(previewInterest);
 
     lot.isMatured = !isBefore(currentMonthDate, lotMaturityDate);
 
@@ -136,7 +203,7 @@ export function updateRegularInvestmentLotsForMonth({
       bondType,
       isLotEarlyWithdrawal,
       isLotEarlyWithdrawal,
-      dFinalAccumulatedInterest,
+      totalInterest,
       units,
       earlyWithdrawalFee,
       redemptionFeeCap,
@@ -147,16 +214,15 @@ export function updateRegularInvestmentLotsForMonth({
       ? new Decimal(lot.grossValue).plus(dFinalAccumulatedInterest)
       : units.times(nominalValue).plus(dFinalAccumulatedInterest);
     const currentTaxPaid = shouldWithholdTaxForLot
-      ? new Decimal(lot.tax)
+      ? nextTax
       : calculateTaxAmount(
           Decimal.max(
             0,
             taxStrategy === TaxStrategy.IKZE
               ? currentGrossValue.minus(dFinalFee)
-              : (isCapitalized
-                  ? currentGrossValue.minus(nominalStarting)
-                  : dFinalAccumulatedInterest
-                ).minus(dFinalFee),
+              : (isCapitalized ? currentGrossValue.minus(nominalStarting) : totalInterest).minus(
+                  dFinalFee,
+                ),
           ),
           taxStrategy,
           settlementPolicyFor(taxStrategy),

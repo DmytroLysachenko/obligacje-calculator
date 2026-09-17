@@ -73,7 +73,12 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
   let totalInvested = new Decimal(0);
   let realContributions = new Decimal(0);
   let cumulativeInflation = new Decimal(1);
-  let cashBalance = new Decimal(0);
+  // Keep contribution residuals distinct from matured proceeds. With rollover
+  // off, only contribution-origin cash may buy new lots; maturity cash stays
+  // available for the terminal withdrawal. This prevents an implicit policy
+  // change merely because both sources happen to share a balance.
+  let contributionCash = new Decimal(0);
+  let maturityCash = new Decimal(0);
   let terminalNetSettlement: Decimal | undefined;
 
   // The terminal settlement is a financial event, not a rendering cadence.
@@ -117,10 +122,16 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
       realContributions = realContributions.plus(
         priceIndexPath.deflate(contributionAmount, startPurchaseDate, currentMonthDate),
       );
-      cashBalance = cashBalance.plus(contributionAmount);
+      contributionCash = contributionCash.plus(contributionAmount);
+      events.push({
+        type: SimulationEventType.CONTRIBUTION,
+        date: format(currentMonthDate, 'yyyy-MM-dd'),
+        description: 'External contribution received',
+        value: contributionAmount,
+      });
       const totalAvailableForPurchase = rollover
-        ? cashBalance
-        : Decimal.min(cashBalance, new Decimal(contributionAmount));
+        ? contributionCash.plus(maturityCash)
+        : contributionCash;
 
       const { lot, investedAmount, units } = createRegularInvestmentLot({
         currentMonthDate,
@@ -133,7 +144,9 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 
       if (lot) {
         lots.push(lot);
-        cashBalance = cashBalance.minus(investedAmount);
+        const fromContributions = Decimal.min(contributionCash, investedAmount);
+        contributionCash = contributionCash.minus(fromContributions);
+        maturityCash = maturityCash.minus(investedAmount.minus(fromContributions));
         events.push({
           type: SimulationEventType.PURCHASE,
           date: format(currentMonthDate, 'yyyy-MM-dd'),
@@ -143,24 +156,17 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
       }
     }
 
-    // Pre-calculate rates for this month to avoid N*H lookups.
-    const { value: currentLagInflation, isProjected: currentIsProjected } = getHistoricalValue(
+    const { isProjected: currentIsProjected } = getHistoricalValue(
       currentMonthDate,
       'inflation',
       2,
-      historicalData,
-    );
-    const { value: currentLagNbp } = getHistoricalValue(
-      currentMonthDate,
-      'nbpRate',
-      0,
       historicalData,
     );
 
     updateRegularInvestmentLotsForMonth({
       lots,
       currentMonthDate,
-      startPurchaseDate,
+      isTerminalWithdrawal: isWithdrawalStep,
       bondDuration,
       bondType,
       firstYearRate,
@@ -168,11 +174,11 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
       expectedNbpRate,
       margin,
       isInflationIndexed: bondDef.isInflationIndexed,
-      currentLagInflation,
-      currentLagNbp,
       customInflation: inputs.customInflation,
       customNbpRate: inputs.customNbpRate,
+      historicalData,
       isCapitalized,
+      payoutFrequency: bondDef.payoutFrequency,
       taxStrategy,
       taxRate,
       bondPrice,
@@ -185,7 +191,7 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     // period has accrued. A settled lot remains in history, but never again
     // contributes to the active holding summary.
     const maturedLiquidity = settleMaturedLots(lots, currentMonthDate, events);
-    cashBalance = cashBalance.plus(maturedLiquidity);
+    maturityCash = maturityCash.plus(maturedLiquidity);
 
     const currentLotSummary = summarizeRegularInvestmentLots({
       lots,
@@ -197,7 +203,8 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     const totalTax = lots.reduce((sum, lot) => sum.plus(lot.tax), new Decimal(0));
     const totalFees = lots.reduce((sum, lot) => sum.plus(lot.earlyWithdrawalFee), new Decimal(0));
     if (isWithdrawalStep) {
-      const terminalSettlement = cashBalance
+      const terminalSettlement = contributionCash
+        .plus(maturityCash)
         .plus(currentLotSummary.nominalValue)
         .minus(currentLotSummary.tax)
         .minus(currentLotSummary.fees);
@@ -208,9 +215,11 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
         value: terminalSettlement.toNumber(),
       });
       terminalNetSettlement = terminalSettlement;
-      cashBalance = new Decimal(0);
+      contributionCash = new Decimal(0);
+      maturityCash = new Decimal(0);
     }
 
+    const cashBalance = contributionCash.plus(maturityCash);
     const nominalValue = terminalNetSettlement ?? currentLotSummary.nominalValue.plus(cashBalance);
     const profit = nominalValue.minus(totalInvested);
 
@@ -238,9 +247,9 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     timeline,
     lots,
     realContributions,
-    cashBalance,
+    contributionCash.plus(maturityCash),
     terminalNetSettlement
       ? new Decimal(0)
-      : new Decimal(last?.nominalValue ?? 0).minus(cashBalance),
+      : new Decimal(last?.nominalValue ?? 0).minus(contributionCash.plus(maturityCash)),
   );
 });

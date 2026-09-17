@@ -863,6 +863,7 @@
         "projected_nbp": "Prognozowana stopa NBP + marża"
       },
       "event": {
+        "contribution": "Wpłata",
         "purchase": "Zakup",
         "rate_reset": "Reset stopy",
         "interest_accrual": "Naliczenie odsetek",
@@ -2016,7 +2017,11 @@
     "recent_description": "Ostatnie zakupy pomagają skontrolowac czas wejścia, daty zapadalności i wartość netto pojedynczych partii.",
     "recent_note": "Najpierw przeczytaj karty podsumowania i roczniki. Pojedyncze partie są tylko szybką kontrolą czasu zakupu i zapadalności.",
     "matures": "Zapadalność",
-    "net_lot_value": "Wartość netto partii"
+    "net_lot_value": "Wartość netto partii",
+    "cash_balance": "Saldo gotówki",
+    "cash_balance_helper": "Niezainwestowane wpłaty i środki z zapadłych obligacji pozostające w gotówce.",
+    "active_holdings": "Aktywne obligacje",
+    "active_holdings_helper": "Wartość aktywnych partii obligacji, bez gotówki."
   },
   "ladder": {
     "description": "Buduj drabinę obligacji, aby zapewnić cykliczną płynność i stabilny wzrost.",

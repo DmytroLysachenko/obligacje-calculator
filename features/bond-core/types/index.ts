@@ -156,6 +156,12 @@ export interface LotBreakdown {
   netValue: number;
   /** Terminal proceeds moved into the simulation cash account. */
   settledValue?: number;
+  /** Issuer period currently applied to this lot; internal trace exposed for audit. */
+  ratePeriodIndex?: number;
+  lockedAnnualRate?: number;
+  /** Completed issuer periods and total interest, retained for incremental valuation. */
+  issuerCompletedPeriods?: number;
+  issuerAccruedInterest?: number;
 }
 
 export interface RegularInvestmentResult {
