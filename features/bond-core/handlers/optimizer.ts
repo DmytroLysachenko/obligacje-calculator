@@ -17,9 +17,9 @@ import { resolveScenarioInputs } from './resolved-inputs';
 
 export class OptimizerHandler
   extends BaseHandler
-  implements ScenarioHandler<BondOptimizerPayload, BondOptimizerResult>
+  implements ScenarioHandler<ScenarioKind.BOND_OPTIMIZER, BondOptimizerPayload, BondOptimizerResult>
 {
-  kind = ScenarioKind.BOND_OPTIMIZER;
+  readonly kind: ScenarioKind.BOND_OPTIMIZER = ScenarioKind.BOND_OPTIMIZER;
 
   async handle(
     payload: BondOptimizerPayload,

@@ -20,7 +20,7 @@ export interface CalculationServiceDependencies {
   getDataFreshness: () => Promise<CalculationDataFreshness>;
   getTaxRulesRevision: () => Promise<string>;
   getDefinitions: () => Promise<Record<BondType, BondDefinition>>;
-  getHandler: (kind: ScenarioKind) => ScenarioHandler<unknown, unknown>;
+  getHandler: (kind: ScenarioKind) => ScenarioHandler<ScenarioKind, unknown, unknown>;
   onFailure?: (kind: ScenarioKind, error: unknown) => void;
 }
 

@@ -61,7 +61,6 @@ function createActions(
   const setStatus = vi.fn();
   return {
     actions: createSingleCalculatorActions({
-      inputs,
       results,
       lastCommittedInputs: inputs,
       selectedSeriesId: 'current',

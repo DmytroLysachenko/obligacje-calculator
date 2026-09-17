@@ -1,6 +1,6 @@
 import { ScenarioKind } from '../types/scenarios';
 
-import { HandlerData, ScenarioHandler } from './base';
+import { HandlerData } from './base';
 import { ComparisonHandler } from './comparison';
 import { OptimizerHandler } from './optimizer';
 import { PortfolioSimulationHandler } from './portfolio-simulation';
@@ -17,32 +17,28 @@ export * from './retirement-planner';
 export * from './single-bond';
 
 export class HandlerFactory {
-  private handlers: Map<ScenarioKind, ScenarioHandler<unknown, unknown>> = new Map();
+  /** Exhaustive registry: each kind retains its request/result pairing. */
+  private readonly handlers: {
+    [ScenarioKind.SINGLE_BOND]: SingleBondHandler;
+    [ScenarioKind.REGULAR_INVESTMENT]: RegularInvestmentHandler;
+    [ScenarioKind.BOND_COMPARISON]: ComparisonHandler;
+    [ScenarioKind.PORTFOLIO_SIMULATION]: PortfolioSimulationHandler;
+    [ScenarioKind.BOND_OPTIMIZER]: OptimizerHandler;
+    [ScenarioKind.RETIREMENT_PLANNER]: RetirementPlannerHandler;
+  };
 
   constructor(data: HandlerData) {
-    this.register(new SingleBondHandler(data) as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(
-      new RegularInvestmentHandler(data) as unknown as ScenarioHandler<unknown, unknown>,
-    );
-    this.register(new ComparisonHandler(data) as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(
-      new PortfolioSimulationHandler(data) as unknown as ScenarioHandler<unknown, unknown>,
-    );
-    this.register(new OptimizerHandler(data) as unknown as ScenarioHandler<unknown, unknown>);
-    this.register(
-      new RetirementPlannerHandler(data) as unknown as ScenarioHandler<unknown, unknown>,
-    );
+    this.handlers = {
+      [ScenarioKind.SINGLE_BOND]: new SingleBondHandler(data),
+      [ScenarioKind.REGULAR_INVESTMENT]: new RegularInvestmentHandler(data),
+      [ScenarioKind.BOND_COMPARISON]: new ComparisonHandler(data),
+      [ScenarioKind.PORTFOLIO_SIMULATION]: new PortfolioSimulationHandler(data),
+      [ScenarioKind.BOND_OPTIMIZER]: new OptimizerHandler(data),
+      [ScenarioKind.RETIREMENT_PLANNER]: new RetirementPlannerHandler(data),
+    };
   }
 
-  register(handler: ScenarioHandler<unknown, unknown>) {
-    this.handlers.set(handler.kind, handler);
-  }
-
-  getHandler(kind: ScenarioKind): ScenarioHandler<unknown, unknown> {
-    const handler = this.handlers.get(kind);
-    if (!handler) {
-      throw new Error(`Unsupported scenario kind: ${kind}`);
-    }
-    return handler;
+  getHandler<TKind extends ScenarioKind>(kind: TKind): (typeof this.handlers)[TKind] {
+    return this.handlers[kind];
   }
 }

@@ -18,11 +18,12 @@ export class ComparisonHandler
   extends BaseHandler
   implements
     ScenarioHandler<
+      ScenarioKind.BOND_COMPARISON,
       NormalizedBondComparisonPayload | IndependentBondComparisonPayload,
       BondComparisonScenarioItem[]
     >
 {
-  kind = ScenarioKind.BOND_COMPARISON;
+  readonly kind: ScenarioKind.BOND_COMPARISON = ScenarioKind.BOND_COMPARISON;
 
   async handle(
     payload: NormalizedBondComparisonPayload | IndependentBondComparisonPayload,

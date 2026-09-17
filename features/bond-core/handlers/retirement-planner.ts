@@ -14,9 +14,14 @@ import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 
 export class RetirementPlannerHandler
   extends BaseHandler
-  implements ScenarioHandler<RetirementPlannerPayload, RetirementPlannerResult>
+  implements
+    ScenarioHandler<
+      ScenarioKind.RETIREMENT_PLANNER,
+      RetirementPlannerPayload,
+      RetirementPlannerResult
+    >
 {
-  kind = ScenarioKind.RETIREMENT_PLANNER;
+  readonly kind: ScenarioKind.RETIREMENT_PLANNER = ScenarioKind.RETIREMENT_PLANNER;
 
   private resolveModeledAnnualRate(payload: RetirementPlannerPayload, context: HandlerContext) {
     const bondDef = context.dbDefinitions[payload.bondType];

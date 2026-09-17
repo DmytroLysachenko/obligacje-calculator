@@ -108,10 +108,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
   const actions = useMemo(
     () =>
       createSingleCalculatorActions({
-        inputs,
         results,
         lastCommittedInputs,
-        selectedSeriesId,
+        selectedSeriesId: lastCommittedInputs?.selectedSeriesId ?? selectedSeriesId,
         language,
         canManageWorkspace,
         t,
@@ -120,8 +119,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           setStatusMessage(message);
         },
       }),
-    [canManageWorkspace, inputs, language, lastCommittedInputs, results, selectedSeriesId, t],
+    [canManageWorkspace, language, lastCommittedInputs, results, selectedSeriesId, t],
   );
+  const committedInputs = lastCommittedInputs ?? inputs;
 
   const handleApplyGuardrailFix = (issue: InputGuardrailIssue) => {
     replaceInputs(applyGuardrailFix(issue, inputs));
@@ -186,7 +186,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           results={
             <BondCalculatorResultsPanel
               results={results}
-              inputs={inputs}
+              inputs={committedInputs}
               envelope={envelope}
               isCalculating={isCalculating}
               isDirty={isDirty}
@@ -200,7 +200,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           details={
             <BondCalculatorDetailsPanel
               results={results}
-              inputs={inputs}
+              inputs={committedInputs}
               envelope={envelope}
               isCalculating={isCalculating}
               readingGuide={readingGuide}

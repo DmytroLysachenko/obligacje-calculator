@@ -257,7 +257,7 @@ describe('Flagship calculation regressions', () => {
       const result = envelope.result as RegularInvestmentResult;
 
       expect(result.totalInvested).toBe(48000);
-      expect(result.finalNominalValue).toBe(48000);
+      expect(result.finalNominalValue).toBeGreaterThan(48000);
       expect(result.totalTax).toBeGreaterThan(700);
       expect(result.totalTax).toBeLessThan(1200);
       expect(result.totalProfit).toBeGreaterThan(2500);

@@ -72,7 +72,6 @@ type Translate = (key: string, values?: Record<string, string | number>) => stri
 type StatusTone = 'success' | 'error';
 
 export interface SingleCalculatorActionDependencies {
-  inputs: BondInputs;
   results: CalculationResult | null;
   lastCommittedInputs: BondInputs | null;
   selectedSeriesId: string | null | undefined;
@@ -87,7 +86,6 @@ export interface SingleCalculatorActionDependencies {
  * container remains responsible for rendering and calculation state only.
  */
 export function createSingleCalculatorActions({
-  inputs,
   results,
   lastCommittedInputs,
   selectedSeriesId,
@@ -101,6 +99,8 @@ export function createSingleCalculatorActions({
       if (!results || !canManageWorkspace) return;
 
       try {
+        if (!lastCommittedInputs) return;
+
         const portfolioList = await portfolioClient.listPortfolios();
         const saveTarget = getWorkspaceSaveTarget(getStoredCurrentPortfolioId(), portfolioList);
         let portfolioId: string | undefined = saveTarget.portfolioId ?? undefined;
@@ -120,12 +120,12 @@ export function createSingleCalculatorActions({
         setStoredCurrentPortfolioId(portfolioId);
         await portfolioClient.createLot({
           portfolioId,
-          bondType: inputs.bondType,
+          bondType: lastCommittedInputs.bondType,
           selectedSeriesId:
             selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
-          purchaseDate: inputs.purchaseDate,
-          bondQuantity: Math.floor(inputs.initialInvestment / 100),
-          isRebought: inputs.isRebought,
+          purchaseDate: lastCommittedInputs.purchaseDate,
+          bondQuantity: Math.floor(lastCommittedInputs.initialInvestment / 100),
+          isRebought: lastCommittedInputs.isRebought,
         });
         setStatus(
           'success',
@@ -141,9 +141,10 @@ export function createSingleCalculatorActions({
 
     saveScenario() {
       try {
-        const scenarioMeta = buildSavedSingleScenarioMeta(inputs, results);
+        if (!results || !lastCommittedInputs) return;
+        const scenarioMeta = buildSavedSingleScenarioMeta(lastCommittedInputs, results);
         saveScenarioRecord(
-          createSavedScenario(inputs, {
+          createSavedScenario(lastCommittedInputs, {
             name: scenarioMeta.name,
             description: scenarioMeta.description,
           }),
@@ -156,15 +157,15 @@ export function createSingleCalculatorActions({
     },
 
     async exportPdf() {
-      if (!results) return;
+      if (!results || !lastCommittedInputs) return;
 
       try {
         const { generateSingleBondReportPdf } = await import('@/shared/lib/pdf-utils');
         await generateSingleBondReportPdf(
           results,
-          inputs,
+          lastCommittedInputs,
           language,
-          buildSingleReportFilename(inputs, language),
+          buildSingleReportFilename(lastCommittedInputs, language),
         );
         setStatus('success', t('bonds.results.pdf_export_success'));
       } catch (error) {

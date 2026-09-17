@@ -15,8 +15,8 @@ export interface HandlerContext {
   dbDefinitions: Record<BondType, BondDefinition>;
 }
 
-export interface ScenarioHandler<TRequest, TResponse> {
-  kind: ScenarioKind;
+export interface ScenarioHandler<TKind extends ScenarioKind, TRequest, TResponse> {
+  kind: TKind;
   handle(payload: TRequest, context: HandlerContext): Promise<CalculationEnvelope<TResponse>>;
 }
 
@@ -37,6 +37,11 @@ export interface HandlerData {
   ) => Promise<{
     firstYearRate: number;
     margin: number;
+    earlyWithdrawalFee?: number;
+    redemptionFeeCap?: string;
+    termsSourceUrl?: string;
+    termsRevision?: string;
+    termsAreVerified: boolean;
     source: 'series' | 'definition' | 'unresolved';
     seriesCode?: string;
     emissionMonth?: string;

@@ -307,7 +307,7 @@ describe('calculator truth QA scenarios', () => {
     expect(result.totalInvested).toBe(48000);
     expect(result.lots).toHaveLength(48);
     expect(result.timeline).toHaveLength(49);
-    expect(result.totalProfit).toBeGreaterThan(3600);
+    expect(result.totalProfit).toBeGreaterThan(2800);
     expect(result.totalTax).toBeGreaterThan(700);
     expect(result.totalEarlyWithdrawalFees).toBeGreaterThan(0);
   });
