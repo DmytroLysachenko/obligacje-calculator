@@ -6,7 +6,11 @@ import { BondType, LotBreakdown, RegularInvestmentInputs, TaxStrategy } from '..
 import { getExpectedInflationForYearIndex } from './inflation';
 import { determineInterestRate } from './rate-resolution';
 import { calculateEarlyWithdrawalFee } from './redemption';
-import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
+import {
+  calculateTaxAmount,
+  settlementPolicyFor,
+  shouldWithholdPeriodicTax,
+} from './tax-settlement';
 
 export function updateRegularInvestmentLotsForMonth({
   lots,
@@ -29,7 +33,7 @@ export function updateRegularInvestmentLotsForMonth({
   bondPrice,
   nominalValue,
   earlyWithdrawalFee,
-  isWithdrawalStep,
+  redemptionFeeCap,
 }: {
   lots: LotBreakdown[];
   currentMonthDate: Date;
@@ -51,9 +55,12 @@ export function updateRegularInvestmentLotsForMonth({
   bondPrice: Decimal.Value;
   nominalValue: Decimal.Value;
   earlyWithdrawalFee: number;
-  isWithdrawalStep: boolean;
+  redemptionFeeCap?: 'interest' | 'principal';
 }) {
   lots.forEach((lot) => {
+    if (lot.settledValue !== undefined) {
+      return;
+    }
     const lotPurchaseDate = parseISO(lot.purchaseDate);
     const lotMaturityDate = parseISO(lot.maturityDate);
 
@@ -95,13 +102,27 @@ export function updateRegularInvestmentLotsForMonth({
         currentInterestRate.dividedBy(12).dividedBy(100),
       );
       const newAccumulatedInterest = dLotAccumulatedInterest.plus(interestThisMonth);
-      lot.accumulatedInterest = newAccumulatedInterest.toNumber();
 
       if (isCapitalized) {
-        lot.grossValue = dLotGrossValue.plus(interestThisMonth).toNumber();
+        // Issuer capitalization is annual for the relevant families. Monthly
+        // UI aggregation must not turn that into monthly compounding.
+        if (monthsHeld % 12 === 0) {
+          lot.grossValue = dLotGrossValue.plus(newAccumulatedInterest).toNumber();
+          lot.accumulatedInterest = 0;
+        } else {
+          lot.accumulatedInterest = newAccumulatedInterest.toNumber();
+        }
       } else if (shouldWithholdTaxForLot) {
-        const taxThisMonth = calculateTaxAmount(interestThisMonth, taxStrategy, false, taxRate);
+        lot.accumulatedInterest = newAccumulatedInterest.toNumber();
+        const taxThisMonth = calculateTaxAmount(
+          interestThisMonth,
+          taxStrategy,
+          settlementPolicyFor(taxStrategy),
+          taxRate,
+        );
         lot.tax = dLotTax.plus(taxThisMonth).toNumber();
+      } else {
+        lot.accumulatedInterest = newAccumulatedInterest.toNumber();
       }
     }
 
@@ -109,6 +130,7 @@ export function updateRegularInvestmentLotsForMonth({
 
     const dFinalAccumulatedInterest = new Decimal(lot.accumulatedInterest);
     const units = new Decimal(lot.investedAmount).dividedBy(bondPrice).floor();
+    const nominalStarting = units.times(nominalValue);
     const isLotEarlyWithdrawal = !lot.isMatured;
     const dFinalFee = calculateEarlyWithdrawalFee(
       bondType,
@@ -117,11 +139,12 @@ export function updateRegularInvestmentLotsForMonth({
       dFinalAccumulatedInterest,
       units,
       earlyWithdrawalFee,
+      redemptionFeeCap,
     );
     lot.earlyWithdrawalFee = dFinalFee.toNumber();
 
     const currentGrossValue = isCapitalized
-      ? new Decimal(lot.grossValue)
+      ? new Decimal(lot.grossValue).plus(dFinalAccumulatedInterest)
       : units.times(nominalValue).plus(dFinalAccumulatedInterest);
     const currentTaxPaid = shouldWithholdTaxForLot
       ? new Decimal(lot.tax)
@@ -130,10 +153,13 @@ export function updateRegularInvestmentLotsForMonth({
             0,
             taxStrategy === TaxStrategy.IKZE
               ? currentGrossValue.minus(dFinalFee)
-              : dFinalAccumulatedInterest.minus(dFinalFee),
+              : (isCapitalized
+                  ? currentGrossValue.minus(nominalStarting)
+                  : dFinalAccumulatedInterest
+                ).minus(dFinalFee),
           ),
           taxStrategy,
-          isWithdrawalStep,
+          settlementPolicyFor(taxStrategy),
           taxRate,
         );
 
@@ -157,11 +183,21 @@ export function summarizeRegularInvestmentLots({
 }) {
   return lots.reduce(
     (summary, lot) => {
+      // A matured lot has been moved to the cash account exactly once. Its
+      // immutable history remains available for the lot table but it cannot
+      // also be counted as an active holding.
+      if (lot.isMatured) {
+        return summary;
+      }
       const units = new Decimal(lot.investedAmount).dividedBy(bondPrice).floor();
       const nominalStarting = units.times(nominalValue);
 
       return {
-        nominalValue: summary.nominalValue.plus(isCapitalized ? lot.grossValue : nominalStarting),
+        nominalValue: summary.nominalValue.plus(
+          isCapitalized
+            ? new Decimal(lot.grossValue).plus(new Decimal(lot.accumulatedInterest))
+            : nominalStarting.plus(new Decimal(lot.accumulatedInterest)),
+        ),
         profit: summary.profit.plus(new Decimal(lot.netValue).minus(lot.investedAmount)),
         tax: summary.tax.plus(lot.tax),
         fees: summary.fees.plus(lot.earlyWithdrawalFee),

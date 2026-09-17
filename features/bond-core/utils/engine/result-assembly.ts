@@ -119,14 +119,14 @@ export function createFinalSingleBondResult({
 
 function calculateRealAnnualizedReturn(
   totalHorizon: number,
-  totalInvested: Decimal,
+  realContributions: Decimal,
   lastPoint: RegularTimelinePoint,
 ): number {
-  if (totalHorizon <= 0 || totalInvested.lte(0)) {
+  if (totalHorizon <= 0 || realContributions.lte(0)) {
     return 0;
   }
 
-  const totalMultiplier = new Decimal(lastPoint.realValue).dividedBy(totalInvested);
+  const totalMultiplier = new Decimal(lastPoint.realValue).dividedBy(realContributions);
   if (totalMultiplier.lte(0)) {
     return 0;
   }
@@ -139,8 +139,14 @@ export function createRegularInvestmentResult(
   totalHorizon: number,
   timeline: RegularTimelinePoint[],
   lots: RegularInvestmentResult['lots'],
+  realContributions = totalInvested,
+  cashBalance = new Decimal(0),
+  activeHoldingsValue = new Decimal(lastRegularNominalValue(timeline, cashBalance)),
 ): RegularInvestmentResult {
   const lastPoint = timeline[timeline.length - 1];
+  const terminalNetSettlement = lastPoint?.events?.find(
+    (event) => event.type === 'WITHDRAWAL',
+  )?.value;
 
   return {
     totalInvested: totalInvested.toNumber(),
@@ -149,8 +155,18 @@ export function createRegularInvestmentResult(
     totalProfit: lastPoint.profit,
     totalTax: lastPoint.tax,
     totalEarlyWithdrawalFees: lastPoint.earlyWithdrawalFees,
-    realAnnualizedReturn: calculateRealAnnualizedReturn(totalHorizon, totalInvested, lastPoint),
+    realAnnualizedReturn: calculateRealAnnualizedReturn(totalHorizon, realContributions, lastPoint),
     timeline,
     lots,
+    cashBalance: cashBalance.toNumber(),
+    totalContributions: totalInvested.toNumber(),
+    activeHoldingsValue: activeHoldingsValue.toNumber(),
+    terminalNetSettlement,
+    paidOutValue: terminalNetSettlement ?? 0,
+    terminalWealth: activeHoldingsValue.plus(cashBalance).toNumber(),
   };
+}
+
+function lastRegularNominalValue(timeline: RegularTimelinePoint[], fallback: Decimal) {
+  return timeline.at(-1)?.nominalValue ?? fallback.toNumber();
 }

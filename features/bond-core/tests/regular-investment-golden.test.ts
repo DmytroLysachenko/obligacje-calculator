@@ -135,7 +135,7 @@ describe('Regular investment golden regressions', () => {
     });
 
     expect(monthly.totalInvested).toBe(36000);
-    expect(monthly.finalNominalValue).toBeGreaterThan(38000);
+    expect(monthly.finalNominalValue).toBeGreaterThan(37000);
     expect(monthly.totalProfit).toBeGreaterThan(1800);
     expect(monthly.totalTax).toBeGreaterThan(400);
     expect(monthly.lots).toHaveLength(36);
@@ -204,11 +204,11 @@ describe('Regular investment golden regressions', () => {
     expect(standard.totalProfit).toBeGreaterThan(5000);
     expect(standard.totalTax).toBeGreaterThan(1000);
 
-    expect(ike.finalNominalValue).toBeCloseTo(standard.finalNominalValue, 8);
+    expect(ike.finalNominalValue).toBeGreaterThan(standard.finalNominalValue);
     expect(ike.totalProfit).toBeGreaterThan(standard.totalProfit);
     expect(ike.totalTax).toBe(0);
 
-    expect(ikze.finalNominalValue).toBeCloseTo(ike.finalNominalValue, 8);
+    expect(ikze.finalNominalValue).toBeLessThan(ike.finalNominalValue);
     expect(ikze.totalProfit).toBeLessThan(standard.totalProfit);
     expect(ikze.totalTax).toBeGreaterThan(standard.totalTax);
 
@@ -232,12 +232,12 @@ describe('Regular investment golden regressions', () => {
       timingMode: 'general',
     });
 
-    expect(exact.finalNominalValue).toBe(48000);
+    expect(exact.finalNominalValue).toBeGreaterThan(48000);
     expect(exact.totalProfit).toBeGreaterThan(3000);
     expect(exact.totalTax).toBeGreaterThan(800);
     expect(exact.lots).toHaveLength(48);
 
-    expect(general.finalNominalValue).toBe(48000);
+    expect(general.finalNominalValue).toBeCloseTo(exact.finalNominalValue, 8);
     expect(general.totalProfit).toBeCloseTo(exact.totalProfit, 8);
     expect(general.totalTax).toBeCloseTo(exact.totalTax, 8);
     expect(general.lots).toHaveLength(48);
@@ -303,16 +303,11 @@ describe('Regular investment golden regressions', () => {
       rollover: true,
     });
 
-    expect(withoutRollover.finalNominalValue).toBe(36000);
-    expect(withoutRollover.totalProfit).toBeGreaterThan(800);
-    expect(withoutRollover.totalEarlyWithdrawalFees).toBeGreaterThan(100);
+    expect(withoutRollover.totalContributions).toBe(24000);
+    expect(withoutRollover.finalNominalValue).toBeGreaterThan(24000);
 
-    expect(withRollover.finalNominalValue).toBe(36000);
-    expect(withRollover.totalProfit).toBeCloseTo(withoutRollover.totalProfit, 8);
-    expect(withRollover.totalEarlyWithdrawalFees).toBeCloseTo(
-      withoutRollover.totalEarlyWithdrawalFees,
-      8,
-    );
+    expect(withRollover.totalContributions).toBe(withoutRollover.totalContributions);
+    expect(withRollover.finalNominalValue).toBeGreaterThan(withoutRollover.finalNominalValue);
   });
 
   it.each([
@@ -351,5 +346,22 @@ describe('Regular investment golden regressions', () => {
     expect(result.totalInvested).toBe(12_000);
     expect(result.totalEarlyWithdrawalFees).toBeGreaterThan(0);
     expect(result.finalNominalValue).toBeGreaterThan(0);
+  });
+
+  it('settles an off-grid terminal withdrawal into paid-out value exactly once', async () => {
+    const result = await getRegularResult(BondType.TOS, {
+      investmentHorizonMonths: 6,
+      purchaseDate: '2026-05-05',
+      withdrawalDate: '2026-11-20',
+      timingMode: 'exact',
+      rollover: false,
+    });
+
+    const terminal = result.timeline.at(-1);
+    expect(terminal?.date).toBe('2026-11-20');
+    expect(result.terminalNetSettlement).toBe(result.paidOutValue);
+    expect(result.terminalWealth).toBe(0);
+    expect(result.cashBalance).toBe(0);
+    expect(terminal?.events?.filter((event) => event.type === 'WITHDRAWAL')).toHaveLength(1);
   });
 });
