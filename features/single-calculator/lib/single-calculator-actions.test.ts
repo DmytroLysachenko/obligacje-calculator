@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { BondInputs } from '@/features/bond-core/types';
+
 const mocks = vi.hoisted(() => ({
   createLot: vi.fn(),
   createPortfolio: vi.fn(),
@@ -44,14 +46,17 @@ vi.mock('./single-calculator-container-model', () => ({
 }));
 vi.mock('@/shared/lib/pdf-utils', () => ({ generateSingleBondReportPdf: mocks.exportPdf }));
 
-import { createSingleCalculatorActions } from './single-calculator-actions';
+import {
+  createSingleCalculatorActions,
+  solveReverseSavingsGoal,
+} from './single-calculator-actions';
 
 const inputs = {
   bondType: 'EDO',
   initialInvestment: 1000,
   purchaseDate: '2026-08-01',
   isRebought: false,
-} as never;
+} as BondInputs;
 const results = { netPayoutValue: 1100 } as never;
 const t = (key: string) => key;
 
@@ -149,5 +154,27 @@ describe('single calculator result actions', () => {
     expect(mocks.scenarioShare).toHaveBeenCalledWith(
       expect.objectContaining({ description: 'Committed single-bond scenario for EDO.' }),
     );
+  });
+});
+
+describe('reverse minimum-purchase solver', () => {
+  it('returns the first whole-bond quantity that reaches a threshold', async () => {
+    const solved = await solveReverseSavingsGoal(
+      {
+        ...inputs,
+        calculatorMode: 'reverse',
+        savingsGoal: 901,
+        rebuyDiscount: 0,
+      },
+      async (candidate) => candidate.initialInvestment * 0.9,
+    );
+
+    expect(solved.initialInvestment).toBe(1100);
+    expect(solved.initialInvestment * 0.9).toBeGreaterThanOrEqual(901);
+    expect((solved.initialInvestment - 100) * 0.9).toBeLessThan(901);
+  });
+
+  it('leaves non-reverse inputs unchanged', async () => {
+    await expect(solveReverseSavingsGoal(inputs, async () => 0)).resolves.toEqual(inputs);
   });
 });

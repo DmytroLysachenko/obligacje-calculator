@@ -19,10 +19,6 @@ import {
   buildSavedSingleScenarioMeta,
   buildSingleReportFilename,
 } from './single-calculator-container-model';
-import {
-  applyReverseSavingsGoal,
-  getReverseCalculationTestInputs,
-} from './single-calculator-state';
 
 type PostCalculation = <TResponse>(
   endpoint: string,
@@ -49,11 +45,13 @@ export async function runSingleBondCalculation({
   let finalInputs = { ...inputs };
 
   if (inputs.calculatorMode === 'reverse' && inputs.savingsGoal) {
-    const simulatedEnvelope = await post<SingleBondCalculationEnvelope>(
-      getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
-      getReverseCalculationTestInputs(inputs),
-    );
-    finalInputs = applyReverseSavingsGoal(inputs, simulatedEnvelope.result.netPayoutValue);
+    finalInputs = await solveReverseSavingsGoal(inputs, async (candidateInputs) => {
+      const envelope = await post<SingleBondCalculationEnvelope>(
+        getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
+        candidateInputs,
+      );
+      return envelope.result.netPayoutValue;
+    });
   }
 
   const envelope = await post<SingleBondCalculationEnvelope>(
@@ -62,6 +60,42 @@ export async function runSingleBondCalculation({
   );
 
   return { envelope, finalInputs };
+}
+
+/** Searches integer purchasable bond counts and verifies the lower neighbour. */
+export async function solveReverseSavingsGoal(
+  inputs: BondInputs,
+  calculatePayout: (candidate: BondInputs) => Promise<number>,
+) {
+  if (inputs.calculatorMode !== 'reverse' || !inputs.savingsGoal || inputs.savingsGoal <= 0) {
+    return { ...inputs };
+  }
+
+  const bondPrice = inputs.isRebought ? 100 - (inputs.rebuyDiscount || 0) : 100;
+  const target = inputs.savingsGoal;
+  const payoutFor = async (quantity: number) =>
+    calculatePayout({ ...inputs, initialInvestment: quantity * bondPrice });
+
+  let low = 0;
+  let high = 1;
+  const MAX_BONDS = 10_000_000;
+  while ((await payoutFor(high)) < target) {
+    low = high;
+    high *= 2;
+    if (high > MAX_BONDS) {
+      throw new Error('The target exceeds the supported reverse-calculation range.');
+    }
+  }
+
+  while (high - low > 1) {
+    const middle = Math.floor((low + high) / 2);
+    if ((await payoutFor(middle)) >= target) high = middle;
+    else low = middle;
+  }
+
+  // The binary-search invariant proves `high` meets the target and `low`
+  // does not, including denomination and tax-rounding thresholds.
+  return { ...inputs, initialInvestment: high * bondPrice };
 }
 
 export function fetchBondSeriesForSymbol(symbol: BondType) {
