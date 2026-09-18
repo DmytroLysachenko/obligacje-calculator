@@ -47,14 +47,40 @@ function getLatestPointAtOrBefore(item: PortfolioSimulationItem, currentDate: Da
   return latestPoint;
 }
 
-function getProRatedFinalFee(item: PortfolioSimulationItem, currentDate: Date, maxDate: Date) {
-  const result = item.result;
-
-  if (result.totalEarlyWithdrawalFee <= 0) {
-    return 0;
+function getCumulativeDeductionsAt(item: PortfolioSimulationItem, currentDate: Date) {
+  if (
+    compareAsc(
+      currentDate,
+      parseISO(item.result.timeline.at(-1)?.cycleEndDate ?? item.purchaseDate),
+    ) >= 0
+  ) {
+    return { tax: item.result.totalTax, fees: item.result.totalEarlyWithdrawalFee };
   }
 
-  return compareAsc(currentDate, maxDate) === 0 ? result.totalEarlyWithdrawalFee : 0;
+  return item.result.timeline.reduce(
+    (total, point) => {
+      if (compareAsc(getPointDate(point), currentDate) > 0) return total;
+      return { tax: total.tax + point.taxDeducted, fees: total.fees };
+    },
+    { tax: 0, fees: 0 },
+  );
+}
+
+function buildAggregateDates(items: PortfolioSimulationItem[], minDate: Date, maxDate: Date) {
+  const dates = new Map<string, Date>();
+  for (let cursor = minDate; !isBefore(maxDate, cursor); cursor = addMonths(cursor, 1)) {
+    dates.set(format(cursor, 'yyyy-MM-dd'), cursor);
+  }
+  dates.set(format(maxDate, 'yyyy-MM-dd'), maxDate);
+  for (const item of items) {
+    for (const point of item.result.timeline) {
+      const date = getPointDate(point);
+      if (!isBefore(date, minDate) && !isBefore(maxDate, date)) {
+        dates.set(format(date, 'yyyy-MM-dd'), date);
+      }
+    }
+  }
+  return Array.from(dates.values()).sort(compareAsc);
 }
 
 export class PortfolioSimulationHandler
@@ -122,8 +148,7 @@ export class PortfolioSimulationHandler
     // single portfolio anchor through the same price-index service as single
     // and recurring calculations.
     const priceIndexPath = priceIndexPathForProjection(minDate, payload.expectedInflation);
-    let curr = minDate;
-    while (!isBefore(maxDate, curr)) {
+    for (const curr of buildAggregateDates(items, minDate, maxDate)) {
       const dateStr = format(curr, 'yyyy-MM-dd');
       let totalNominalValue = 0;
       let totalNetValue = 0;
@@ -137,8 +162,9 @@ export class PortfolioSimulationHandler
           totalNominalValue += point.nominalValueAfterInterest;
           totalNetValue += point.totalValue;
           totalProfit += point.netProfit;
-          totalTax += point.taxDeducted;
-          totalFees += getProRatedFinalFee(item, curr, maxDate);
+          const deductions = getCumulativeDeductionsAt(item, curr);
+          totalTax += deductions.tax;
+          totalFees += deductions.fees;
         }
       }
 
@@ -152,7 +178,6 @@ export class PortfolioSimulationHandler
         totalTax,
         totalFees,
       });
-      curr = addMonths(curr, 1);
     }
 
     const result: PortfolioSimulationResult = {

@@ -165,6 +165,27 @@ describe('portfolio simulation aggregation', () => {
     expect(result.summary.totalProfit).toBe(final?.totalProfit);
   });
 
+  it('includes an off-grid terminal settlement and reconciles each lot', async () => {
+    const result = await calculatePortfolio({
+      withdrawalDate: '2025-01-15',
+      investments: [
+        {
+          bondType: BondType.TOS,
+          amount: 10_000,
+          purchaseDate: '2024-01-01',
+          taxStrategy: TaxStrategy.STANDARD,
+          rollover: false,
+        },
+      ],
+    });
+    const final = result.aggregatedTimeline.at(-1);
+
+    expect(final?.date).toBe('2025-01-15');
+    expect(final?.totalNetValue).toBeCloseTo(result.items[0]?.result.netPayoutValue ?? 0, 8);
+    expect(final?.totalTax).toBeCloseTo(result.items[0]?.result.totalTax ?? 0, 8);
+    expect(final?.totalFees).toBeCloseTo(result.items[0]?.result.totalEarlyWithdrawalFee ?? 0, 8);
+  });
+
   it('deflates the aggregate once from the portfolio anchor', async () => {
     const result = await calculatePortfolio();
     const final = result.aggregatedTimeline.at(-1);
