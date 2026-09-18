@@ -12,6 +12,7 @@ import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { isCalculationAbort, runSingleBondCalculation } from '../lib/single-calculator-actions';
 import {
   getInitialSingleCalculatorClientState,
+  isSameSingleCalculatorCalculation,
   resolveSingleCalculatorFieldUpdate,
   resolveSingleCalculatorReplacementInputs,
   resolveSingleCalculatorSelectedSeriesUpdate,
@@ -55,12 +56,19 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
         { envelope: SingleBondCalculationEnvelope; finalInputs: BondInputs }
       >({
         transitions: {
-          start: () => setIsDirty(false),
-          succeed: (_inputs, result) => {
+          start: () => undefined,
+          succeed: (calculationInputs, result) => {
             // Result rendering is non-urgent, but only this workflow may commit it.
             startTransition(() => {
               setEnvelope(result.envelope);
               setLastCommittedInputs(result.finalInputs);
+              // Starting a request is not a commit: retain stale state after
+              // failures/cancellations or edits made while it was in flight.
+              // Reverse mode reports solved inputs but compares its request.
+              setInputs((visibleInputs) => {
+                setIsDirty(!isSameSingleCalculatorCalculation(visibleInputs, calculationInputs));
+                return visibleInputs;
+              });
             });
           },
           fail: () => undefined,

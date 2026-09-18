@@ -13,7 +13,10 @@ import {
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { fetchBondSeriesForSymbol } from '../lib/single-calculator-actions';
-import { buildSingleCalculatorPersistenceSnapshot } from '../lib/single-calculator-client-state';
+import {
+  buildSingleCalculatorPersistenceSnapshot,
+  isSameSingleCalculatorCalculation,
+} from '../lib/single-calculator-client-state';
 import {
   applySingleCalculatorMacroDefaults,
   type MacroDefaults,
@@ -94,13 +97,21 @@ export function useBondCalculatorEffects({
 }: UseBondCalculatorEffectsInput) {
   const applyMacroDefaults = useEffectEvent((defaults: MacroDefaults) => {
     setInputs((previous) => {
-      return applySingleCalculatorMacroDefaults(previous, defaults);
+      const next = applySingleCalculatorMacroDefaults(previous, defaults);
+      if (lastCommittedInputs && !isSameSingleCalculatorCalculation(next, lastCommittedInputs)) {
+        setIsDirty(true);
+      }
+      return next;
     });
   });
 
   const reconcilePersistedMacroDefaults = useEffectEvent((defaults: MacroDefaults) => {
     setInputs((previous) => {
-      return reconcilePersistedSingleCalculatorMacroDefaults(previous, defaults);
+      const next = reconcilePersistedSingleCalculatorMacroDefaults(previous, defaults);
+      if (lastCommittedInputs && !isSameSingleCalculatorCalculation(next, lastCommittedInputs)) {
+        setIsDirty(true);
+      }
+      return next;
     });
   });
 
@@ -111,16 +122,20 @@ export function useBondCalculatorEffects({
 
     const timer = window.setTimeout(() => {
       setInputs((previous) => {
-        return resolveDefinitionSyncedInputs({
+        const next = resolveDefinitionSyncedInputs({
           previous,
           definitions,
           selectedSeriesId,
         });
+        if (lastCommittedInputs && !isSameSingleCalculatorCalculation(next, lastCommittedInputs)) {
+          setIsDirty(true);
+        }
+        return next;
       });
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [definitions, inputs.bondType, selectedSeriesId, setInputs]);
+  }, [definitions, inputs.bondType, lastCommittedInputs, selectedSeriesId, setInputs, setIsDirty]);
 
   useEffect(() => {
     if (initialInputs || hasRestoredStateRef.current || !definitions) {

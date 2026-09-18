@@ -159,14 +159,14 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           isDirty={isDirty}
           isCalculating={isCalculating}
           scenarioSummary={[
-            { label: t('bonds.bond.type'), value: inputs.bondType },
+            { label: t('bonds.bond.type'), value: committedInputs.bondType },
             {
               label: t('bonds.bond_quantity'),
-              value: `${Math.floor(inputs.initialInvestment / 100)} ${t('bonds.units')}`,
+              value: `${Math.floor(committedInputs.initialInvestment / 100)} ${t('bonds.units')}`,
             },
             {
               label: t('bonds.investment_horizon'),
-              value: `${inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)} ${t('common.month_compact')}`,
+              value: `${committedInputs.investmentHorizonMonths ?? Math.round(committedInputs.duration * 12)} ${t('common.month_compact')}`,
             },
           ]}
           controls={
