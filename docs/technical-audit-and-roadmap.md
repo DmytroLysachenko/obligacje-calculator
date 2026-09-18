@@ -285,7 +285,9 @@ F03.
 **Type:** Bug  
 **Scope:** XL
 
-### Current state
+**Status:** Completed (16 September 2026). Recurring plans now retain source-aware cash, settle matured lots once, execute exact-date withdrawals, and expose cash and active holdings separately.
+
+### Original audit state
 
 regular-investment-engine.ts creates integer lots but does not retain purchase residual cash. Matured liquidity is consumed only at contribution steps; matured lots remain in the aggregate. The schema drops rollover even though the engine reads it. Exact-date iteration stops on the monthly grid. summarizeRegularInvestmentLots omits paid interest from noncapitalized nominal value.
 
@@ -324,7 +326,9 @@ F01, F02, F03; coordinate F06 as one model migration.
 **Type:** Refactor  
 **Scope:** XL
 
-### Current state
+**Status:** Completed (17 September 2026). The single and recurring engines now share a date-aware issuer-period evaluator. Recurring lots settle only newly completed issuer periods, retain an incremental audit state, and use the same rate reset and accrual rules for annual, monthly, and partial periods.
+
+### Original audit state
 
 regular-investment-lots.ts increases capitalized gross value every month using annualRate/12 and resolves inflation-linked rates monthly. RegularInvestmentHandler resolves one initial offer for all future purchases. A one-lot, one-year TOS probe at 4.4% gives 104.48982685184559 PLN gross in regular investment versus 104.4 in the single engine.
 
@@ -363,7 +367,9 @@ F01–F03, F05; coordinate F12.
 **Type:** Bug  
 **Scope:** L
 
-### Current state
+**Status:** Completed (17 September 2026). Single-calculator report panels, actions and the collapsed scenario receipt consume committed inputs. Draft identity remains dirty through failed, cancelled and in-flight requests; successful calculations clear it only when the visible draft matches the completed request. Display-only preferences do not stale a report, while refreshed offer/default terms do.
+
+### Original audit state
 
 useBondCalculator retains lastCommittedInputs, but BondCalculatorContainer passes mutable inputs to summary, chart, details and PDF actions. addToNotebook and saveScenario also use the draft. Only shareScenario uses committed inputs. Dirty state is cleared at request start, including a request that later fails.
 
@@ -401,7 +407,9 @@ None. F26 subsequently enriches report metadata.
 **Type:** Bug  
 **Scope:** L
 
-### Current state
+**Status:** Completed (17 September 2026). Versioned portfolio packages now round-trip through the strict import envelope, including database numeric formatting and null values. Export carries portable series codes alongside non-authoritative source IDs; import prefers the code when a source UUID is foreign. Import is preflighted with a client confirmation and remains one atomic server transaction.
+
+### Original audit state
 
 exportOwnerPortfolio emits version/export metadata, assumptions, IDs, nullable notes and amount. ImportPayloadSchema is strict at root, portfolio and lot levels and accepts a smaller shape. useNotebookWorkspaceActions passes the parsed exported file directly to it. The export-shaped payload fails schema validation. Import re-resolves series from date and accepts fractional quantities.
 
@@ -440,7 +448,9 @@ None for codec/round trip; F02/F12 for richer series policy identity.
 **Type:** Bug  
 **Scope:** L
 
-### Current state
+**Status:** Completed (17 September 2026). Portfolio timelines now include every lot checkpoint and the exact requested terminal date. Aggregates use cumulative taxes and fees, and the terminal row reconciles directly to each lot’s settled result.
+
+### Original audit state
 
 PortfolioSimulationHandler aggregates on an earliest-purchase monthly grid, carries checkpoints, sums point.taxDeducted, and only adds final fees when a grid row exactly equals withdrawalDate. Terminal capitalized tax is represented in events/settlement, not that period field. Query services return envelope.result and drop provenance.
 
@@ -478,7 +488,9 @@ F01–F03; coordinate F12/F26 for context.
 **Type:** Feature  
 **Scope:** L
 
-### Current state
+**Status:** Completed (17 September 2026). Reverse mode now brackets and binary-searches integer bond quantities against simulated payouts, verifying that the selected quantity meets the target while the immediately lower quantity does not.
+
+### Original audit state
 
 runSingleBondCalculation scales a 10,000 PLN test result via applyReverseSavingsGoal and rounds the estimated required bond count upward. It does not verify that the result reaches the target or that one fewer bond fails.
 
@@ -517,7 +529,9 @@ F01, F02, F07; F11 for wrapper-aware solving; F04 for real goals.
 **Type:** Bug  
 **Scope:** L
 
-### Current state
+**Status:** Completed (17 September 2026). Wrapper-limit splits now aggregate returns by invested amount rather than averaging percentages, and unavailable purchase-year limits fall back explicitly to standard taxation with a warning.
+
+### Original audit state
 
 STANDARD/IKE/IKZE are accepted broadly. SingleBondHandler optionally splits an annual-limit overflow but averages the two annualized returns equally, regardless of amounts. Tax rule lookup can substitute the latest year when the requested year is missing. IKZE settlement is tied to bond cycles, and the engine also has relief-related fields not present in the intent schema.
 
@@ -556,7 +570,9 @@ F01, F02, F07.
 **Type:** Architecture  
 **Scope:** XL
 
-### Current state
+**Status:** Completed (17 September 2026). Resolution enforces issued sale windows, preserves explicit-series failures as unresolved rather than silently substituting a current offer, and exposes resolved-series provenance through assumptions and warnings.
+
+### Original audit state
 
 findActiveBondSeriesForDate selects latest emissionMonth ≤ purchaseDate, without sellEndDate. Explicit-series lookup does not check sale-window compatibility. resolveBondOfferTerms can return generic definition state after a database failure, even for an explicit series. Context revisions omit exact resolved-series values and historical inputs loaded later. Sync writes definitions and individual series sequentially; official-source success is not a full-family coverage check.
 

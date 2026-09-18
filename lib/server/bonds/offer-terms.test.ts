@@ -73,4 +73,12 @@ describe('isValidSeriesCodeForEmission', () => {
       resolveBondOfferTerms(BondType.ROR, '2026-09-01', BOND_DEFINITIONS, 'ror-august'),
     ).resolves.toMatchObject({ source: 'unresolved', requestedSeriesId: 'ror-august' });
   });
+
+  it('keeps an explicit series unresolved when its lookup fails', async () => {
+    repository.findBondDefinitionBySymbol.mockRejectedValue(new Error('database unavailable'));
+
+    await expect(
+      resolveBondOfferTerms(BondType.EDO, '2026-08-01', BOND_DEFINITIONS, 'edo-august'),
+    ).resolves.toMatchObject({ source: 'unresolved', requestedSeriesId: 'edo-august' });
+  });
 });

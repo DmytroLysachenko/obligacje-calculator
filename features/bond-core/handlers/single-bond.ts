@@ -60,6 +60,24 @@ export class SingleBondHandler
           ? parseFloat(rules?.ikeLimit || '0')
           : parseFloat(rules?.ikzeLimit || '0');
 
+      if (limitValue <= 0) {
+        const result = calculateBondInvestment({
+          ...inputsToCalculate,
+          taxStrategy: TaxStrategy.STANDARD,
+          rollover: shouldAutoRollover(inputsToCalculate, def.duration),
+        } as BondInputs & { rollover: boolean });
+        return this.createEnvelope(
+          result,
+          [
+            'No verified annual wrapper limit is available for this purchase year; standard taxation was used.',
+          ],
+          [
+            'Tax-wrapper illustration was not applied because its year-specific limit is unavailable.',
+          ],
+          context.dataFreshness,
+        );
+      }
+
       if (limitValue > 0 && inputsToCalculate.initialInvestment > limitValue) {
         return this.calculateSplitTaxWrapper(inputsToCalculate, limitValue, context.dataFreshness);
       }
@@ -181,9 +199,13 @@ export class SingleBondHandler
       isEarlyWithdrawal: wrapperPart.isEarlyWithdrawal,
       maturityDate: wrapperPart.maturityDate,
       nominalAnnualizedReturn:
-        (wrapperPart.nominalAnnualizedReturn + standardPart.nominalAnnualizedReturn) / 2,
+        (wrapperPart.nominalAnnualizedReturn * limit +
+          standardPart.nominalAnnualizedReturn * (inputs.initialInvestment - limit)) /
+        inputs.initialInvestment,
       realAnnualizedReturn:
-        (wrapperPart.realAnnualizedReturn + standardPart.realAnnualizedReturn) / 2,
+        (wrapperPart.realAnnualizedReturn * limit +
+          standardPart.realAnnualizedReturn * (inputs.initialInvestment - limit)) /
+        inputs.initialInvestment,
       calculationNotes: [
         ...(wrapperPart.calculationNotes || []),
         `Investment split: ${limit} PLN in ${inputs.taxStrategy} wrapper, ${inputs.initialInvestment - limit} PLN in Standard account due to annual limit.`,

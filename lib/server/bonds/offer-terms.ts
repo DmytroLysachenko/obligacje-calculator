@@ -169,6 +169,13 @@ export async function resolveBondOfferTerms(
     };
   } catch (error) {
     logger.error('Failed to resolve bond offer terms', error);
+    if (selectedSeriesId && selectedSeriesId !== 'current') {
+      return {
+        ...fallback,
+        source: 'unresolved',
+        requestedSeriesId: selectedSeriesId,
+      };
+    }
     return fallback;
   }
 }
@@ -188,18 +195,16 @@ export async function resolveStoredBondLotContext(
 
     if (selectedSeriesId && selectedSeriesId !== 'current') {
       const exactSeries = await findBondSeriesByIdForBond(selectedSeriesId, bond.id);
-
-      return {
-        bondTypeId: bond.id,
-        bondSeriesId:
-          exactSeries && isPurchaseWithinSeriesWindow(purchaseDate, exactSeries)
-            ? exactSeries.id
-            : null,
-        seriesCode:
-          exactSeries && isPurchaseWithinSeriesWindow(purchaseDate, exactSeries)
-            ? exactSeries.seriesCode
-            : undefined,
-      };
+      if (exactSeries && isPurchaseWithinSeriesWindow(purchaseDate, exactSeries)) {
+        return {
+          bondTypeId: bond.id,
+          bondSeriesId: exactSeries.id,
+          seriesCode: exactSeries.seriesCode,
+        };
+      }
+      // UUIDs are database-local. A portable package may contain its source
+      // UUID as trace metadata, but its public series code is authoritative.
+      if (!selectedSeriesCode) return { bondTypeId: bond.id, bondSeriesId: null };
     }
 
     if (selectedSeriesCode) {
