@@ -40,6 +40,56 @@ describe('portfolio import schema', () => {
     expect(parsed.portfolio.lots[0].bondSeriesId).toBe('c1af1c0f-fb73-4e25-a1e1-7838b38703e1');
   });
 
+  it('decodes a real package export without restoring database or calculated fields', () => {
+    const parsed = ImportPayloadSchema.parse({
+      version: '2.0',
+      packageType: 'portfolio-package',
+      exportedAt: '2026-09-15T10:00:00.000Z',
+      appVersion: '3.0.0-tax-calendar-inflation',
+      assumptions: { expectedInflation: 3.5 },
+      summary: { totalNetValue: 123_456 },
+      portfolio: {
+        id: 'c1af1c0f-fb73-4e25-a1e1-7838b38703e1',
+        name: 'Portable package',
+        description: null,
+        lots: [
+          {
+            bondType: 'EDO',
+            bondTypeId: 'c1af1c0f-fb73-4e25-a1e1-7838b38703e1',
+            bondSeriesId: 'c1af1c0f-fb73-4e25-a1e1-7838b38703e1',
+            seriesCode: 'EDO1036',
+            purchaseDate: '2026-09-15',
+            amount: '100.00',
+            isRebought: false,
+            notes: null,
+          },
+        ],
+      },
+    });
+
+    expect(parsed).toEqual({
+      version: '2.0',
+      packageType: 'portfolio-package',
+      exportedAt: '2026-09-15T10:00:00.000Z',
+      appVersion: '3.0.0-tax-calendar-inflation',
+      portfolio: {
+        name: 'Portable package',
+        description: undefined,
+        lots: [
+          {
+            bondType: 'EDO',
+            purchaseDate: '2026-09-15',
+            bondSeriesId: 'c1af1c0f-fb73-4e25-a1e1-7838b38703e1',
+            seriesCode: 'EDO1036',
+            isRebought: false,
+            notes: undefined,
+            bondQuantity: '100.00',
+          },
+        ],
+      },
+    });
+  });
+
   it.each([
     [
       'invalid date shape',
@@ -128,7 +178,7 @@ describe('portfolio import schema', () => {
     ).toBe(true);
   });
 
-  it.each(['-1', '+1', '1e3', 'NaN', 'Infinity', '', ' 1', '1 ', '.5', '0.00', '1.0'])(
+  it.each(['-1', '+1', '1e3', 'NaN', 'Infinity', '', ' 1', '1 ', '.5', '0.00', '1.5'])(
     'rejects unsafe amount encoding %s',
     (amount) => {
       expect(

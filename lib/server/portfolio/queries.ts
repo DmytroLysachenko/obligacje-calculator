@@ -1,11 +1,12 @@
 import { MODEL_VERSION } from '@/features/bond-core/model-version';
-import { TaxStrategy } from '@/features/bond-core/types';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import {
   PortfolioSimulationCalculationEnvelope,
   type PortfolioSimulationResult,
   ScenarioKind,
 } from '@/features/bond-core/types/scenarios';
 import { getMacroAssumptionDefaults } from '@/lib/data/market-data';
+import { resolveStoredBondLotContext } from '@/lib/server/bonds/offer-terms';
 import { calculationService } from '@/lib/server/calculation/composition';
 import { getOwnedPortfolio } from '@/lib/server/portfolio/access';
 import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
@@ -115,15 +116,24 @@ export async function exportOwnerPortfolio(
       id: portfolio.id,
       name: portfolio.name,
       description: portfolio.description,
-      lots: lots.map((lot) => ({
-        bondType: lot.bondType,
-        bondTypeId: lot.bondTypeId,
-        bondSeriesId: lot.bondSeriesId,
-        purchaseDate: lot.purchaseDate,
-        amount: lot.amount,
-        isRebought: lot.isRebought,
-        notes: lot.notes,
-      })),
+      lots: await Promise.all(
+        lots.map(async (lot) => ({
+          bondType: lot.bondType,
+          bondTypeId: lot.bondTypeId,
+          bondSeriesId: lot.bondSeriesId,
+          seriesCode: (
+            await resolveStoredBondLotContext(
+              lot.bondType as BondType,
+              lot.purchaseDate,
+              lot.bondSeriesId,
+            )
+          ).seriesCode,
+          purchaseDate: lot.purchaseDate,
+          amount: lot.amount,
+          isRebought: lot.isRebought,
+          notes: lot.notes,
+        })),
+      ),
     },
     summary: simulation?.result.summary ?? null,
   };

@@ -3,11 +3,12 @@ import { z } from 'zod';
 import { BondType } from '@/features/bond-core/types';
 import { IsoCalendarDateSchema } from '@/features/bond-core/types/iso-calendar-date';
 
-const ImportedBondQuantitySchema = z
-  .union([z.string(), z.number()])
-  .refine(
-    (value) => /^\d+$/.test(String(value)) && Number(value) > 0 && Number(value) <= 10_000_000,
-  );
+const ImportedBondQuantitySchema = z.union([z.string(), z.number()]).refine(
+  // Database numerics are exported as strings such as "100.00". Accept
+  // that lossless representation, but never fractional bond quantities.
+  (value) =>
+    /^\d+(?:\.0+)?$/.test(String(value)) && Number(value) > 0 && Number(value) <= 10_000_000,
+);
 
 const ImportedLotSchema = z
   .object({
@@ -21,7 +22,7 @@ const ImportedLotSchema = z
     // intentionally discarded: imports resolve the public series identity.
     bondTypeId: z.uuid().optional().nullable(),
     isRebought: z.boolean().optional(),
-    notes: z.string().trim().max(2_000).optional(),
+    notes: z.string().trim().max(2_000).nullable().optional(),
   })
   .strict()
   .refine((lot) => lot.bondQuantity !== undefined || lot.amount !== undefined, {
@@ -34,7 +35,7 @@ const ImportedLotSchema = z
     bondSeriesId: input.bondSeriesId,
     seriesCode: input.seriesCode,
     isRebought: input.isRebought,
-    notes: input.notes,
+    notes: input.notes ?? undefined,
     bondQuantity: input.bondQuantity ?? input.amount!,
   }));
 
@@ -51,14 +52,14 @@ export const ImportPayloadSchema = z
     portfolio: z
       .object({
         name: z.string().trim().min(1).max(120),
-        description: z.string().trim().max(2_000).optional(),
+        description: z.string().trim().max(2_000).nullable().optional(),
         id: z.uuid().optional(),
         lots: z.array(ImportedLotSchema).max(500),
       })
       .strict()
       .transform((portfolio) => ({
         name: portfolio.name,
-        description: portfolio.description,
+        description: portfolio.description ?? undefined,
         lots: portfolio.lots,
       })),
   })
