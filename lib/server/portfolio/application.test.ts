@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   importOwnerPortfolio: vi.fn(),
   toggleOwnerPortfolioSharing: vi.fn(),
   updateOwnerLot: vi.fn(),
+  updateOwnerPortfolio: vi.fn(),
   exportOwnerPortfolio: vi.fn(),
   listOwnerPortfolios: vi.fn(),
   listPortfolioLots: vi.fn(),
@@ -25,6 +26,7 @@ vi.mock('./commands', () => ({
   importOwnerPortfolio: mocks.importOwnerPortfolio,
   toggleOwnerPortfolioSharing: mocks.toggleOwnerPortfolioSharing,
   updateOwnerLot: mocks.updateOwnerLot,
+  updateOwnerPortfolio: mocks.updateOwnerPortfolio,
 }));
 vi.mock('./queries', () => ({
   exportOwnerPortfolio: mocks.exportOwnerPortfolio,
@@ -42,6 +44,7 @@ describe('portfolio application interface', () => {
   it.each([
     ['createPortfolio', 'createOwnerPortfolio', ['owner-1', { name: 'Taxable' }]],
     ['deletePortfolio', 'deleteOwnerPortfolio', ['owner-1', 'portfolio-1']],
+    ['updatePortfolio', 'updateOwnerPortfolio', ['owner-1', 'portfolio-1', { name: 'Edited' }]],
     ['listPortfolios', 'listOwnerPortfolios', ['owner-1']],
     [
       'createLot',

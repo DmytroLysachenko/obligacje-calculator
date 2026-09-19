@@ -10,6 +10,7 @@ import {
   deletePortfolioByOwner,
   importPortfolioAtomically,
   updateLotByOwner,
+  updatePortfolioByOwner,
   updatePortfolioVisibility,
 } from '@/lib/server/portfolio/repository';
 
@@ -25,6 +26,16 @@ export async function deleteOwnerPortfolio(ownerId: string, portfolioId: string)
   const [deletedPortfolio] = await deletePortfolioByOwner(ownerId, portfolioId);
   if (!deletedPortfolio) throw new PortfolioServiceError('Portfolio not found', 404, 'NOT_FOUND');
   return deletedPortfolio;
+}
+
+export async function updateOwnerPortfolio(
+  ownerId: string,
+  portfolioId: string,
+  input: { name?: string; description?: string },
+) {
+  const [portfolio] = await updatePortfolioByOwner(ownerId, portfolioId, input);
+  if (!portfolio) throw new PortfolioServiceError('Portfolio not found', 404, 'NOT_FOUND');
+  return portfolio;
 }
 
 export async function createPortfolioLot(

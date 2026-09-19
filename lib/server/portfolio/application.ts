@@ -9,6 +9,7 @@ import {
   importOwnerPortfolio,
   toggleOwnerPortfolioSharing,
   updateOwnerLot,
+  updateOwnerPortfolio,
 } from './commands';
 import {
   exportOwnerPortfolio,
@@ -27,6 +28,7 @@ import { getPublicSharedPortfolioPageData } from './shared-page-service';
 export const portfolioApplication = {
   createPortfolio: createOwnerPortfolio,
   deletePortfolio: deleteOwnerPortfolio,
+  updatePortfolio: updateOwnerPortfolio,
   listPortfolios: listOwnerPortfolios,
   async createLot(...args: Parameters<typeof createPortfolioLot>) {
     return toHoldingLot(await createPortfolioLot(...args));

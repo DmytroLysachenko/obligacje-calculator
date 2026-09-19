@@ -69,6 +69,7 @@ export const BondInputsSchema = withDateOrderValidation(
     customInflation: customPathSchema('customInflation', -20, 100),
     customNbpRate: customPathSchema('customNbpRate', -10, 100),
     rollover: z.boolean().optional(),
+    couponDisposition: z.enum(['reinvest', 'cash']).optional(),
     timingMode: z.enum(['general', 'exact']).optional(),
     investmentHorizonMonths: horizonMonths(360).optional(),
     useTaxWrapperLimit: z.boolean().optional(),
@@ -119,6 +120,33 @@ export const SingleBondCalculationIntentSchema = withDateOrderValidation(
 export const RegularInvestmentInputsSchema = withDateOrderValidation(
   DateRangeInputsSchema.extend({
     contributionAmount: money('contributionAmount', 100, 10_000_000),
+    initialLumpSum: money('initialLumpSum', 0, 10_000_000).optional(),
+    annualContributionIncreasePercent: percent(
+      'annualContributionIncreasePercent',
+      0,
+      100,
+    ).optional(),
+    skippedContributionDates: z.array(DateStringSchema).max(120).optional(),
+    oneOffContributions: z
+      .array(z.object({ date: DateStringSchema, amount: money('amount', 0, 10_000_000) }))
+      .max(120)
+      .optional(),
+    contributionOverrides: z
+      .array(z.object({ date: DateStringSchema, amount: money('amount', 0, 10_000_000) }))
+      .max(120)
+      .optional(),
+    allocationTargets: z
+      .array(z.object({ bondType: z.nativeEnum(BondType), percent: percent('percent', 0, 100) }))
+      .min(2)
+      .max(3)
+      .optional(),
+    cashBenchmark: z
+      .object({
+        annualRate: percent('annualRate', 0, 100),
+        capitalization: z.enum(['monthly', 'yearly']),
+        taxRate: percent('taxRate', 0, 100),
+      })
+      .optional(),
     frequency: z.nativeEnum(InvestmentFrequency),
     investmentHorizonMonths: horizonMonths(600),
     bondType: z.nativeEnum(BondType),
@@ -145,11 +173,52 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(
 ).superRefine((value, ctx) => {
   validateEffectiveHorizon(value, ctx, 600);
   validatePathLengths(value, value.investmentHorizonMonths / 12, ctx);
+  if (value.allocationTargets) {
+    const total = value.allocationTargets.reduce((sum, target) => sum + target.percent, 0);
+    if (
+      Math.abs(total - 100) > 0.0001 ||
+      new Set(value.allocationTargets.map((target) => target.bondType)).size !==
+        value.allocationTargets.length
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['allocationTargets'],
+        message: 'Allocation targets must be unique and total 100%',
+      });
+    }
+  }
 });
 
 export const RegularInvestmentCalculationIntentSchema = withDateOrderValidation(
   DateRangeInputsSchema.extend({
     contributionAmount: money('contributionAmount', 100, 10_000_000),
+    initialLumpSum: money('initialLumpSum', 0, 10_000_000).optional(),
+    annualContributionIncreasePercent: percent(
+      'annualContributionIncreasePercent',
+      0,
+      100,
+    ).optional(),
+    skippedContributionDates: z.array(DateStringSchema).max(120).optional(),
+    oneOffContributions: z
+      .array(z.object({ date: DateStringSchema, amount: money('amount', 0, 10_000_000) }))
+      .max(120)
+      .optional(),
+    contributionOverrides: z
+      .array(z.object({ date: DateStringSchema, amount: money('amount', 0, 10_000_000) }))
+      .max(120)
+      .optional(),
+    allocationTargets: z
+      .array(z.object({ bondType: z.nativeEnum(BondType), percent: percent('percent', 0, 100) }))
+      .min(2)
+      .max(3)
+      .optional(),
+    cashBenchmark: z
+      .object({
+        annualRate: percent('annualRate', 0, 100),
+        capitalization: z.enum(['monthly', 'yearly']),
+        taxRate: percent('taxRate', 0, 100),
+      })
+      .optional(),
     frequency: z.nativeEnum(InvestmentFrequency),
     investmentHorizonMonths: horizonMonths(600),
     bondType: z.nativeEnum(BondType),
@@ -166,6 +235,20 @@ export const RegularInvestmentCalculationIntentSchema = withDateOrderValidation(
   }),
 ).superRefine((value, ctx) => {
   validatePathLengths(value, value.investmentHorizonMonths / 12, ctx);
+  if (value.allocationTargets) {
+    const total = value.allocationTargets.reduce((sum, target) => sum + target.percent, 0);
+    if (
+      Math.abs(total - 100) > 0.0001 ||
+      new Set(value.allocationTargets.map((target) => target.bondType)).size !==
+        value.allocationTargets.length
+    ) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['allocationTargets'],
+        message: 'Allocation targets must be unique and total 100%',
+      });
+    }
+  }
 });
 
 const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(
@@ -207,6 +290,10 @@ const ComparisonSharedConfigSchema = withDateOrderValidation(
     timingMode: z.enum(['general', 'exact']).optional(),
     investmentHorizonMonths: horizonMonths(360).optional(),
     maturityMode: ComparisonMaturityModeSchema.optional(),
+    strategyPolicy: z
+      .enum(['hold_to_maturity', 'reinvest_until_horizon', 'cash_after_maturity'])
+      .optional(),
+    couponDisposition: z.enum(['reinvest', 'cash']).optional(),
   }),
 ).superRefine((value, ctx) => {
   let horizonYears: number;

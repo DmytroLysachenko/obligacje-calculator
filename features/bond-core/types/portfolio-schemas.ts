@@ -36,6 +36,14 @@ export const PortfolioSchema = z
   })
   .strict();
 
+export const PortfolioUpdateSchema = z
+  .object({
+    name: PortfolioNameSchema.optional(),
+    description: PortfolioDescriptionSchema.optional(),
+  })
+  .strict()
+  .refine((command) => Object.keys(command).length > 0, 'Update must contain at least one field.');
+
 const PortfolioBondQuantitySchema = PortfolioAmountSchema;
 
 const InvestmentLotFields = {

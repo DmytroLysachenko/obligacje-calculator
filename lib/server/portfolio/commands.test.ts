@@ -5,11 +5,15 @@ const mocks = vi.hoisted(() => ({
   portfolio: vi.fn(),
   resolve: vi.fn(),
   update: vi.fn(),
+  updatePortfolio: vi.fn(),
 }));
 vi.mock('./access', () => ({ getOwnedLot: mocks.lot, getOwnedPortfolio: mocks.portfolio }));
 vi.mock('@/lib/server/bonds/offer-terms', () => ({ resolveStoredBondLotContext: mocks.resolve }));
-vi.mock('./repository', () => ({ updateLotByOwner: mocks.update }));
-import { updateOwnerLot } from './commands';
+vi.mock('./repository', () => ({
+  updateLotByOwner: mocks.update,
+  updatePortfolioByOwner: mocks.updatePortfolio,
+}));
+import { updateOwnerLot, updateOwnerPortfolio } from './commands';
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -24,6 +28,24 @@ beforeEach(() => {
   mocks.portfolio.mockResolvedValue({ id: 'portfolio' });
   mocks.resolve.mockResolvedValue({ bondTypeId: 'new-type', bondSeriesId: 'new-series' });
   mocks.update.mockResolvedValue([{ id: 'lot' }]);
+  mocks.updatePortfolio.mockResolvedValue([{ id: 'portfolio', name: 'Updated' }]);
+});
+
+describe('portfolio metadata edits', () => {
+  it('scopes metadata updates to the authenticated owner', async () => {
+    await expect(updateOwnerPortfolio('alice', 'portfolio', { name: 'Updated' })).resolves.toEqual({
+      id: 'portfolio',
+      name: 'Updated',
+    });
+    expect(mocks.updatePortfolio).toHaveBeenCalledWith('alice', 'portfolio', { name: 'Updated' });
+  });
+
+  it('reports a missing or foreign portfolio without fabricating a success', async () => {
+    mocks.updatePortfolio.mockResolvedValue([]);
+    await expect(updateOwnerPortfolio('alice', 'foreign', { name: 'Updated' })).rejects.toThrow(
+      'Portfolio not found',
+    );
+  });
 });
 describe('coherent lot edits', () => {
   it.each([

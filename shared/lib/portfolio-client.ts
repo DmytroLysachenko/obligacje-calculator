@@ -21,6 +21,7 @@ export interface CreatePortfolioLotInput {
   purchaseDate: string;
   bondQuantity: number;
   isRebought?: boolean;
+  notes?: string;
 }
 
 export interface ImportPortfolioResult {
@@ -44,6 +45,9 @@ export const portfolioClient = {
   },
   createPortfolio(input: CreatePortfolioInput) {
     return apiPost<UserPortfolio>('/api/portfolio', input);
+  },
+  updatePortfolio(portfolioId: string, input: Partial<CreatePortfolioInput>) {
+    return apiPatch<UserPortfolio>(`/api/portfolio?id=${portfolioId}`, input);
   },
   deletePortfolio(portfolioId: string) {
     return apiDelete<UserPortfolio>(`/api/portfolio?id=${portfolioId}`);

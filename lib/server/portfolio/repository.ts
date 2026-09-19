@@ -47,6 +47,18 @@ export function updatePortfolioVisibility(ownerId: string, portfolioId: string, 
     .where(and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)));
 }
 
+export function updatePortfolioByOwner(
+  ownerId: string,
+  portfolioId: string,
+  values: { name?: string; description?: string },
+) {
+  return db
+    .update(userPortfolios)
+    .set({ ...values, updatedAt: new Date() })
+    .where(and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)))
+    .returning();
+}
+
 export function listLotsByPortfolio(portfolioId: string) {
   return db.query.userInvestmentLots.findMany({
     where: eq(userInvestmentLots.portfolioId, portfolioId),
