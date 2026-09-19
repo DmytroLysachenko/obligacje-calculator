@@ -22,6 +22,7 @@ import { buildSingleCalculatorReadingGuide } from '../lib/single-calculator-cont
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
+import { SavedScenarioLibrary } from './SavedScenarioLibrary';
 import { ScenarioDraftStatus } from './ScenarioDraftStatus';
 import { SharedScenarioNotice } from './SharedScenarioNotice';
 
@@ -149,6 +150,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         ) : null}
 
         <ScenarioDraftStatus inputs={inputs} isDirty={isDirty} onRestore={replaceInputs} />
+        <SavedScenarioLibrary isDirty={isDirty} onRestore={replaceInputs} t={t} />
 
         <CalculatorWorkspace
           className="gap-8 xl:gap-10"
@@ -195,6 +197,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               onSaveScenario={actions.saveScenario}
               onAddToNotebook={actions.addToNotebook}
               onExportPDF={actions.exportPdf}
+              onPrepareSensitivityDraft={replaceInputs}
             />
           }
           details={
