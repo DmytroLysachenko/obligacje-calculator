@@ -66,6 +66,7 @@ export const NotebookContainer: React.FC = () => {
         onDelete={deletePortfolio}
         onPortfolioUpdate={mergePortfolio}
         onBack={closePortfolio}
+        portfolios={portfolios}
       />
     ) : (
       <NotebookLoadingState />

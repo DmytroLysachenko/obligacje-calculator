@@ -1,6 +1,7 @@
 'use client';
 
-import { ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -15,11 +16,17 @@ import {
 } from '@/components/ui/table';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
+import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { bondSeriesClient, BondSeriesMetadata } from '@/shared/lib/bond-series-client';
+import { downloadFile } from '@/shared/lib/csv-utils';
 import { formatIsoDate } from '@/shared/lib/financial-formatters';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { buildMaturityIcs, estimateSettlementDate } from '@/shared/lib/maturity-planner';
+import { CreatePortfolioLotInput } from '@/shared/lib/portfolio-client';
 import { UserInvestmentLot } from '@/shared/types/portfolio';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 export type PortfolioMaturityItem = UserInvestmentLot & {
   maturityDate: Date;
@@ -27,6 +34,10 @@ export type PortfolioMaturityItem = UserInvestmentLot & {
 };
 
 type MaturityWindowDays = 30 | 90 | 180;
+type LotMutationInput = Omit<CreatePortfolioLotInput, 'portfolioId'> & {
+  portfolioId?: string;
+  notes?: string;
+};
 
 interface PortfolioLotsTableSectionProps {
   isLoading: boolean;
@@ -35,6 +46,10 @@ interface PortfolioLotsTableSectionProps {
   language: 'en' | 'pl';
   formatCurrency: (value: number) => string;
   t: (key: string, values?: Record<string, string>) => string;
+  onCreateLot: (input: LotMutationInput) => Promise<unknown>;
+  onUpdateLot: (lotId: string, input: LotMutationInput) => Promise<unknown>;
+  onDeleteLot: (lotId: string) => Promise<unknown>;
+  portfolios: UserPortfolio[];
 }
 
 interface PortfolioLiquidityPanelProps {
@@ -58,13 +73,47 @@ export function PortfolioLotsTableSection({
   language,
   formatCurrency,
   t,
+  onCreateLot,
+  onUpdateLot,
+  onDeleteLot,
+  portfolios,
 }: PortfolioLotsTableSectionProps) {
+  const [editing, setEditing] = useState<UserInvestmentLot | 'new' | null>(null);
+  const [lotPendingDelete, setLotPendingDelete] = useState<UserInvestmentLot | null>(null);
+  const [isMutating, setIsMutating] = useState(false);
+  const submitLot = async (input: LotMutationInput) => {
+    setIsMutating(true);
+    try {
+      if (editing === 'new') await onCreateLot(input);
+      else if (editing) await onUpdateLot(editing.id, input);
+      setEditing(null);
+    } finally {
+      setIsMutating(false);
+    }
+  };
   return (
     <section className="space-y-5 border-t border-border py-5">
       <div className="space-y-2">
-        <h2 className="ui-section-title">{t('notebook.stored_lots_title')}</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="ui-section-title">{t('notebook.stored_lots_title')}</h2>
+          <Button size="sm" onClick={() => setEditing('new')}>
+            <Plus className="mr-1 h-4 w-4" />
+            {t('notebook.add_lot')}
+          </Button>
+        </div>
         <p className="ui-body text-muted-foreground">{t('notebook.stored_lots_desc')}</p>
       </div>
+      {editing ? (
+        <LotEditorDialog
+          lot={editing === 'new' ? null : editing}
+          definitions={definitions}
+          portfolios={portfolios}
+          onCancel={() => setEditing(null)}
+          onSubmit={submitLot}
+          isMutating={isMutating}
+          t={t}
+        />
+      ) : null}
       <div>
         {isLoading ? (
           <div className="flex min-h-48 items-center justify-center gap-3 text-sm text-muted-foreground">
@@ -105,6 +154,24 @@ export function PortfolioLotsTableSection({
                       >
                         <ExternalLink aria-hidden="true" className="h-4 w-4" />
                       </a>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="min-h-11 min-w-11"
+                      onClick={() => setEditing(lot)}
+                      aria-label={t('common.edit')}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="min-h-11 min-w-11"
+                      onClick={() => setLotPendingDelete(lot)}
+                      aria-label={t('common.delete')}
+                    >
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                   <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
@@ -214,6 +281,22 @@ export function PortfolioLotsTableSection({
                             <ExternalLink aria-hidden="true" className="h-4 w-4" />
                           </a>
                         </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={t('common.edit')}
+                          onClick={() => setEditing(lot)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label={t('common.delete')}
+                          onClick={() => setLotPendingDelete(lot)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -223,7 +306,193 @@ export function PortfolioLotsTableSection({
           </div>
         )}
       </div>
+      <ConfirmActionDialog
+        open={Boolean(lotPendingDelete)}
+        title={t('notebook.delete_lot')}
+        description={t('notebook.confirm_delete_lot')}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        onCancel={() => setLotPendingDelete(null)}
+        onConfirm={async () => {
+          if (lotPendingDelete) await onDeleteLot(lotPendingDelete.id);
+          setLotPendingDelete(null);
+        }}
+      />
     </section>
+  );
+}
+
+function LotEditorDialog({
+  lot,
+  definitions,
+  portfolios,
+  onCancel,
+  onSubmit,
+  isMutating,
+  t,
+}: {
+  lot: UserInvestmentLot | null;
+  definitions: Record<BondType, BondDefinition>;
+  portfolios: UserPortfolio[];
+  onCancel: () => void;
+  onSubmit: (input: LotMutationInput) => Promise<void>;
+  isMutating: boolean;
+  t: PortfolioLotsTableSectionProps['t'];
+}) {
+  const [bondType, setBondType] = useState<BondType>(
+    (lot?.bondType as BondType) ?? (Object.keys(definitions)[0] as BondType),
+  );
+  const [purchaseDate, setPurchaseDate] = useState(
+    lot?.purchaseDate ?? new Date().toISOString().slice(0, 10),
+  );
+  const [bondQuantity, setBondQuantity] = useState(lot?.bondQuantity ?? '1');
+  const [notes, setNotes] = useState(lot?.notes ?? '');
+  const [targetPortfolioId, setTargetPortfolioId] = useState(
+    lot?.portfolioId ?? portfolios[0]?.id ?? '',
+  );
+  const [series, setSeries] = useState<BondSeriesMetadata[]>([]);
+  const [selectedSeriesId, setSelectedSeriesId] = useState(lot?.bondSeriesId ?? '');
+  const [seriesError, setSeriesError] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    setSeries([]);
+    setSelectedSeriesId(lot?.bondType === bondType ? (lot.bondSeriesId ?? '') : '');
+    setSeriesError(false);
+    void bondSeriesClient
+      .listBySymbol(bondType)
+      .then((nextSeries) => {
+        if (active) setSeries(nextSeries);
+      })
+      .catch(() => {
+        if (active) setSeriesError(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [bondType, lot?.bondSeriesId, lot?.bondType]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="lot-editor-title"
+    >
+      <form
+        className="w-full max-w-2xl space-y-4 border border-border bg-background p-5 shadow-lg"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void onSubmit({
+            portfolioId: targetPortfolioId,
+            bondType,
+            purchaseDate,
+            bondQuantity: Number(bondQuantity),
+            selectedSeriesId: selectedSeriesId || null,
+            isRebought: lot?.isRebought ?? false,
+            notes,
+          });
+        }}
+      >
+        <div>
+          <h3 id="lot-editor-title" className="ui-card-title">
+            {lot ? t('notebook.edit_lot') : t('notebook.add_lot')}
+          </h3>
+          <p className="mt-1 text-sm text-muted-foreground">{t('notebook.lot_editor_desc')}</p>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          <label className="text-sm">
+            {t('notebook.column_type')}
+            <select
+              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+              value={bondType}
+              onChange={(event) => setBondType(event.target.value as BondType)}
+            >
+              {Object.keys(definitions).map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-sm">
+            {t('notebook.column_amount')}
+            <input
+              required
+              min="0.01"
+              step="0.01"
+              type="number"
+              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+              value={bondQuantity}
+              onChange={(event) => setBondQuantity(event.target.value)}
+            />
+          </label>
+          <label className="text-sm">
+            {t('notebook.column_purchase_date')}
+            <input
+              required
+              type="date"
+              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+              value={purchaseDate}
+              onChange={(event) => setPurchaseDate(event.target.value)}
+            />
+          </label>
+          <label className="text-sm">
+            {t('notebook.series')}
+            <select
+              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+              value={selectedSeriesId}
+              onChange={(event) => setSelectedSeriesId(event.target.value)}
+            >
+              <option value="">{t('notebook.current_offer')}</option>
+              {series.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.seriesCode}
+                </option>
+              ))}
+            </select>
+            {seriesError ? (
+              <span className="mt-1 block text-xs text-warning">
+                {t('notebook.series_load_error')}
+              </span>
+            ) : null}
+          </label>
+          {lot ? (
+            <label className="text-sm md:col-span-2">
+              {t('notebook.move_to_portfolio')}
+              <select
+                className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+                value={targetPortfolioId}
+                onChange={(event) => setTargetPortfolioId(event.target.value)}
+              >
+                {portfolios.map((portfolio) => (
+                  <option key={portfolio.id} value={portfolio.id}>
+                    {portfolio.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <label className="text-sm md:col-span-2">
+            {t('notebook.notes')}
+            <textarea
+              className="mt-1 min-h-20 w-full rounded border border-input bg-background px-2 py-1"
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+              maxLength={2000}
+            />
+          </label>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={isMutating}>
+            {t('common.save')}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -238,6 +507,19 @@ export function PortfolioLiquidityPanel({
   maturityWindowLabel,
   t,
 }: PortfolioLiquidityPanelProps) {
+  const exportCalendar = () =>
+    downloadFile(
+      buildMaturityIcs(
+        filteredMaturities.map((item) => ({
+          id: `maturity-${item.id}`,
+          date: item.maturityDate.toISOString().slice(0, 10),
+          title: `${item.bondType} maturity`,
+          description: `Principal scheduled at maturity: ${item.value.toFixed(2)} PLN. This is a planning event, not a redemption instruction.`,
+        })),
+      ),
+      'bond-maturities.ics',
+      'text/calendar;charset=utf-8',
+    );
   return (
     <div className="space-y-6">
       <section className="space-y-4 border-t border-border py-5">
@@ -292,7 +574,37 @@ export function PortfolioLiquidityPanel({
             ))}
           </div>
         )}
+        {filteredMaturities.length ? (
+          <Button type="button" variant="outline" onClick={exportCalendar}>
+            Export local calendar (.ics)
+          </Button>
+        ) : null}
       </section>
+
+      {filteredMaturities[0] ? (
+        <section
+          className="space-y-2 border-t border-border py-5"
+          aria-labelledby="exit-planner-title"
+        >
+          <h2 id="exit-planner-title" className="ui-card-title">
+            Early-exit planning
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Read-only estimate for {filteredMaturities[0].bondType}; it does not submit an
+            instruction.
+          </p>
+          <dl className="grid grid-cols-2 gap-2 text-sm">
+            <dt>Principal</dt>
+            <dd className="text-right">{formatCurrency(filteredMaturities[0].value)}</dd>
+            <dt>Estimated settlement</dt>
+            <dd className="text-right">
+              {estimateSettlementDate(new Date().toISOString().slice(0, 10))}
+            </dd>
+            <dt>Interest / fee / tax</dt>
+            <dd className="text-right">Calculated only in the scenario engine</dd>
+          </dl>
+        </section>
+      ) : null}
 
       <section className="space-y-2 border-t border-border py-5">
         <h2 className="ui-card-title">{t('notebook.usage_note_title')}</h2>

@@ -100,17 +100,19 @@ export function useNotebookWorkspaceActions({
   const handleCreateDemo = async () => {
     setIsMutating(true);
     try {
-      const createdPortfolio = await portfolioClient.createPortfolio({
-        name: labels.demoName,
-        description: labels.demoDescription,
+      const imported = await portfolioClient.importPortfolio({
+        version: '2.0',
+        packageType: 'portfolio-package',
+        portfolio: {
+          name: labels.demoName,
+          description: labels.demoDescription,
+          lots: NOTEBOOK_DEMO_LOTS,
+        },
       });
-      const portfolioId = createdPortfolio?.id;
-      if (!portfolioId) {
+      const createdPortfolio = imported?.portfolio;
+      if (!createdPortfolio?.id) {
         await fetchPortfolios();
         return;
-      }
-      for (const lot of NOTEBOOK_DEMO_LOTS) {
-        await portfolioClient.createLot({ portfolioId, ...lot });
       }
       mergePortfolioIntoState(createdPortfolio);
       setSelectedPortfolioId(createdPortfolio.id);

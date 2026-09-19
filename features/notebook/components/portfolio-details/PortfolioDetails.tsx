@@ -2,10 +2,12 @@
 import dynamic from 'next/dynamic';
 import React, { useCallback, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePortfolioDetailsWorkspace } from '@/features/notebook/hooks/usePortfolioDetailsWorkspace';
 import { useAppI18n } from '@/i18n/client';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCurrencyFormatter, useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { UserPortfolio } from '@/shared/types/portfolio';
@@ -30,12 +32,14 @@ interface PortfolioDetailsProps {
   onBack: () => void;
   onDelete?: (portfolio: UserPortfolio) => Promise<void> | void;
   onPortfolioUpdate?: (portfolio: UserPortfolio) => void;
+  portfolios: UserPortfolio[];
 }
 export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
   portfolio,
   onBack,
   onDelete,
   onPortfolioUpdate,
+  portfolios,
 }) => {
   const { t, locale: language } = useAppI18n();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
@@ -67,6 +71,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
     handleToggleShare,
     copyToClipboard,
     handleExport,
+    createLot,
+    updateLot,
+    deleteLot,
+    requestError,
+    fetchLots,
+    updatePortfolio,
   } = usePortfolioDetailsWorkspace({
     portfolio,
     definitions,
@@ -106,7 +116,19 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
         onDeleteRequest={() => setIsDeleteDialogOpen(true)}
         canDelete={Boolean(onDelete)}
         t={t}
+        onUpdatePortfolio={updatePortfolio}
       />
+      {requestError ? (
+        <FormInlineNotice
+          tone="warning"
+          description={requestError}
+          action={
+            <Button size="sm" variant="outline" onClick={() => void fetchLots()}>
+              {t('common.retry')}
+            </Button>
+          }
+        />
+      ) : null}
 
       <Tabs defaultValue="lots" className="w-full">
         <TabsList className="mb-5 h-auto w-full justify-start gap-3 border-b border-border bg-transparent p-0 md:w-fit">
@@ -131,6 +153,10 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
             upcomingCashflow={upcomingCashflow}
             maturityWindowLabel={maturityWindowLabel}
             t={t}
+            onCreateLot={createLot}
+            onUpdateLot={updateLot}
+            onDeleteLot={deleteLot}
+            portfolios={portfolios}
           />
         </TabsContent>
 

@@ -29,6 +29,10 @@ describe('PortfolioLotsTableSection', () => {
         language="en"
         formatCurrency={(value) => `${value} PLN`}
         t={(key) => key}
+        onCreateLot={async () => undefined}
+        onUpdateLot={async () => undefined}
+        onDeleteLot={async () => undefined}
+        portfolios={[]}
       />,
     );
 
