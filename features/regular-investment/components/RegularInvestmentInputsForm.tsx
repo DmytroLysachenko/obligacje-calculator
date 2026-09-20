@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { buildContributionSchedule } from '@/features/bond-core/utils/engine/contribution-schedule';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
@@ -16,6 +17,7 @@ import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
 import { RegularInvestmentGuardrail } from '../lib/regular-investment-guardrails';
 
 import { AdvancedSettingsSection } from './inputs/AdvancedSettingsSection';
+import { AllocationStrategySection } from './inputs/AllocationStrategySection';
 import { BondSelectionSection } from './inputs/BondSelectionSection';
 import { ContributionPlanSection } from './inputs/ContributionPlanSection';
 import { TimingSection } from './inputs/TimingSection';
@@ -117,6 +119,12 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           <ScenarioFieldset title={t('comparison.configuration')} divided>
             <ContributionPlanSection
               contributionAmount={inputs.contributionAmount}
+              initialLumpSum={inputs.initialLumpSum ?? 0}
+              annualContributionIncreasePercent={inputs.annualContributionIncreasePercent ?? 0}
+              oneOffContributions={inputs.oneOffContributions ?? []}
+              skippedContributionDates={inputs.skippedContributionDates ?? []}
+              contributionOverrides={inputs.contributionOverrides ?? []}
+              previewRows={buildContributionSchedule(inputs).slice(0, 8)}
               language={language}
               frequency={inputs.frequency}
               taxStrategy={inputs.taxStrategy}
@@ -135,6 +143,10 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               onUpdate={onUpdate}
               t={t}
             />
+          </ScenarioFieldset>
+
+          <ScenarioFieldset title={t('regular_investment_page.allocation_title')} divided>
+            <AllocationStrategySection inputs={inputs} onUpdate={onUpdate} t={t} />
           </ScenarioFieldset>
 
           <ScenarioFieldset title={t('common.advanced')} divided>

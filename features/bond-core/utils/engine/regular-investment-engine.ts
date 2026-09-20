@@ -10,6 +10,7 @@ import {
 import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
 
+import { buildContributionSchedule } from './contribution-schedule';
 import { getHistoricalValue } from './historical-data';
 import { normalizeRegularInvestmentInputs } from './input-normalization';
 import { priceIndexPathForProjection } from './price-index';
@@ -30,7 +31,6 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 ): RegularInvestmentResult {
   const normalizedInputs = normalizeRegularInvestmentInputs(inputs);
   const {
-    contributionAmount,
     frequency,
     investmentHorizonMonths,
     bondType,
@@ -55,7 +55,6 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     bondDef,
     nominalValue: bondNominalValue,
     bondDuration,
-    interval,
     bondPrice,
   } = resolveRegularInvestmentBondSetup({
     bondType,
@@ -66,6 +65,8 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
   });
 
   const totalMonths = investmentHorizonMonths;
+  const contributionSchedule = buildContributionSchedule(inputs);
+  const contributionsByDate = new Map(contributionSchedule.map((flow) => [flow.date, flow]));
 
   const lots: LotBreakdown[] = [];
   const timeline: RegularTimelinePoint[] = [];
@@ -92,6 +93,11 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
   if (!eventDates.some((date) => isEqual(date, targetWithdrawalDate))) {
     eventDates.push(targetWithdrawalDate);
   }
+  for (const flow of contributionSchedule) {
+    const date = new Date(`${flow.date}T00:00:00`);
+    if (!eventDates.some((eventDate) => isEqual(eventDate, date))) eventDates.push(date);
+  }
+  eventDates.sort((left, right) => left.getTime() - right.getTime());
   const priceIndexPath = priceIndexPathForProjection(
     startPurchaseDate,
     expectedInflation,
@@ -109,29 +115,30 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 
     const isWithdrawalStep = currentMonthDate.getTime() === targetWithdrawalDate.getTime();
 
-    const isContributionStep =
-      m < totalMonths &&
-      m % interval === 0 &&
-      isEqual(currentMonthDate, addMonths(startPurchaseDate, m));
-    if (isContributionStep) {
+    const scheduledContribution = contributionsByDate.get(format(currentMonthDate, 'yyyy-MM-dd'));
+    if (scheduledContribution) {
       // Contributions are external cash even when they cannot yet purchase a
       // whole bond. This is the conservation identity for the simulation.
-      totalInvested = totalInvested.plus(contributionAmount);
+      totalInvested = totalInvested.plus(scheduledContribution.amount);
       // Contributions arrive at different price levels. Convert each one to
       // the start-date purchasing-power basis before deriving real returns.
       realContributions = realContributions.plus(
-        priceIndexPath.deflate(contributionAmount, startPurchaseDate, currentMonthDate),
+        priceIndexPath.deflate(scheduledContribution.amount, startPurchaseDate, currentMonthDate),
       );
-      contributionCash = contributionCash.plus(contributionAmount);
+      contributionCash = contributionCash.plus(scheduledContribution.amount);
       events.push({
         type: SimulationEventType.CONTRIBUTION,
         date: format(currentMonthDate, 'yyyy-MM-dd'),
         description: 'External contribution received',
-        value: contributionAmount,
+        value: scheduledContribution.amount,
       });
-      const totalAvailableForPurchase = rollover
-        ? contributionCash.plus(maturityCash)
-        : contributionCash;
+      // Terminal-date cash is paid out, never converted into a bond that is
+      // immediately redeemed. This makes same-day ordering explicit.
+      const totalAvailableForPurchase = isWithdrawalStep
+        ? new Decimal(0)
+        : rollover
+          ? contributionCash.plus(maturityCash)
+          : contributionCash;
 
       const { lot, investedAmount, units } = createRegularInvestmentLot({
         currentMonthDate,
