@@ -93,9 +93,12 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
   if (!eventDates.some((date) => isEqual(date, targetWithdrawalDate))) {
     eventDates.push(targetWithdrawalDate);
   }
+  const scheduledEventDates = new Set(eventDates.map((date) => format(date, 'yyyy-MM-dd')));
   for (const flow of contributionSchedule) {
-    const date = new Date(`${flow.date}T00:00:00`);
-    if (!eventDates.some((eventDate) => isEqual(eventDate, date))) eventDates.push(date);
+    if (!scheduledEventDates.has(flow.date)) {
+      eventDates.push(new Date(`${flow.date}T00:00:00`));
+      scheduledEventDates.add(flow.date);
+    }
   }
   eventDates.sort((left, right) => left.getTime() - right.getTime());
   const priceIndexPath = priceIndexPathForProjection(
