@@ -33,6 +33,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
   inputs: BondInputs & { rollover?: boolean },
 ): CalculationResult {
   const rollover = inputs.rollover ?? false;
+  const couponDisposition = inputs.couponDisposition ?? 'reinvest';
   const normalizedInputs = normalizeBondInputs(inputs);
   const {
     initialInvestment,
@@ -122,6 +123,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     let currentNominalValue = new Decimal(nominalStartingValue);
     let totalInterestEarnedSoFar = new Decimal(0);
     let periodicTaxPaidSoFar = new Decimal(0);
+    let cycleCouponCash = new Decimal(0);
 
     const periods = generateCyclePeriods(
       simulationState.currentPurchaseDate,
@@ -163,11 +165,13 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         taxRate,
         initialInvestment,
         leftoverCash: simulationState.leftoverCash,
+        couponDisposition,
       });
       currentNominalValue = periodResult.currentNominalValue;
       totalInterestEarnedSoFar = periodResult.totalInterestEarnedSoFar;
       periodicTaxPaidSoFar = periodResult.periodicTaxPaidSoFar;
       simulationState.globalAccumulatedNetInterest = periodResult.globalAccumulatedNetInterest;
+      cycleCouponCash = cycleCouponCash.plus(periodResult.couponCashAdded);
       if (periodResult.dataQualityFlag) {
         simulationState.dataQualityFlags.add(periodResult.dataQualityFlag);
       }
@@ -177,7 +181,11 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       if (period.isWithdrawal) break;
     }
 
-    const { cycleFee, cycleTax, netProceeds } = resolveSingleBondCycleSettlement({
+    const {
+      cycleFee,
+      cycleTax,
+      netProceeds: settledProceeds,
+    } = resolveSingleBondCycleSettlement({
       bondType,
       isEarlyWithdrawal,
       totalInterestEarnedSoFar,
@@ -192,6 +200,8 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       periodicTaxPaidSoFar,
       leftoverCash: simulationState.leftoverCash,
     });
+    const netProceeds = rollover ? settledProceeds.minus(cycleCouponCash) : settledProceeds;
+    if (rollover) simulationState.couponCash = simulationState.couponCash.plus(cycleCouponCash);
 
     simulationState.totalTaxAcc = simulationState.totalTaxAcc.plus(cycleTax);
     simulationState.totalFeeAcc = simulationState.totalFeeAcc.plus(cycleFee);
@@ -216,7 +226,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       return createFinalSingleBondResult({
         initialInvestment,
         timeline: simulationState.globalTimeline,
-        cycleNetProceeds: netProceeds,
+        cycleNetProceeds: netProceeds.plus(simulationState.couponCash),
         totalTax: simulationState.totalTaxAcc,
         totalFee: simulationState.totalFeeAcc,
         isEarlyWithdrawal,

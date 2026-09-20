@@ -162,6 +162,17 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     }
   }, [session]);
 
+  const restorePortableScenario = useCallback(
+    (next: ComparisonUrlState) => {
+      session.setDraftInputs({
+        sharedConfig: next.sharedConfig,
+        scenarioA: next.scenarioA,
+        scenarioB: next.scenarioB,
+      });
+    },
+    [session],
+  );
+
   const updateSharedConfig = <K extends keyof SharedComparisonConfig>(
     key: K,
     value: SharedComparisonConfig[K],
@@ -251,6 +262,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     isCalculating: session.isCalculating,
     isDirty,
     calculate,
+    restorePortableScenario,
     updateSharedConfig,
     updateScenarioA,
     updateScenarioB,

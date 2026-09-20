@@ -55,6 +55,7 @@ interface RunSingleBondPeriodInput {
   taxRate: number;
   initialInvestment: number;
   leftoverCash: Decimal;
+  couponDisposition?: 'reinvest' | 'cash';
 }
 
 export function runSingleBondPeriod({
@@ -88,6 +89,7 @@ export function runSingleBondPeriod({
   taxRate,
   initialInvestment,
   leftoverCash,
+  couponDisposition,
 }: RunSingleBondPeriodInput) {
   let nextCurrentNominalValue = currentNominalValue;
   let nextTotalInterestEarnedSoFar = totalInterestEarnedSoFar;
@@ -247,5 +249,9 @@ export function runSingleBondPeriod({
     periodicTaxPaidSoFar: nextPeriodicTaxPaidSoFar,
     globalAccumulatedNetInterest: nextGlobalAccumulatedNetInterest,
     dataQualityFlag: usedProjectedRate ? 'projected_rate_segment' : null,
+    couponCashAdded:
+      couponDisposition === 'cash' && !isCapitalized && !period.isWithdrawal
+        ? netInterest
+        : new Decimal(0),
   };
 }

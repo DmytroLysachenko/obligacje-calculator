@@ -54,6 +54,43 @@ export function ComparisonSharedBaseCard({
         </p>
       </div>
       <div className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="comparison-maturity-mode" className="ui-metadata text-muted-foreground">
+            {t('comparison.maturity_policy')}
+          </Label>
+          <FormSelect
+            id="comparison-maturity-mode"
+            value={sharedConfig.strategyPolicy ?? 'reinvest_until_horizon'}
+            options={[
+              { value: 'reinvest_until_horizon', label: t('comparison.maturity_reinvest') },
+              { value: 'cash_after_maturity', label: t('comparison.maturity_cash') },
+              { value: 'hold_to_maturity', label: t('comparison.maturity_hold') },
+            ]}
+            onValueChange={(value) =>
+              onUpdateSharedConfig('strategyPolicy', value as SharedConfig['strategyPolicy'])
+            }
+          />
+          <p className="text-xs text-muted-foreground">{t('comparison.maturity_cash_note')}</p>
+        </div>
+        <div className="space-y-2">
+          <Label
+            htmlFor="comparison-coupon-disposition"
+            className="ui-metadata text-muted-foreground"
+          >
+            {t('comparison.coupon_policy')}
+          </Label>
+          <FormSelect
+            id="comparison-coupon-disposition"
+            value={sharedConfig.couponDisposition ?? 'reinvest'}
+            options={[
+              { value: 'reinvest', label: t('comparison.coupon_reinvest') },
+              { value: 'cash', label: t('comparison.coupon_cash') },
+            ]}
+            onValueChange={(value) =>
+              onUpdateSharedConfig('couponDisposition', value as SharedConfig['couponDisposition'])
+            }
+          />
+        </div>
         <div className="space-y-3">
           <Label className="ui-metadata text-muted-foreground">
             {t('bonds.timing.mode.label')}

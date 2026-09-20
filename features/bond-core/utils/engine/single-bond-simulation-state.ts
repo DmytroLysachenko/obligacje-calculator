@@ -14,6 +14,7 @@ export interface SingleBondSimulationState {
   totalTaxAcc: Decimal;
   totalFeeAcc: Decimal;
   globalAccumulatedNetInterest: Decimal;
+  couponCash: Decimal;
   currentPurchaseDate: Date;
   applySwapDiscountThisCycle: boolean;
   cycleIndex: number;
@@ -35,6 +36,7 @@ export function createSingleBondSimulationState({
     totalTaxAcc: new Decimal(0),
     totalFeeAcc: new Decimal(0),
     globalAccumulatedNetInterest: new Decimal(0),
+    couponCash: new Decimal(0),
     currentPurchaseDate: startDate,
     applySwapDiscountThisCycle: false,
     cycleIndex: 1,

@@ -104,6 +104,8 @@ export class ComparisonHandler
         scenarioA.expectedInflation,
         scenarioA.inflationScenario,
       ),
+      maturityMode: payload.sharedConfig.strategyPolicy,
+      couponDisposition: payload.sharedConfig.couponDisposition,
     });
 
     const resultB = calculateComparisonScenarioItem({
@@ -114,6 +116,8 @@ export class ComparisonHandler
         scenarioB.expectedInflation,
         scenarioB.inflationScenario,
       ),
+      maturityMode: payload.sharedConfig.strategyPolicy,
+      couponDisposition: payload.sharedConfig.couponDisposition,
     });
 
     const results: BondComparisonScenarioItem[] = [resultA, resultB];
@@ -129,9 +133,11 @@ export class ComparisonHandler
     assumptions.push(
       'Independent comparison resolves issued-series terms per scenario purchase date when present.',
     );
-    assumptions.push('Maturity handling: automatic rollover to the selected shared horizon.');
     assumptions.push(
-      'Shorter native terms are reinvested when needed so both scenarios cover the same selected horizon.',
+      `Maturity handling: ${describeMaturityMode(payload.sharedConfig.strategyPolicy)}.`,
+    );
+    assumptions.push(
+      `Coupon handling: ${payload.sharedConfig.couponDisposition === 'cash' ? 'paid coupons are held as zero-rate cash' : 'eligible coupons remain available to the strategy'}.`,
     );
 
     return this.createEnvelope(results, warnings, assumptions, context.dataFreshness);
@@ -222,5 +228,20 @@ export class ComparisonHandler
     },
   ): string[] {
     return this.generateAssumptions(inputs).map((assumption) => `${label}: ${assumption}`);
+  }
+}
+
+function describeMaturityMode(
+  mode: IndependentBondComparisonPayload['sharedConfig']['strategyPolicy'],
+) {
+  switch (mode) {
+    case 'cash_after_maturity':
+      return 'matured principal is held as zero-rate cash';
+    case 'hold_to_maturity':
+      return 'each scenario stops at its native maturity';
+    case 'reinvest_until_horizon':
+      return 'matured principal is reinvested until the selected horizon';
+    default:
+      return 'automatic rollover to the selected shared horizon';
   }
 }

@@ -35,6 +35,13 @@ export type SingleBondCalculationIntent = Pick<
 export type RegularInvestmentCalculationIntent = Pick<
   RegularInvestmentInputs,
   | 'contributionAmount'
+  | 'initialLumpSum'
+  | 'annualContributionIncreasePercent'
+  | 'skippedContributionDates'
+  | 'oneOffContributions'
+  | 'contributionOverrides'
+  | 'allocationTargets'
+  | 'cashBenchmark'
   | 'frequency'
   | 'investmentHorizonMonths'
   | 'bondType'
@@ -163,6 +170,8 @@ export interface BondComparisonScenarioItem {
   scenarioKey?: 'scenarioA' | 'scenarioB';
   type: BondType;
   name: string;
+  /** Declared post-maturity treatment used for this calculation. */
+  strategyPolicy?: 'hold_to_maturity' | 'reinvest_until_horizon' | 'cash_after_maturity';
   result: CalculationResult;
 }
 
@@ -202,6 +211,9 @@ export interface IndependentBondComparisonPayload {
     timingMode?: TimingMode;
     investmentHorizonMonths?: number;
     maturityMode?: ComparisonMaturityMode;
+    /** Explicit F17 policy; legacy maturityMode remains decode-only. */
+    strategyPolicy?: 'hold_to_maturity' | 'reinvest_until_horizon' | 'cash_after_maturity';
+    couponDisposition?: 'reinvest' | 'cash';
   };
   scenarioA: {
     bondType: BondType;

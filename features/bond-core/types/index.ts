@@ -64,6 +64,8 @@ export interface BondInputs {
   customInflation?: number[];
   customNbpRate?: number[];
   rollover?: boolean;
+  /** Whether non-capitalized coupon payouts remain investable or stay in cash. */
+  couponDisposition?: 'reinvest' | 'cash';
   timingMode?: import('@/shared/lib/date-timing').TimingMode;
   investmentHorizonMonths?: number;
   chartStep?: ChartStep;
@@ -141,6 +143,18 @@ export interface RegularInvestmentInputs extends Omit<BondInputs, 'initialInvest
   contributionAmount: number;
   frequency: InvestmentFrequency;
   investmentHorizonMonths: number;
+  /** Capital available on the plan start date, before recurring deposits. */
+  initialLumpSum?: number;
+  /** Nominal annual increase applied to future base-cadence contributions. */
+  annualContributionIncreasePercent?: number;
+  /** Dates on which a base contribution is skipped. */
+  skippedContributionDates?: string[];
+  /** Dated additions; duplicate dates are intentionally summed. */
+  oneOffContributions?: Array<{ date: string; amount: number }>;
+  /** Replaces the base contribution on its matching cadence date. */
+  contributionOverrides?: Array<{ date: string; amount: number }>;
+  allocationTargets?: Array<{ bondType: BondType; percent: number }>;
+  cashBenchmark?: { annualRate: number; capitalization: 'monthly' | 'yearly'; taxRate: number };
   showRealValue?: boolean;
 }
 
@@ -172,6 +186,8 @@ export interface RegularInvestmentResult {
   totalTax: number;
   totalEarlyWithdrawalFees: number;
   realAnnualizedReturn: number; // CAGR adjusted for inflation
+  /** Money-weighted annual return over dated external contributions; undefined when no root is bracketed. */
+  moneyWeightedAnnualizedReturn?: number;
   timeline: RegularTimelinePoint[];
   lots: LotBreakdown[];
   /** Cash retained after purchases and maturity settlements. */
@@ -186,6 +202,17 @@ export interface RegularInvestmentResult {
   paidOutValue: number;
   /** Active holdings plus retained cash; zero after a terminal withdrawal. */
   terminalWealth: number;
+  mixedAllocation?: {
+    totalValue: number;
+    residualCash: number;
+    actualWeights: Array<{
+      bondType: BondType;
+      targetPercent: number;
+      value: number;
+      actualPercent: number;
+    }>;
+    cashBenchmark?: { finalValue: number; annualRate: number; taxRate: number };
+  };
 }
 
 export interface RegularTimelinePoint {
