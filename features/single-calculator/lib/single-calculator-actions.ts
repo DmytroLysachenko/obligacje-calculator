@@ -6,6 +6,7 @@ import { CalculationCancelled } from '@/shared/lib/calculation-cancelled';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { logClientError } from '@/shared/lib/client-logger';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
+import { createSingleScenarioPackage, encodeScenarioForUrl } from '@/shared/lib/scenario-codec';
 import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
 import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
 import {
@@ -210,6 +211,11 @@ export function createSingleCalculatorActions({
 
     async shareScenario() {
       if (!results || !lastCommittedInputs) return;
+
+      const encoded = encodeScenarioForUrl(createSingleScenarioPackage(lastCommittedInputs));
+      if (encoded && typeof window !== 'undefined') {
+        return `${window.location.origin}/single-calculator?scenario=${encoded}`;
+      }
 
       const payload = buildSharedSingleScenarioPayload(
         lastCommittedInputs,

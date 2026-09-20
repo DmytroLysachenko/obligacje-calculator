@@ -1,9 +1,10 @@
 'use client';
-import { Scale } from 'lucide-react';
+import { Download, Scale, Upload } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { ChartStep } from '@/features/bond-core/types';
 import { bondQuantityFromInvestment } from '@/features/bond-core/utils/bond-quantity';
 import { useAppI18n } from '@/i18n/client';
@@ -11,7 +12,14 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { downloadJsonFile } from '@/shared/lib/csv-utils';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
+import {
+  createComparisonScenarioPackage,
+  isComparisonPortableScenario,
+  parseScenarioPackage,
+  serializeScenarioPackage,
+} from '@/shared/lib/scenario-codec';
 
 import { useComparison } from '../hooks/useComparison';
 import { useComparisonPlanVisibility } from '../hooks/useComparisonPlanVisibility';
@@ -50,6 +58,7 @@ export const ComparisonContainer: React.FC = () => {
     warningsB,
     isCalculating,
     calculate,
+    restorePortableScenario,
     updateSharedConfig,
     updateScenarioA,
     updateScenarioB,
@@ -65,6 +74,12 @@ export const ComparisonContainer: React.FC = () => {
   } = useComparison(initialUrlState);
   const { t, locale: language } = useAppI18n();
   const [chartStep, setChartStep] = useState<ChartStep>('yearly');
+  const [pendingImport, setPendingImport] = useState<{
+    sharedConfig: typeof sharedConfig;
+    scenarioA: typeof scenarioA;
+    scenarioB: typeof scenarioB;
+  } | null>(null);
+  const importRef = useRef<HTMLInputElement>(null);
   const hasComparisonResults = isPersistenceReady && !!resultsA && !!resultsB;
   const { isPlanOpen, setIsPlanOpen } = useComparisonPlanVisibility(hasComparisonResults, isDirty);
   const { onBondTypeChange, onCustomHorizonChange, onScenarioChange, onSharedConfigChange } =
@@ -161,6 +176,15 @@ export const ComparisonContainer: React.FC = () => {
     },
     { label: t('comparison.scenario_a'), value: scenarioA.bondType },
     { label: t('comparison.scenario_b'), value: scenarioB.bondType },
+    {
+      label: t('comparison.maturity_policy'),
+      value:
+        sharedConfig.strategyPolicy === 'cash_after_maturity'
+          ? t('comparison.maturity_cash')
+          : sharedConfig.strategyPolicy === 'hold_to_maturity'
+            ? t('comparison.maturity_hold')
+            : t('comparison.maturity_reinvest'),
+    },
   ];
   const showPlanReceipt = hasComparisonResults && !isPlanOpen;
 
@@ -175,6 +199,80 @@ export const ComparisonContainer: React.FC = () => {
       onKeyDown={handleKeyDown}
     >
       <div className="ui-page-flow">
+        <div className="flex flex-wrap justify-end gap-2">
+          <input
+            ref={importRef}
+            type="file"
+            accept="application/json"
+            className="hidden"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              void file
+                .text()
+                .then((text) => {
+                  const decoded = parseScenarioPackage(text);
+                  if (decoded.ok && isComparisonPortableScenario(decoded.scenario)) {
+                    const next = {
+                      sharedConfig: decoded.scenario.intent.sharedConfig,
+                      scenarioA: decoded.scenario.intent.scenarioA,
+                      scenarioB: decoded.scenario.intent.scenarioB,
+                    };
+                    if (isDirty) setPendingImport(next);
+                    else restorePortableScenario(next);
+                  }
+                })
+                .finally(() => {
+                  event.target.value = '';
+                });
+            }}
+          />
+          <Button size="sm" variant="outline" onClick={() => importRef.current?.click()}>
+            <Upload className="mr-1 h-4 w-4" />
+            {t('comparison.import_package')}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              downloadJsonFile(
+                JSON.parse(
+                  serializeScenarioPackage(
+                    createComparisonScenarioPackage({
+                      mode: 'independent',
+                      sharedConfig,
+                      scenarioA,
+                      scenarioB,
+                    }),
+                  ),
+                ),
+                'bond-comparison.scenario.json',
+              )
+            }
+          >
+            <Download className="mr-1 h-4 w-4" />
+            {t('comparison.export_package')}
+          </Button>
+        </div>
+        {pendingImport ? (
+          <div className="rounded-md border border-warning/30 bg-warning/5 p-3 text-sm">
+            <p>{t('comparison.import_dirty')}</p>
+            <div className="mt-3 flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => {
+                  restorePortableScenario(pendingImport);
+                  setPendingImport(null);
+                }}
+              >
+                {t('comparison.import_confirm')}
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setPendingImport(null)}>
+                {t('common.cancel')}
+              </Button>
+            </div>
+          </div>
+        ) : null}
         {showPlanReceipt ? (
           <ComparisonPlanReceipt
             isOpen={false}

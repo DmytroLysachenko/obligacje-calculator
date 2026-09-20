@@ -27,12 +27,15 @@ function persistedState(): PersistedComparisonState {
 }
 
 describe('comparison deep-link state', () => {
-  it('accepts only a pair of supported, distinct bond types', () => {
+  it('accepts supported bond pairs, including two strategies for one family', () => {
     expect(parseComparisonBondPair(new URLSearchParams('a=COI&b=EDO'))).toEqual([
       BondType.COI,
       BondType.EDO,
     ]);
-    expect(parseComparisonBondPair(new URLSearchParams('a=COI&b=COI'))).toBeNull();
+    expect(parseComparisonBondPair(new URLSearchParams('a=COI&b=COI'))).toEqual([
+      BondType.COI,
+      BondType.COI,
+    ]);
     expect(parseComparisonBondPair(new URLSearchParams('a=COI&b=NOPE'))).toBeNull();
     expect(parseComparisonBondPair(new URLSearchParams('a=COI'))).toBeNull();
   });
@@ -85,8 +88,7 @@ describe('comparison deep-link state', () => {
 
     const url = withComparisonUrlState('/compare', new URLSearchParams('panel=chart'), state!);
     expect(url).toContain('panel=chart');
-    expect(url).toContain('a=ROR');
-    expect(url).toContain('taxB=IKZE');
+    expect(url).toContain('scenario=');
     expect(url).not.toContain('chartStep');
   });
 

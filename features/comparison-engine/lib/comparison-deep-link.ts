@@ -5,6 +5,11 @@ import type {
   SharedComparisonConfig,
 } from '@/features/comparison-engine/lib/comparison-calculator-state';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import {
+  createComparisonScenarioPackage,
+  decodeScenarioFromUrl,
+  encodeScenarioForUrl,
+} from '@/shared/lib/scenario-codec';
 
 type SearchParams = Pick<URLSearchParams, 'get'>;
 
@@ -31,19 +36,31 @@ const URL_KEYS = [
   'taxB',
   'horizonA',
   'horizonB',
+  'scenario',
 ] as const;
+
+export class ComparisonScenarioUrlTooLongError extends Error {}
 
 export function parseComparisonBondPair(searchParams: SearchParams): ComparisonBondPair | null {
   const a = parseBondType(searchParams.get('a'));
   const b = parseBondType(searchParams.get('b'));
 
-  return a && b && a !== b ? [a, b] : null;
+  return a && b ? [a, b] : null;
 }
 
 export function parseComparisonUrlState(
   searchParams: SearchParams,
   defaults: SharedComparisonConfig,
 ): ComparisonUrlState | null {
+  const portable = decodeScenarioFromUrl(searchParams.get('scenario'));
+  if (portable.ok && portable.scenario.kind === 'bond-comparison') {
+    const intent = portable.scenario.intent;
+    return {
+      sharedConfig: intent.sharedConfig,
+      scenarioA: intent.scenarioA,
+      scenarioB: intent.scenarioB,
+    };
+  }
   const pair = parseComparisonBondPair(searchParams);
   if (!pair) return null;
 
@@ -86,20 +103,16 @@ export function withComparisonUrlState(
   const searchParams = new URLSearchParams(currentSearchParams);
   URL_KEYS.forEach((key) => searchParams.delete(key));
 
-  searchParams.set('a', state.scenarioA.bondType);
-  searchParams.set('b', state.scenarioB.bondType);
-  searchParams.set('amount', String(state.sharedConfig.initialInvestment));
-  searchParams.set('timing', state.sharedConfig.timingMode ?? 'general');
-  searchParams.set('purchase', state.sharedConfig.purchaseDate);
-  searchParams.set('withdrawal', state.sharedConfig.withdrawalDate);
-  searchParams.set('horizon', String(state.sharedConfig.investmentHorizonMonths ?? 120));
-  searchParams.set('tax', state.sharedConfig.taxStrategy ?? TaxStrategy.STANDARD);
-  searchParams.set('inflation', String(state.sharedConfig.expectedInflation));
-  if (state.sharedConfig.expectedNbpRate !== undefined) {
-    searchParams.set('nbp', String(state.sharedConfig.expectedNbpRate));
-  }
-  setScenarioParams(searchParams, 'A', state.scenarioA);
-  setScenarioParams(searchParams, 'B', state.scenarioB);
+  const encoded = encodeScenarioForUrl(
+    createComparisonScenarioPackage({
+      mode: 'independent',
+      sharedConfig: state.sharedConfig,
+      scenarioA: state.scenarioA,
+      scenarioB: state.scenarioB,
+    }),
+  );
+  if (!encoded) throw new ComparisonScenarioUrlTooLongError('Scenario requires a local package.');
+  searchParams.set('scenario', encoded);
   return `${pathname}?${searchParams.toString()}`;
 }
 
@@ -123,17 +136,6 @@ function buildScenario(bondType: BondType, taxValue: string | null, horizonValue
     ...(taxStrategy ? { taxStrategy } : {}),
     ...(investmentHorizonMonths ? { investmentHorizonMonths } : {}),
   } satisfies ScenarioOverride;
-}
-
-function setScenarioParams(
-  searchParams: URLSearchParams,
-  suffix: 'A' | 'B',
-  scenario: ScenarioOverride,
-) {
-  if (scenario.taxStrategy) searchParams.set(`tax${suffix}`, scenario.taxStrategy);
-  if (scenario.investmentHorizonMonths !== undefined) {
-    searchParams.set(`horizon${suffix}`, String(scenario.investmentHorizonMonths));
-  }
 }
 
 function parseBondType(value: string | null) {

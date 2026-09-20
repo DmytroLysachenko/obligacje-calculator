@@ -6,7 +6,11 @@ import { useCallback, useMemo } from 'react';
 import type { FieldUpdater } from '@/shared/types/field-updater';
 
 import type { ScenarioOverride, SharedComparisonConfig } from '../lib/comparison-calculator-state';
-import { type ComparisonUrlState, withComparisonUrlState } from '../lib/comparison-deep-link';
+import {
+  ComparisonScenarioUrlTooLongError,
+  type ComparisonUrlState,
+  withComparisonUrlState,
+} from '../lib/comparison-deep-link';
 import {
   applyScenarioBondTypeUpdate,
   applyScenarioCustomHorizonEnabled,
@@ -57,9 +61,13 @@ export function useComparisonUrlState({
   );
   const sync = useCallback(
     (nextState: ComparisonUrlState) => {
-      router.push(
-        withComparisonUrlState(pathname, new URLSearchParams(searchParams.toString()), nextState),
-      );
+      try {
+        router.push(
+          withComparisonUrlState(pathname, new URLSearchParams(searchParams.toString()), nextState),
+        );
+      } catch (error) {
+        if (!(error instanceof ComparisonScenarioUrlTooLongError)) throw error;
+      }
     },
     [pathname, router, searchParams],
   );
