@@ -16,6 +16,8 @@ import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPa
 
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 
+import { SensitivityPanel } from './SensitivityPanel';
+
 const BondResultsSummary = dynamic(
   () => import('./BondResultsSummary').then((module) => module.BondResultsSummary),
   { loading: () => <Skeleton className="h-72 w-full rounded-md" /> },
@@ -38,6 +40,7 @@ interface BondCalculatorResultsPanelProps {
   onSaveScenario: () => void | Promise<void>;
   onAddToNotebook: () => void | Promise<void>;
   onExportPDF: () => void | Promise<void>;
+  onPrepareSensitivityDraft: (inputs: BondInputs) => void;
 }
 
 interface BondCalculatorDetailsPanelProps {
@@ -59,6 +62,7 @@ export function BondCalculatorResultsPanel({
   onSaveScenario,
   onAddToNotebook,
   onExportPDF,
+  onPrepareSensitivityDraft,
 }: BondCalculatorResultsPanelProps) {
   const { t } = useAppI18n();
 
@@ -122,6 +126,7 @@ export function BondCalculatorResultsPanel({
             canManageWorkspace={canManageWorkspace}
             dataQualityFlags={envelope?.dataQualityFlags}
           />
+          <SensitivityPanel inputs={inputs} onPrepareDraft={onPrepareSensitivityDraft} />
         </div>
       ) : null}
     </div>

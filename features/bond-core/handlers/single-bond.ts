@@ -1,4 +1,5 @@
-import { getYear, parseISO } from 'date-fns';
+import { addMonths, format, getYear, parseISO } from 'date-fns';
+import { z } from 'zod';
 
 import { BondInputs, CalculationResult, TaxStrategy } from '../types';
 import {
@@ -149,6 +150,53 @@ export class SingleBondHandler
       historicalAverages,
     );
   }
+
+  /**
+   * Evaluates a deliberately small parameter sweep from one resolved issuer/data
+   * snapshot.  This is intentionally separate from `handle`: a sensitivity run
+   * is analysis, not a collection of independently refreshed quotations.
+   */
+  async calculateSensitivity(
+    payload: SensitivityRequest,
+    context: HandlerContext,
+  ): Promise<SensitivityResponse> {
+    const request = SensitivityRequestSchema.parse(payload);
+    const validated = SingleBondCalculationIntentSchema.parse(request.inputs);
+    const { definition, inputs: resolved } = await resolveScenarioInputs({
+      data: this.data,
+      inputs: validated,
+      context,
+      selectedSeriesId: validated.selectedSeriesId,
+    });
+    const snapshot = await this.withHistoricalData(resolved);
+    const values = createSweepValues(request.start, request.end, request.step);
+    const points: SensitivityPoint[] = values.map((value) => {
+      try {
+        const candidate = applySensitivityValue(snapshot, request.variable, value);
+        const result = calculateBondInvestment({
+          ...candidate,
+          expectedInflation: this.applyInflationScenario(
+            candidate.expectedInflation,
+            candidate.inflationScenario,
+          ),
+          rollover: shouldAutoRollover(candidate, definition.duration),
+        } as BondInputs & { rollover: boolean });
+        return { value, netPayoutValue: result.netPayoutValue, totalProfit: result.totalProfit };
+      } catch (error) {
+        return {
+          value,
+          error: error instanceof Error ? error.message : 'Unable to calculate point.',
+        };
+      }
+    });
+
+    return {
+      variable: request.variable,
+      points,
+      dataFreshness: context.dataFreshness,
+      crossings: findZeroCrossings(points),
+    };
+  }
   private async calculateSplitTaxWrapper(
     inputs: BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap },
     limit: number,
@@ -238,4 +286,90 @@ export class SingleBondHandler
       historicalAverages,
     );
   }
+}
+
+export const SensitivityVariableSchema = z.enum(['inflation', 'nbp_rate', 'horizon_months']);
+export const SensitivityRequestSchema = z
+  .object({
+    inputs: SingleBondCalculationIntentSchema,
+    variable: SensitivityVariableSchema,
+    start: z.number().finite(),
+    end: z.number().finite(),
+    step: z.number().finite().positive(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.end < value.start) {
+      ctx.addIssue({ code: 'custom', path: ['end'], message: 'end must not precede start' });
+    }
+    if ((value.end - value.start) / value.step > 12.000001) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['step'],
+        message: 'A sweep may contain at most 13 points',
+      });
+    }
+    if (value.variable === 'horizon_months' && (value.start < 1 || value.end > 360)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['start'],
+        message: 'Horizon must be between 1 and 360 months',
+      });
+    }
+  });
+
+export type SensitivityRequest = z.infer<typeof SensitivityRequestSchema>;
+export type SensitivityVariable = z.infer<typeof SensitivityVariableSchema>;
+export interface SensitivityPoint {
+  value: number;
+  netPayoutValue?: number;
+  totalProfit?: number;
+  error?: string;
+}
+export interface SensitivityResponse {
+  variable: SensitivityVariable;
+  points: SensitivityPoint[];
+  crossings: Array<{ from: number; to: number }>;
+  dataFreshness: import('../types/scenarios').CalculationDataFreshness;
+}
+
+export function createSweepValues(start: number, end: number, step: number) {
+  const values: number[] = [];
+  for (let value = start; value <= end + step / 1_000_000; value += step) {
+    values.push(Number(value.toFixed(8)));
+  }
+  return values;
+}
+
+function applySensitivityValue(
+  inputs: BondInputs & { historicalData: BondInputs['historicalData'] },
+  variable: SensitivityVariable,
+  value: number,
+) {
+  if (variable === 'inflation') return { ...inputs, expectedInflation: value };
+  if (variable === 'nbp_rate') return { ...inputs, expectedNbpRate: value };
+  return {
+    ...inputs,
+    investmentHorizonMonths: value,
+    withdrawalDate: format(addMonths(parseISO(inputs.purchaseDate), value), 'yyyy-MM-dd'),
+  };
+}
+
+/** Reports brackets only; no monotonicity or unique-root claim is made. */
+export function findZeroCrossings(points: SensitivityPoint[]) {
+  const crossings: Array<{ from: number; to: number }> = [];
+  for (let index = 1; index < points.length; index += 1) {
+    const previous = points[index - 1];
+    const current = points[index];
+    if (
+      previous.totalProfit === undefined ||
+      current.totalProfit === undefined ||
+      previous.error ||
+      current.error
+    )
+      continue;
+    if (previous.totalProfit >= 0 !== current.totalProfit >= 0) {
+      crossings.push({ from: previous.value, to: current.value });
+    }
+  }
+  return crossings;
 }
