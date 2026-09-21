@@ -15,6 +15,7 @@ import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
+import { CashFlowReconciliation } from '@/shared/components/results/CashFlowReconciliation';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 
 const BondChart = dynamic(() => import('./BondChart').then((module) => module.BondChart), {
@@ -89,6 +90,8 @@ export function BondCalculatorDetailsContent({
       >
         <BondTimeline results={results} chartStep={displayStep} />
       </CalculatorSection>
+
+      <CashFlowReconciliation events={results.timeline.flatMap((point) => point.events ?? [])} />
 
       <SecondaryInsightAccordion
         title={t('bonds.simulation.calculation_context')}

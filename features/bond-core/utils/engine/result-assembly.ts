@@ -156,6 +156,7 @@ export function createRegularInvestmentResult(
     totalTax: lastPoint.tax,
     totalEarlyWithdrawalFees: lastPoint.earlyWithdrawalFees,
     realAnnualizedReturn: calculateRealAnnualizedReturn(totalHorizon, realContributions, lastPoint),
+    moneyWeightedAnnualizedReturn: calculateMoneyWeightedReturn(timeline, lastPoint.nominalValue),
     timeline,
     lots,
     cashBalance: cashBalance.toNumber(),
@@ -165,6 +166,34 @@ export function createRegularInvestmentResult(
     paidOutValue: terminalNetSettlement ?? 0,
     terminalWealth: activeHoldingsValue.plus(cashBalance).toNumber(),
   };
+}
+
+function calculateMoneyWeightedReturn(timeline: RegularTimelinePoint[], terminalValue: number) {
+  const flows = timeline.flatMap((point) =>
+    (point.events ?? [])
+      .filter((event) => event.type === 'CONTRIBUTION')
+      .map((event) => ({ date: new Date(event.date), amount: -(event.value ?? 0) })),
+  );
+  const terminalDate = new Date(timeline.at(-1)?.date ?? '');
+  if (!flows.length || !Number.isFinite(terminalDate.getTime())) return undefined;
+  flows.push({ date: terminalDate, amount: terminalValue });
+  const origin = flows[0].date.getTime();
+  const npv = (rate: number) =>
+    flows.reduce(
+      (sum, flow) =>
+        sum +
+        flow.amount / Math.pow(1 + rate, (flow.date.getTime() - origin) / 86_400_000 / 365.25),
+      0,
+    );
+  let low = -0.9999;
+  let high = 10;
+  if (npv(low) * npv(high) > 0) return undefined;
+  for (let index = 0; index < 80; index += 1) {
+    const middle = (low + high) / 2;
+    if (npv(low) * npv(middle) <= 0) high = middle;
+    else low = middle;
+  }
+  return ((low + high) / 2) * 100;
 }
 
 function lastRegularNominalValue(timeline: RegularTimelinePoint[], fallback: Decimal) {
