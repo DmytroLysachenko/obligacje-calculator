@@ -398,4 +398,27 @@ describe('calculation request validation hardening', () => {
       BondInputsSchema.parse(singlePayload({ payoutFrequency: 'DAILY' as InterestPayout })),
     );
   });
+
+  it('requires unique mixed-allocation targets totaling 100 percent', () => {
+    expectInvalid('underallocated targets', () =>
+      RegularInvestmentInputsSchema.parse(
+        regularPayload({
+          allocationTargets: [
+            { bondType: BondType.COI, percent: 40 },
+            { bondType: BondType.EDO, percent: 40 },
+          ],
+        }),
+      ),
+    );
+    expect(
+      RegularInvestmentInputsSchema.parse(
+        regularPayload({
+          allocationTargets: [
+            { bondType: BondType.COI, percent: 50 },
+            { bondType: BondType.EDO, percent: 50 },
+          ],
+        }),
+      ).allocationTargets,
+    ).toHaveLength(2);
+  });
 });
