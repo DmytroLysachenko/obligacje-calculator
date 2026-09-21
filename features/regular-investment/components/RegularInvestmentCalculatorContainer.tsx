@@ -15,6 +15,7 @@ import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspac
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
 import { getRegularInvestmentGuardrails } from '../lib/regular-investment-guardrails';
 
+import { RecurringGoalPlanner } from './RecurringGoalPlanner';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 const RegularInvestmentResultsSummary = dynamic(
   () =>
@@ -154,6 +155,10 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                   results={results}
                   inputs={inputs}
                   dataQualityFlags={envelope?.dataQualityFlags}
+                />
+                <RecurringGoalPlanner
+                  inputs={inputs}
+                  onApply={(value) => updateInput('contributionAmount', value)}
                 />
               </div>
             ) : null}
