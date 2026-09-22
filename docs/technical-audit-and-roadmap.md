@@ -128,6 +128,8 @@ IDs are durable workstream identifiers. Priority is practical impact, not a prom
 **Type:** Bug  
 **Scope:** L
 
+**Status:** Completed (20 September 2026). The shared settlement policy retains high-precision accrual and rounds the standard taxable base and 19% tax upward to grosze at coupon/redemption settlement. IKE remains exempt and IKZE retains its separately modeled withdrawal policy. Single and recurring paths use the same policy, including a pinned 0.33 PLN → 0.07 PLN standard-tax fixture.
+
 ### Current state
 
 features/bond-core/utils/engine/tax-settlement.ts rounds the taxable base and tax to whole PLN when useOfficialRounding is true. Single periodic/final settlements use that branch; regular monthly withholding uses unrounded tax. Accrual carries Decimal values but does not define all issuer settlement rounding stages. calculations.precision.test.ts allows a difference below five PLN in a test labeled official rounding.
@@ -167,6 +169,8 @@ None. Coordinate rule identity with F02 and F11.
 **Type:** Bug  
 **Scope:** XL
 
+**Status:** Completed (20 September 2026). Resolved issued-series terms now carry fee amount and cap basis through offer resolution into both engines. Interest-capped fees and evidenced principal-basis fees are distinct, OTS forfeits interest, and unresolved series remain visibly non-verified rather than inheriting an issuer claim from a current family offer.
+
 ### Current state
 
 ResolvedBondOfferTerms contains rates/margin but no issued fee policy. resolved-inputs.ts takes earlyWithdrawalFee and rebuyDiscount from the current definition. BOND_DEFINITIONS has TOS/COI fees of 0.70 PLN. redemption.ts caps every non-OTS fee at cumulative interest. single-bond-accounting.ts explicitly assumes coupon principal is preserved.
@@ -205,6 +209,8 @@ F01; coordinate F12. Do not generalize ROR rules to every family without evidenc
 **Priority:** High  
 **Type:** Bug  
 **Scope:** L
+
+**Status:** Completed (20 September 2026). Cycle periods are generated from the original purchase anchor instead of advancing from a clipped month-end date. Regular lots and notebook maturity projections use term months rather than day multiplication; January-31, leap-day and terminal partial-period cases are pinned by regression tests.
 
 ### Current state
 
@@ -611,6 +617,8 @@ Coordinate with F02; may start independently with the resolution contract.
 **Type:** Bug  
 **Scope:** L
 
+**Status:** Completed (17 September 2026). Ladder maturity buckets now show and label nominal principal scheduled at each lot's maturity rather than reusing a selected-horizon liquidation value. Horizon liquidation remains in the regular-plan result, while the ladder explicitly excludes unprojected future coupons.
+
 ### Current state
 
 buildLadderMaturityBuckets groups lots by maturityDate but sums lot.netValue from the regular simulation's selected horizon. Many lots mature after that horizon. The UI labels these groups as maturity values and calculates average/peak maturity amounts.
@@ -651,6 +659,8 @@ F03, F05, F06.
 **Type:** Feature  
 **Scope:** L
 
+**Status:** Completed (19 September 2026). The notebook now has accessible holding add/edit/delete dialogs with quantity, purchase date, notes, issued-series and owned-portfolio move controls, plus owner-scoped portfolio metadata editing. Detail reads and simulations are guarded by portfolio/mutation epochs, preserve the last good data on failure and expose retryable errors; demo creation uses one atomic import command.
+
 ### Current state
 
 Notebook offers default/demo creation, imports, deletions, sharing and read-only lot tables. updateOwnerLot and portfolioClient.updateLot already exist, but PortfolioLotsTabSections does not provide a complete editing workflow. usePortfolioDetailsWorkspace logs list/simulate/share/export errors, sometimes substitutes an empty list, and has no request epoch protection. Simulation refresh depends on lots.length rather than lot content.
@@ -689,6 +699,8 @@ F08 and F09 for trustworthy import/projection behavior; CRUD can begin independe
 **Priority:** High  
 **Type:** Feature  
 **Scope:** L
+
+**Status:** Completed (17 September 2026). The single calculator now exposes a local scenario library with search, rename/notes/tags, duplicate, delete, guarded restore-as-draft, record validation/migration, storage-error feedback and explicit capacity handling. Stored inputs are versioned single-bond intents and intentionally require recalculation after restore.
 
 ### Current state
 
@@ -729,6 +741,8 @@ F07; F16 for multi-calculator portability.
 **Type:** Feature  
 **Scope:** L
 
+**Status:** Completed (19 September 2026). A versioned discriminated scenario codec now validates portable single and independent-comparison intents for compact URLs, local JSON packages, saved records and shared-input construction. Comparison links preserve custom paths and same-family variants; oversized inline state is never truncated and can be exported as a package, while single scenarios retain the expiring server-share fallback. Restores deliberately contain inputs only and require recalculation.
+
 ### Current state
 
 Single URLs carry bond family or use a database share record. Comparison URLs preserve many scalar fields but omit custom CPI/NBP paths and several overrides. parseComparisonBondPair rejects equal bond families even though the independent comparison model can compare two strategies for one family. URL horizon limits differ from API limits.
@@ -767,6 +781,8 @@ F07, F27; coordinate with F15.
 **Priority:** High  
 **Type:** Feature  
 **Scope:** XL
+
+**Status:** Completed (19 September 2026). Comparison scenarios now use an explicit strategy policy for native maturity, reinvest-to-horizon or zero-rate cash after maturity, plus an independent coupon disposition. Policies are validated, portable through the scenario codec, shown in the committed receipt and passed to the engine. Non-capitalized coupons selected as cash are retained outside rollover capital; legacy maturityMode remains compatibility-only.
 
 ### Current state
 
@@ -807,6 +823,8 @@ F01–F07, F12, F16.
 **Type:** Feature  
 **Scope:** L
 
+**Status:** Completed (19 September 2026). The single-calculator result panel now runs cancellable, bounded CPI, NBP-rate and exit-horizon sweeps (at most 13 points). The server resolves issuer terms, definitions and historical data once per sweep and evaluates every point from that shared snapshot. Results retain per-point failures, render an accessible table with a visual companion, identify all observed profit-sign brackets without claiming a unique root, and let a point prepare—never silently commit—a recalculation draft.
+
 ### Current state
 
 SingleBondHandler can calculate low/high inflation timelines; market-assumption controls support presets and custom paths. Comparison presents one committed setup. No reusable sensitivity grid or crossover calculation was found.
@@ -846,6 +864,8 @@ F04, F07, F12, F17, F30.
 **Type:** Feature  
 **Scope:** L
 
+**Status:** Completed (19 September 2026). Recurring plans now normalize initial capital, cadence contributions, nominal annual increases, dated skips, replacements and top-ups into one deterministic cash-flow schedule before simulation. The form includes an optional schedule editor and preview; duplicate-date additions are combined, contribution residual cash remains available for whole-bond purchases, and committed results remain draft-stable while the plan is edited.
+
 ### Current state
 
 RegularInvestmentInputs accepts one contribution amount and monthly/quarterly/yearly frequency. A separate starting lump sum, contribution increases, pauses and one-off top-ups are not represented.
@@ -883,6 +903,8 @@ F03–F07, F16.
 **Priority:** Medium  
 **Type:** Feature  
 **Scope:** XL
+
+**Status:** Completed (19 September 2026). Recurring plans can opt into a validated two- or three-family percentage allocation. The server applies every normalized F19 contribution flow to each family’s target share, preserves whole-bond residual cash, does not sell/rebalance existing holdings, and reports actual versus target weights. An optional monthly-capitalized, user-entered cash-rate comparison is clearly labeled hypothetical and taxed using the declared rate; it is never presented as a bank offer.
 
 ### Current state
 
@@ -922,6 +944,8 @@ F05, F06, F17, F19, F30.
 **Priority:** Medium  
 **Type:** Feature  
 **Scope:** L
+
+**Status:** Completed (20 September 2026). Single-calculator details now expose the engine event stream as an accessible cash-flow reconciliation table, retaining separate coupon, tax, fee, purchase, maturity and withdrawal rows. The shared display model makes discrepancies visible rather than netting them away. Recurring results now carry a dated money-weighted annual return when a root is bracketed; undefined cases remain undefined rather than being displayed as zero.
 
 ### Current state
 
@@ -963,6 +987,8 @@ F01–F07, F09, F26.
 **Type:** Feature  
 **Scope:** L
 
+**Status:** Completed (20 September 2026). Notebook liquidity now exposes read-only maturity events as a local all-day ICS download with stable lot IDs and escaped content. The local exit panel distinguishes planning from an instruction, shows the selected principal and a next-business-day settlement estimate, and explicitly defers interest, fee and tax figures to the authoritative scenario engine.
+
 ### Current state
 
 Notebook shows 30/90/180-day maturity windows; ladder groups maturity months. Single calculator accepts a withdrawal date but does not model a redemption instruction and settlement window.
@@ -1001,6 +1027,8 @@ F02, F03, F09, F13, F14, F21.
 **Priority:** Medium  
 **Type:** Feature  
 **Scope:** L
+
+**Status:** Completed (20 September 2026). The recurring calculator now provides a bounded, authoritative endpoint-backed solver for the minimum base contribution needed to reach a nominal target at the selected date. It verifies the solved outcome, reports bound-limited targets honestly, and applies a result only as an editable draft requiring normal recalculation.
 
 ### Current state
 
