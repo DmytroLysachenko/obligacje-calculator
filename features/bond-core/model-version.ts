@@ -1,1 +1,1 @@
-export const MODEL_VERSION = '3.0.0-tax-calendar-inflation';
+export const MODEL_VERSION = '3.1.0-issuer-settlement';

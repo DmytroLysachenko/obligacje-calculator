@@ -1,5 +1,5 @@
 {
-  "modelVersion": "3.0.0-tax-calendar-inflation",
+  "modelVersion": "3.1.0-issuer-settlement",
   "rounding": "Exact IEEE-754 engine outputs are asserted; presentation rounding is not part of this fixture.",
   "scenarios": [
     {

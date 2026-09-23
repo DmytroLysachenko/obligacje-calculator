@@ -20,6 +20,7 @@ import { runSingleBondPeriod } from './single-bond-period-runner';
 import { createSingleBondSimulationState } from './single-bond-simulation-state';
 import { applySingleBondTaxRelief } from './single-bond-tax-relief';
 import {
+  buildSingleBondTerminalDiagnostics,
   buildSingleBondTerminalNotes,
   shouldStopSingleBondSimulation,
 } from './single-bond-terminal';
@@ -123,6 +124,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     let currentNominalValue = new Decimal(nominalStartingValue);
     let totalInterestEarnedSoFar = new Decimal(0);
     let periodicTaxPaidSoFar = new Decimal(0);
+    let currentPeriodInterest = new Decimal(0);
     let cycleCouponCash = new Decimal(0);
 
     const periods = generateCyclePeriods(
@@ -170,6 +172,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       currentNominalValue = periodResult.currentNominalValue;
       totalInterestEarnedSoFar = periodResult.totalInterestEarnedSoFar;
       periodicTaxPaidSoFar = periodResult.periodicTaxPaidSoFar;
+      currentPeriodInterest = periodResult.currentPeriodInterest;
       simulationState.globalAccumulatedNetInterest = periodResult.globalAccumulatedNetInterest;
       cycleCouponCash = cycleCouponCash.plus(periodResult.couponCashAdded);
       if (periodResult.dataQualityFlag) {
@@ -189,9 +192,11 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       bondType,
       isEarlyWithdrawal,
       totalInterestEarnedSoFar,
+      currentPeriodInterest,
       numberOfBonds,
       earlyWithdrawalFee,
       redemptionFeeCap,
+      issuerPeriodIndex: Math.max(0, periods.length - 1),
       isCapitalized,
       currentNominalValue,
       nominalStartingValue,
@@ -222,6 +227,13 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           isEarlyWithdrawal,
         }),
       );
+      simulationState.noteDiagnostics.push(
+        ...buildSingleBondTerminalDiagnostics({
+          rollover,
+          cycleIndex: simulationState.cycleIndex,
+          isEarlyWithdrawal,
+        }),
+      );
 
       return createFinalSingleBondResult({
         initialInvestment,
@@ -233,6 +245,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         cycleMaturityDate,
         totalHorizonYears,
         calculationNotes: simulationState.calculationNotes,
+        noteDiagnostics: simulationState.noteDiagnostics,
         dataQualityFlags: Array.from(simulationState.dataQualityFlags),
       });
     }

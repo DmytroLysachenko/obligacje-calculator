@@ -177,7 +177,6 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
       lots,
       currentMonthDate,
       isTerminalWithdrawal: isWithdrawalStep,
-      bondDuration,
       bondType,
       firstYearRate,
       expectedInflation,

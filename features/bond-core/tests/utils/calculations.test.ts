@@ -94,6 +94,8 @@ describe('Bond Calculations Engine (Modular)', () => {
         duration: 10,
         firstYearRate: 7.0,
         earlyWithdrawalFee: 2.0,
+        isCapitalized: true,
+        payoutFrequency: InterestPayout.MATURITY,
         withdrawalDate: '2024-02-01', // 1 month in => Fee must be capped
       };
       const resultsCapped = calculateBondInvestment(inputs);

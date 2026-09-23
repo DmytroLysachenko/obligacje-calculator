@@ -135,7 +135,7 @@ describe('Comprehensive Bond Calculations', () => {
       payoutFrequency: InterestPayout.MONTHLY,
       earlyWithdrawalFee: 0.5,
       purchaseDate: '2026-03-01T00:00:00.000Z',
-      withdrawalDate: '2026-07-01T00:00:00.000Z',
+      withdrawalDate: '2026-07-02T00:00:00.000Z',
     };
     const results = calculateBondInvestment(inputs);
     const finalPoint = results.timeline[results.timeline.length - 1];

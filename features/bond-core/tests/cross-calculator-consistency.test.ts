@@ -10,6 +10,7 @@ import {
   PortfolioSimulationResult,
   ScenarioKind,
 } from '../types/scenarios';
+import { BondComparisonScenarioRequestSchema } from '../types/schemas';
 import { calculationCache } from '../utils/calculation-cache';
 
 vi.mock('@/lib/data/market-data', async () => {
@@ -321,7 +322,7 @@ describe('cross-calculator consistency', () => {
     expect(ikze.totalTax).toBeGreaterThan(standard.totalTax);
   });
 
-  it('keeps rebuy discount single-only while comparison ignores legacy swap overrides', async () => {
+  it('rejects rebuy discount comparison overrides instead of silently ignoring them', async () => {
     const plain = await calculateSingle(BondType.EDO, {
       initialInvestment: 100000,
       isRebought: false,
@@ -334,33 +335,28 @@ describe('cross-calculator consistency', () => {
       investmentHorizonMonths: 240,
       withdrawalDate: '2046-01-01',
     });
-    const comparisonEnvelope = await calculationService.calculate({
-      kind: ScenarioKind.BOND_COMPARISON,
-      payload: {
-        mode: 'independent',
-        sharedConfig: {
-          initialInvestment: 100000,
-          purchaseDate,
-          withdrawalDate: '2046-01-01',
-          expectedInflation: 3,
-          expectedNbpRate: 5,
-          taxStrategy: TaxStrategy.STANDARD,
-          timingMode: 'exact',
-          investmentHorizonMonths: 240,
+    expect(
+      BondComparisonScenarioRequestSchema.safeParse({
+        kind: ScenarioKind.BOND_COMPARISON,
+        payload: {
+          mode: 'independent',
+          sharedConfig: {
+            initialInvestment: 100000,
+            purchaseDate,
+            withdrawalDate: '2046-01-01',
+            expectedInflation: 3,
+            expectedNbpRate: 5,
+            taxStrategy: TaxStrategy.STANDARD,
+            timingMode: 'exact',
+            investmentHorizonMonths: 240,
+          },
+          scenarioA: { bondType: BondType.EDO, isRebought: false },
+          scenarioB: { bondType: BondType.EDO, isRebought: true },
         },
-        scenarioA: { bondType: BondType.EDO, isRebought: false },
-        scenarioB: { bondType: BondType.EDO, isRebought: true },
-      },
-    });
-    const [comparisonPlain, comparisonRebought] =
-      comparisonEnvelope.result as BondComparisonScenarioItem[];
+      }).success,
+    ).toBe(false);
 
     expect(rebought.netPayoutValue).toBeGreaterThan(plain.netPayoutValue);
-    expect(comparisonRebought.result.netPayoutValue).toBeCloseTo(
-      comparisonPlain.result.netPayoutValue,
-      8,
-    );
-    expectCloseResult(plain, comparisonRebought.result);
   });
 
   it('keeps custom CPI path effect consistent between single and comparison', async () => {

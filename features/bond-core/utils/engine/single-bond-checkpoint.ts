@@ -3,7 +3,7 @@ import { Decimal } from 'decimal.js';
 import { BondType, RateSource, TaxStrategy, YearlyTimelinePoint } from '../../types';
 import { SimulationEvent } from '../../types/simulation';
 
-import { calculateEarlyWithdrawalFee } from './redemption';
+import { calculateEarlyWithdrawalFee, type RedemptionFeeCap } from './redemption';
 import {
   calculateTaxAmount,
   settlementPolicyFor,
@@ -100,9 +100,11 @@ export function resolveSingleBondCycleSettlement({
   bondType,
   isEarlyWithdrawal,
   totalInterestEarnedSoFar,
+  currentPeriodInterest,
   numberOfBonds,
   earlyWithdrawalFee,
   redemptionFeeCap,
+  issuerPeriodIndex,
   isCapitalized,
   currentNominalValue,
   nominalStartingValue,
@@ -114,9 +116,11 @@ export function resolveSingleBondCycleSettlement({
   bondType: BondType;
   isEarlyWithdrawal: boolean;
   totalInterestEarnedSoFar: Decimal;
+  currentPeriodInterest: Decimal;
   numberOfBonds: Decimal;
   earlyWithdrawalFee: number;
-  redemptionFeeCap?: 'interest' | 'principal';
+  redemptionFeeCap?: RedemptionFeeCap;
+  issuerPeriodIndex: number;
   isCapitalized: boolean;
   currentNominalValue: Decimal;
   nominalStartingValue: Decimal;
@@ -130,17 +134,27 @@ export function resolveSingleBondCycleSettlement({
         bondType,
         true,
         true,
-        totalInterestEarnedSoFar,
+        isCapitalized ? totalInterestEarnedSoFar : currentPeriodInterest,
         numberOfBonds,
         earlyWithdrawalFee,
         redemptionFeeCap,
+        issuerPeriodIndex,
       )
     : new Decimal(0);
   const cycleGrossValue = isCapitalized
     ? currentNominalValue
     : nominalStartingValue.plus(totalInterestEarnedSoFar);
   const cycleTax = shouldWithholdPeriodicTax(taxStrategy, isCapitalized)
-    ? periodicTaxPaidSoFar
+    ? periodicTaxPaidSoFar.plus(
+        isEarlyWithdrawal
+          ? calculateTaxAmount(
+              Decimal.max(0, currentPeriodInterest.minus(cycleFee)),
+              taxStrategy,
+              settlementPolicyFor(taxStrategy),
+              taxRate,
+            )
+          : 0,
+      )
     : calculateTaxAmount(
         Decimal.max(
           0,

@@ -126,7 +126,8 @@ describe('Single-bond edge golden regressions', () => {
     expect(coiEarly.totalProfit).toBeGreaterThan(700);
     expect(coiEarly.totalProfit).toBeLessThan(980);
     expect(coiEarly.totalTax).toBeGreaterThan(80);
-    expect(coiEarly.totalTax).toBeLessThan(140);
+    // The final unpaid coupon period is now taxed at redemption as well.
+    expect(coiEarly.totalTax).toBe(170.05);
     expect(coiEarly.totalEarlyWithdrawalFee).toBe(70);
     expect(coiEarly.isEarlyWithdrawal).toBe(true);
 

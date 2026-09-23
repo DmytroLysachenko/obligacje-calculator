@@ -10,7 +10,7 @@ import {
 } from '../../types';
 
 import { evaluateIssuerPeriod } from './issuer-period-evaluator';
-import { calculateEarlyWithdrawalFee } from './redemption';
+import { calculateEarlyWithdrawalFee, type RedemptionFeeCap } from './redemption';
 import {
   calculateTaxAmount,
   settlementPolicyFor,
@@ -21,7 +21,6 @@ export function updateRegularInvestmentLotsForMonth({
   lots,
   currentMonthDate,
   isTerminalWithdrawal,
-  bondDuration,
   bondType,
   firstYearRate,
   expectedInflation,
@@ -43,7 +42,6 @@ export function updateRegularInvestmentLotsForMonth({
   lots: LotBreakdown[];
   currentMonthDate: Date;
   isTerminalWithdrawal: boolean;
-  bondDuration: number;
   bondType: BondType;
   firstYearRate: number;
   expectedInflation: RegularInvestmentInputs['expectedInflation'];
@@ -60,7 +58,7 @@ export function updateRegularInvestmentLotsForMonth({
   bondPrice: Decimal.Value;
   nominalValue: Decimal.Value;
   earlyWithdrawalFee: number;
-  redemptionFeeCap?: 'interest' | 'principal';
+  redemptionFeeCap?: RedemptionFeeCap;
 }) {
   lots.forEach((lot) => {
     if (lot.settledValue !== undefined) {
@@ -73,7 +71,6 @@ export function updateRegularInvestmentLotsForMonth({
       return;
     }
 
-    const bondDurationMonths = Math.round(bondDuration * 12);
     const issuerPeriodMonths =
       bondType === BondType.ROR || bondType === BondType.DOR
         ? 1
@@ -87,6 +84,7 @@ export function updateRegularInvestmentLotsForMonth({
     const dLotTax = new Decimal(lot.tax);
     const shouldWithholdTaxForLot = shouldWithholdPeriodicTax(taxStrategy, isCapitalized);
     let nextTax = dLotTax;
+    let terminalUnpaidInterest = new Decimal(0);
 
     // Settle only newly completed natural issuer periods. The monthly plan
     // merely asks for a valuation; it never converts annual products into
@@ -125,6 +123,13 @@ export function updateRegularInvestmentLotsForMonth({
       });
       completedInterest = completedInterest.plus(evaluated.interestEarned);
       if (isCapitalized) nextPrincipal = nextPrincipal.plus(evaluated.interestEarned);
+      if (
+        isTerminalWithdrawal &&
+        !period.isMaturity &&
+        periodEnd.getTime() === currentMonthDate.getTime()
+      ) {
+        terminalUnpaidInterest = evaluated.interestEarned;
+      }
       if (
         shouldWithholdTaxForLot &&
         !(
@@ -184,6 +189,8 @@ export function updateRegularInvestmentLotsForMonth({
       lot.lockedAnnualRate = evaluated.rateContext.currentInterestRate.toNumber();
     }
 
+    const currentUnpaidInterest = terminalUnpaidInterest.plus(previewInterest);
+
     lot.issuerCompletedPeriods = nextCompletedPeriods;
     lot.issuerAccruedInterest = completedInterest.toNumber();
     lot.grossValue = nextPrincipal.toNumber();
@@ -203,10 +210,11 @@ export function updateRegularInvestmentLotsForMonth({
       bondType,
       isLotEarlyWithdrawal,
       isLotEarlyWithdrawal,
-      totalInterest,
+      isCapitalized ? totalInterest : currentUnpaidInterest,
       units,
       earlyWithdrawalFee,
       redemptionFeeCap,
+      terminalUnpaidInterest.gt(0) ? Math.max(0, nextCompletedPeriods - 1) : nextCompletedPeriods,
     );
     lot.earlyWithdrawalFee = dFinalFee.toNumber();
 
@@ -214,7 +222,14 @@ export function updateRegularInvestmentLotsForMonth({
       ? new Decimal(lot.grossValue).plus(dFinalAccumulatedInterest)
       : units.times(nominalValue).plus(dFinalAccumulatedInterest);
     const currentTaxPaid = shouldWithholdTaxForLot
-      ? nextTax
+      ? nextTax.plus(
+          calculateTaxAmount(
+            Decimal.max(0, currentUnpaidInterest.minus(dFinalFee)),
+            taxStrategy,
+            settlementPolicyFor(taxStrategy),
+            taxRate,
+          ),
+        )
       : calculateTaxAmount(
           Decimal.max(
             0,
@@ -230,7 +245,7 @@ export function updateRegularInvestmentLotsForMonth({
         );
 
     lot.netValue = currentGrossValue.minus(currentTaxPaid).minus(dFinalFee).toNumber();
-    if (!shouldWithholdTaxForLot) {
+    if (isTerminalWithdrawal || !shouldWithholdTaxForLot) {
       lot.tax = currentTaxPaid.toNumber();
     }
   });

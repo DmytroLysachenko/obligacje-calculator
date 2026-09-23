@@ -429,6 +429,44 @@ describe('Regular investment golden regressions', () => {
     );
   });
 
+  it.each(['2026-06-14', '2026-07-01', '2026-07-14'])(
+    'reconciles a one-lot ROR issuer-period redemption on %s',
+    (withdrawalDate) => {
+      // ROR1225 issuer rule: first monthly period caps at accrued interest;
+      // later periods may charge the 0.50 PLN fee against principal.
+      // https://www.obligacjeskarbowe.pl/oferta-obligacji/obligacje-roczne-ror/ror1225/
+      const common = {
+        bondType: BondType.ROR,
+        firstYearRate: 5.25,
+        expectedInflation: 3.5,
+        expectedNbpRate: 5.25,
+        margin: 0,
+        duration: 1,
+        earlyWithdrawalFee: 0.5,
+        redemptionFeeCap: 'first-interest-then-principal' as const,
+        taxRate: 19,
+        isCapitalized: false,
+        payoutFrequency: BOND_DEFINITIONS[BondType.ROR].payoutFrequency,
+        purchaseDate: '2026-06-01',
+        withdrawalDate,
+        isRebought: false,
+        rebuyDiscount: 0.1,
+        taxStrategy: TaxStrategy.STANDARD,
+      };
+      const single = calculateBondInvestment({ ...common, initialInvestment: 100 });
+      const recurring = calculateRegularInvestment({
+        ...common,
+        contributionAmount: 100,
+        frequency: InvestmentFrequency.YEARLY,
+        investmentHorizonMonths: 1,
+      });
+
+      expect(recurring.lots).toHaveLength(1);
+      expect(recurring.totalEarlyWithdrawalFees).toBeCloseTo(single.totalEarlyWithdrawalFee, 8);
+      expect(recurring.finalNominalValue).toBeCloseTo(single.netPayoutValue, 8);
+    },
+  );
+
   it('keeps a CPI reset tied to the lot anniversary under a custom path', () => {
     const definition = BOND_DEFINITIONS[BondType.EDO];
     const common = {
