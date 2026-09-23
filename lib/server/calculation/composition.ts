@@ -27,6 +27,6 @@ export const calculationService = new CalculationApplicationService({
   getDefinitions: getBondDefinitionsMap,
   getDataFreshness: getGlobalDataFreshness,
   getTaxRulesRevision,
-  getHandler: (kind) => handlers.getHandler(kind),
+  getHandler: handlers.getHandler.bind(handlers),
   onFailure: (kind, error) => logger.error(`Calculation failed: ${kind}`, error),
 });

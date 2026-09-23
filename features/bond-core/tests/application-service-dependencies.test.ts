@@ -54,7 +54,7 @@ describe('CalculationApplicationService dependencies', () => {
       getDataFreshness: vi.fn(async () => freshness),
       getTaxRulesRevision: vi.fn(async () => '2026:revision'),
       getDefinitions: vi.fn(async () => BOND_DEFINITIONS),
-      getHandler: vi.fn(() => handler),
+      getHandler: vi.fn(() => handler) as unknown as CalculationServiceDependencies['getHandler'],
     };
 
     const service = new CalculationApplicationService(dependencies);
@@ -63,7 +63,7 @@ describe('CalculationApplicationService dependencies', () => {
       payload: basePayload,
     });
 
-    expect(result).toBe(envelope);
+    expect(result).toEqual({ ...envelope, taxRulesRevision: '2026:revision' });
     expect(dependencies.getHandler).toHaveBeenCalledWith(ScenarioKind.SINGLE_BOND);
     expect(handler.handle).toHaveBeenCalledWith(
       SingleBondCalculationIntentSchema.parse(basePayload),
@@ -72,7 +72,11 @@ describe('CalculationApplicationService dependencies', () => {
         dbDefinitions: BOND_DEFINITIONS,
       },
     );
-    expect(dependencies.cache.set).toHaveBeenCalledWith('cache-key', envelope, 5 * 60_000);
+    expect(dependencies.cache.set).toHaveBeenCalledWith(
+      'cache-key',
+      { ...envelope, taxRulesRevision: '2026:revision' },
+      5 * 60_000,
+    );
   });
 
   it('uses the authoritative freshness revision as part of the cache identity', async () => {
@@ -102,7 +106,7 @@ describe('CalculationApplicationService dependencies', () => {
       getDataFreshness: vi.fn(async () => freshness),
       getTaxRulesRevision: vi.fn(async () => '2026:revision'),
       getDefinitions: vi.fn(async () => BOND_DEFINITIONS),
-      getHandler: vi.fn(() => handler),
+      getHandler: vi.fn(() => handler) as unknown as CalculationServiceDependencies['getHandler'],
     };
 
     await new CalculationApplicationService(dependencies).calculate({
@@ -154,7 +158,7 @@ describe('CalculationApplicationService dependencies', () => {
       getHandler: vi.fn(() => ({
         kind: ScenarioKind.SINGLE_BOND,
         handle: vi.fn(async () => envelope),
-      })),
+      })) as unknown as CalculationServiceDependencies['getHandler'],
     };
     const calculation = new CalculationApplicationService(dependencies).calculate({
       kind: ScenarioKind.SINGLE_BOND,

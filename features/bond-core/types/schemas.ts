@@ -1,4 +1,4 @@
-import { differenceInMonths, parseISO } from 'date-fns';
+import { addMonths, differenceInCalendarMonths, format, parseISO } from 'date-fns';
 import { z } from 'zod';
 
 import { BondType, InterestPayout, InvestmentFrequency, ScenarioKind, TaxStrategy } from './index';
@@ -28,11 +28,14 @@ function validateEffectiveHorizon(
   ctx: z.RefinementCtx,
   maximumMonths: number,
 ) {
-  const dateMonths = differenceInMonths(
-    parseISO(value.withdrawalDate),
-    parseISO(value.purchaseDate),
+  const dateMonths = Math.max(
+    1,
+    differenceInCalendarMonths(parseISO(value.withdrawalDate), parseISO(value.purchaseDate)),
   );
-  if (dateMonths > maximumMonths) {
+  if (
+    parseISO(value.withdrawalDate).getTime() >
+    addMonths(parseISO(value.purchaseDate), maximumMonths).getTime()
+  ) {
     ctx.addIssue({
       code: 'custom',
       path: ['withdrawalDate'],
@@ -80,9 +83,10 @@ export const BondInputsSchema = withDateOrderValidation(
   validateEffectiveHorizon(value, ctx, 360);
   validatePathLengths(
     value,
-    typeof value.investmentHorizonMonths === 'number'
-      ? value.investmentHorizonMonths / 12
-      : value.duration,
+    Math.max(
+      1,
+      differenceInCalendarMonths(parseISO(value.withdrawalDate), parseISO(value.purchaseDate)),
+    ) / 12,
     ctx,
   );
 });
@@ -110,9 +114,10 @@ export const SingleBondCalculationIntentSchema = withDateOrderValidation(
   validateEffectiveHorizon(value, ctx, 360);
   validatePathLengths(
     value,
-    typeof value.investmentHorizonMonths === 'number'
-      ? value.investmentHorizonMonths / 12
-      : undefined,
+    Math.max(
+      1,
+      differenceInCalendarMonths(parseISO(value.withdrawalDate), parseISO(value.purchaseDate)),
+    ) / 12,
     ctx,
   );
 });
@@ -234,6 +239,7 @@ export const RegularInvestmentCalculationIntentSchema = withDateOrderValidation(
     timingMode: z.enum(['general', 'exact']).optional(),
   }),
 ).superRefine((value, ctx) => {
+  validateEffectiveHorizon(value, ctx, 600);
   validatePathLengths(value, value.investmentHorizonMonths / 12, ctx);
   if (value.allocationTargets) {
     const total = value.allocationTargets.reduce((sum, target) => sum + target.percent, 0);
@@ -267,6 +273,7 @@ const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(
     reinvest: z.boolean().optional(),
   }),
 ).superRefine((value, ctx) => {
+  validateEffectiveHorizon(value, ctx, 360);
   const start = new Date(value.purchaseDate).getTime();
   const end = new Date(value.withdrawalDate).getTime();
   validatePathLengths(
@@ -296,6 +303,7 @@ const ComparisonSharedConfigSchema = withDateOrderValidation(
     couponDisposition: z.enum(['reinvest', 'cash']).optional(),
   }),
 ).superRefine((value, ctx) => {
+  validateEffectiveHorizon(value, ctx, 360);
   let horizonYears: number;
   if (value.investmentHorizonMonths) {
     horizonYears = value.investmentHorizonMonths / 12;
@@ -307,23 +315,86 @@ const ComparisonSharedConfigSchema = withDateOrderValidation(
   validatePathLengths(value, horizonYears, ctx);
 });
 
-const ComparisonScenarioOverrideSchema = z.object({
+const ComparisonScenarioOverrideSchema = z.strictObject({
   bondType: z.nativeEnum(BondType),
-  rollover: z.boolean().optional(),
-  isRebought: z.boolean().optional(),
+  selectedSeriesId: z.string().uuid().nullable().optional(),
+  rollover: z.literal(false).optional(),
+  isRebought: z.literal(false).optional(),
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
+  strategyPolicy: z
+    .enum(['hold_to_maturity', 'reinvest_until_horizon', 'cash_after_maturity'])
+    .optional(),
+  couponDisposition: z.enum(['reinvest', 'cash']).optional(),
   purchaseDate: DateStringSchema.optional(),
   withdrawalDate: DateStringSchema.optional(),
   timingMode: z.enum(['general', 'exact']).optional(),
   investmentHorizonMonths: horizonMonths(360).optional(),
 });
 
-const IndependentBondComparisonPayloadSchema = z.object({
-  mode: z.literal('independent'),
-  sharedConfig: ComparisonSharedConfigSchema,
-  scenarioA: ComparisonScenarioOverrideSchema,
-  scenarioB: ComparisonScenarioOverrideSchema,
-});
+const IndependentBondComparisonPayloadSchema = z
+  .object({
+    mode: z.literal('independent'),
+    sharedConfig: ComparisonSharedConfigSchema,
+    scenarioA: ComparisonScenarioOverrideSchema,
+    scenarioB: ComparisonScenarioOverrideSchema,
+  })
+  .superRefine((value, ctx) => {
+    for (const key of ['scenarioA', 'scenarioB'] as const) {
+      const scenario = value[key];
+      if (
+        scenario.investmentHorizonMonths === undefined &&
+        (scenario.withdrawalDate !== undefined || scenario.timingMode !== undefined)
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key],
+          message: 'An override withdrawal date or timing mode requires its own horizon',
+        });
+      }
+      if (scenario.investmentHorizonMonths !== undefined && scenario.timingMode === 'exact') {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key, 'timingMode'],
+          message: 'Override horizons use general timing',
+        });
+      }
+      const purchaseDate = scenario.purchaseDate ?? value.sharedConfig.purchaseDate;
+      const horizon =
+        scenario.investmentHorizonMonths ?? value.sharedConfig.investmentHorizonMonths;
+      const timingMode = scenario.timingMode ?? value.sharedConfig.timingMode ?? 'general';
+      const withdrawalDate =
+        scenario.withdrawalDate ??
+        (timingMode === 'general' && horizon
+          ? format(addMonths(parseISO(purchaseDate), horizon), 'yyyy-MM-dd')
+          : value.sharedConfig.withdrawalDate);
+      if (parseISO(withdrawalDate).getTime() < parseISO(purchaseDate).getTime()) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key, 'withdrawalDate'],
+          message: 'withdrawalDate must be on or after purchaseDate',
+        });
+      }
+      if (parseISO(withdrawalDate).getTime() > addMonths(parseISO(purchaseDate), 360).getTime()) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key, 'withdrawalDate'],
+          message: 'Effective calculation horizon must not exceed 360 months',
+        });
+      }
+      if (
+        scenario.investmentHorizonMonths !== undefined &&
+        scenario.withdrawalDate !== undefined &&
+        scenario.withdrawalDate !==
+          format(addMonths(parseISO(purchaseDate), scenario.investmentHorizonMonths), 'yyyy-MM-dd')
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [key, 'withdrawalDate'],
+          message: 'Override withdrawal date must match its horizon',
+        });
+      }
+    }
+  });
 
 export const BondComparisonScenarioPayloadSchema = z.union([
   NormalizedBondComparisonPayloadSchema,
@@ -341,7 +412,7 @@ export const RetirementPlannerPayloadSchema = z.object({
   expectedInflation: percent('expectedInflation', -20, 100),
   expectedNbpRate: percent('expectedNbpRate', -10, 100).optional(),
   bondType: z.nativeEnum(BondType),
-  taxStrategy: z.nativeEnum(TaxStrategy).optional(),
+  taxStrategy: z.nativeEnum(TaxStrategy),
   horizonYears: finiteNumber('horizonYears').int().min(1).max(50),
   projectionStartDate: DateStringSchema.optional(),
 });
@@ -357,9 +428,46 @@ export const BondOptimizerPayloadSchema = z
     taxStrategy: z.nativeEnum(TaxStrategy).optional(),
     includeFamilyBonds: z.boolean().optional(),
   })
-  .refine((value) => Boolean(value.withdrawalDate || value.investmentHorizonMonths), {
-    message: 'Either withdrawalDate or investmentHorizonMonths is required',
-    path: ['withdrawalDate'],
+  .superRefine((value, ctx) => {
+    if (!value.withdrawalDate && !value.investmentHorizonMonths) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['withdrawalDate'],
+        message: 'Either withdrawalDate or investmentHorizonMonths is required',
+      });
+    }
+    if (value.withdrawalDate) {
+      if (parseISO(value.withdrawalDate).getTime() < parseISO(value.purchaseDate).getTime()) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['withdrawalDate'],
+          message: 'withdrawalDate must be on or after purchaseDate',
+        });
+      }
+      if (
+        parseISO(value.withdrawalDate).getTime() >
+        addMonths(parseISO(value.purchaseDate), 360).getTime()
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['withdrawalDate'],
+          message: 'Effective calculation horizon must not exceed 360 months',
+        });
+      }
+      if (
+        value.investmentHorizonMonths !== undefined &&
+        Math.max(
+          1,
+          differenceInCalendarMonths(parseISO(value.withdrawalDate), parseISO(value.purchaseDate)),
+        ) !== value.investmentHorizonMonths
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['investmentHorizonMonths'],
+          message: 'investmentHorizonMonths must match the supplied calendar-date range',
+        });
+      }
+    }
   });
 
 export const PortfolioSimulationPayloadSchema = z
@@ -383,6 +491,7 @@ export const PortfolioSimulationPayloadSchema = z
     withdrawalDate: DateStringSchema,
   })
   .superRefine((value, ctx) => {
+    let estimatedLotMonths = 0;
     for (const [index, investment] of value.investments.entries()) {
       if (new Date(value.withdrawalDate).getTime() < new Date(investment.purchaseDate).getTime()) {
         ctx.addIssue({
@@ -391,6 +500,30 @@ export const PortfolioSimulationPayloadSchema = z
           message: 'investment purchaseDate must be on or before withdrawalDate',
         });
       }
+      if (
+        parseISO(value.withdrawalDate).getTime() >
+        addMonths(parseISO(investment.purchaseDate), 360).getTime()
+      ) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['investments', index, 'purchaseDate'],
+          message: 'Portfolio lot horizon must not exceed 360 months',
+        });
+      }
+      estimatedLotMonths += Math.max(
+        1,
+        differenceInCalendarMonths(
+          parseISO(value.withdrawalDate),
+          parseISO(investment.purchaseDate),
+        ) + 1,
+      );
+    }
+    if (estimatedLotMonths > 12_000) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['investments'],
+        message: 'Portfolio workload exceeds the 12,000 lot-month budget',
+      });
     }
   });
 
