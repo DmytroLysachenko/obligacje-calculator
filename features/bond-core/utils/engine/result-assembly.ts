@@ -68,6 +68,7 @@ interface FinalSingleBondResultParams {
   cycleMaturityDate: Date;
   totalHorizonYears: number;
   calculationNotes?: string[];
+  noteDiagnostics?: CalculationResult['noteDiagnostics'];
   dataQualityFlags?: string[];
 }
 
@@ -81,6 +82,7 @@ export function createFinalSingleBondResult({
   cycleMaturityDate,
   totalHorizonYears,
   calculationNotes = [],
+  noteDiagnostics = [],
   dataQualityFlags = [],
 }: FinalSingleBondResultParams): CalculationResult {
   const lastPoint = timeline[timeline.length - 1];
@@ -113,6 +115,7 @@ export function createFinalSingleBondResult({
     nominalAnnualizedReturn,
     realAnnualizedReturn,
     calculationNotes,
+    noteDiagnostics,
     dataQualityFlags,
   };
 }

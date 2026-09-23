@@ -5,6 +5,7 @@ import { MODEL_VERSION } from '../model-version';
 import { BondInputs, BondType } from '../types';
 import {
   CalculationDataFreshness,
+  CalculationDiagnostic,
   CalculationEnvelope,
   HistoricalAverages,
   ScenarioKind,
@@ -144,6 +145,7 @@ export abstract class BaseHandler {
     assumptions: string[],
     dataFreshness: CalculationDataFreshness,
     historicalAverages?: HistoricalAverages,
+    diagnostics?: CalculationDiagnostic[],
   ): Promise<CalculationEnvelope<T>> {
     const resultAsRecord = result as Record<string, unknown>;
     const averages = historicalAverages || (await this.data.getHistoricalAverages());
@@ -161,6 +163,7 @@ export abstract class BaseHandler {
       dataFreshness,
       calculationVersion: MODEL_VERSION,
       historicalAverages: averages,
+      ...(diagnostics ? { diagnostics } : {}),
     };
   }
 }

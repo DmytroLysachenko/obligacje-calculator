@@ -109,7 +109,70 @@ export interface CalculationEnvelope<T> {
   dataQualityFlags: string[];
   dataFreshness: CalculationDataFreshness;
   calculationVersion: string;
+  taxRulesRevision?: string;
+  offerTerms?: {
+    source: 'series' | 'definition' | 'unresolved';
+    seriesCode?: string;
+    termsRevision?: string;
+    termsSourceUrl?: string;
+    termsAreVerified: boolean;
+  };
+  diagnostics?: CalculationDiagnostic[];
   historicalAverages?: HistoricalAverages;
+}
+
+export const CALCULATION_DIAGNOSTIC_CODES = [
+  'expected_inflation',
+  'expected_nbp_rate',
+  'custom_inflation',
+  'custom_nbp',
+  'missing_inflation_history',
+  'missing_nbp_history',
+  'missing_history',
+  'issued_series_resolved',
+  'issued_series_unverified',
+  'issued_series_unresolved',
+  'generic_offer_definition',
+  'auto_rollover',
+  'single_cycle',
+  'rollover_disabled',
+  'rollover_cycles',
+  'early_redemption_applied',
+  'ikze_tax_relief',
+  'wrapper_limit_unavailable',
+  'wrapper_limit_split',
+  'comparison_normalized',
+  'comparison_independent',
+  'comparison_nearest_issue',
+  'comparison_rollover_inferred',
+  'maturity_cash_after_maturity',
+  'maturity_hold_to_maturity',
+  'maturity_reinvest_until_horizon',
+  'maturity_auto',
+  'coupon_cash',
+  'coupon_reinvest',
+  'comparison_side_maturity_cash_after_maturity',
+  'comparison_side_maturity_hold_to_maturity',
+  'comparison_side_maturity_reinvest_until_horizon',
+  'comparison_side_maturity_auto',
+  'comparison_side_coupon_cash',
+  'comparison_side_coupon_reinvest',
+  'ranking_net_payout',
+  'retirement_horizon',
+  'retirement_withdrawal',
+  'retirement_steady_rate',
+  'retirement_rate',
+  'retirement_approximation',
+  'portfolio_sparse_checkpoints',
+  'portfolio_fee_semantics',
+  'portfolio_unresolved_issue',
+] as const;
+
+export interface CalculationDiagnostic {
+  code: (typeof CALCULATION_DIAGNOSTIC_CODES)[number];
+  severity: 'assumption' | 'warning';
+  params?: Record<string, string | number>;
+  sourceRef?: string;
 }
 
 interface SingleBondScenarioRequest {
@@ -128,7 +191,7 @@ export interface RetirementPlannerPayload {
   expectedInflation: number;
   expectedNbpRate?: number;
   bondType: BondType;
-  taxStrategy?: TaxStrategy;
+  taxStrategy: TaxStrategy;
   horizonYears: number;
   /**
    * Declared projection origin. Legacy callers may omit it; the application
@@ -170,6 +233,7 @@ export interface BondComparisonScenarioItem {
   scenarioKey?: 'scenarioA' | 'scenarioB';
   type: BondType;
   name: string;
+  offerTerms?: CalculationEnvelope<unknown>['offerTerms'];
   /** Declared post-maturity treatment used for this calculation. */
   strategyPolicy?: 'hold_to_maturity' | 'reinvest_until_horizon' | 'cash_after_maturity';
   result: CalculationResult;
@@ -217,11 +281,14 @@ export interface IndependentBondComparisonPayload {
   };
   scenarioA: {
     bondType: BondType;
-    firstYearRate?: number;
-    margin?: number;
-    rollover?: boolean;
-    isRebought?: boolean;
+    selectedSeriesId?: string | null;
+    /** Legacy false-only marker; strategyPolicy owns maturity behavior. */
+    rollover?: false;
+    /** Legacy false-only marker; rebuy discount is not a comparison policy. */
+    isRebought?: false;
     taxStrategy?: TaxStrategy;
+    strategyPolicy?: 'hold_to_maturity' | 'reinvest_until_horizon' | 'cash_after_maturity';
+    couponDisposition?: 'reinvest' | 'cash';
     purchaseDate?: string;
     withdrawalDate?: string;
     timingMode?: TimingMode;
@@ -229,11 +296,12 @@ export interface IndependentBondComparisonPayload {
   };
   scenarioB: {
     bondType: BondType;
-    firstYearRate?: number;
-    margin?: number;
-    rollover?: boolean;
-    isRebought?: boolean;
+    selectedSeriesId?: string | null;
+    rollover?: false;
+    isRebought?: false;
     taxStrategy?: TaxStrategy;
+    strategyPolicy?: 'hold_to_maturity' | 'reinvest_until_horizon' | 'cash_after_maturity';
+    couponDisposition?: 'reinvest' | 'cash';
     purchaseDate?: string;
     withdrawalDate?: string;
     timingMode?: TimingMode;

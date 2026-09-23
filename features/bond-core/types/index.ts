@@ -1,3 +1,5 @@
+import type { CalculationDiagnostic } from './scenarios';
+
 export enum BondType {
   OTS = 'OTS', // 3-month fixed
   ROR = 'ROR', // 1-year variable
@@ -30,7 +32,8 @@ export type RateSource =
   | 'historical_cpi_lag'
   | 'projected_cpi'
   | 'historical_nbp'
-  | 'projected_nbp';
+  | 'projected_nbp'
+  | 'cash_after_maturity';
 
 export type ChartStep = 'daily' | 'monthly' | 'quarterly' | 'yearly';
 
@@ -46,7 +49,7 @@ export interface BondInputs {
   isInflationIndexed?: boolean; // Added to decouple from hardcoded constants
   earlyWithdrawalFee: number; // per bond (100 PLN)
   /** Issued-series redemption rule; absent means the issue terms are unresolved. */
-  redemptionFeeCap?: 'interest' | 'principal';
+  redemptionFeeCap?: 'interest' | 'principal' | 'first-interest-then-principal';
   taxRate: number;
   isCapitalized: boolean;
   payoutFrequency: InterestPayout;
@@ -119,6 +122,8 @@ export interface CalculationResult {
   nominalAnnualizedReturn: number;
   realAnnualizedReturn: number;
   calculationNotes?: string[];
+  /** Structured engine notes for localized new-result presentation. */
+  noteDiagnostics?: CalculationDiagnostic[];
   dataQualityFlags?: string[];
   taxSavings?: number;
   overflowInfo?: {
