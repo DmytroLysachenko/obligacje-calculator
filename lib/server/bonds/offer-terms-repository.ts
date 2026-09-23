@@ -53,7 +53,7 @@ export async function updatePolishBondOfferTerms(
     .where(eq(polishBonds.symbol, bondType));
 }
 
-export async function upsertBondSeriesOffer(offer: {
+export interface BondSeriesOfferUpsert {
   bondTypeId: string;
   seriesCode: string;
   emissionMonth: string;
@@ -66,7 +66,26 @@ export async function upsertBondSeriesOffer(offer: {
   redemptionFeeCap?: string;
   termsSourceUrl?: string;
   termsRevision?: string;
-}) {
+}
+
+/** A rate-only sync must not clear reviewed historical fee or source evidence. */
+export function bondSeriesOfferConflictValues(offer: BondSeriesOfferUpsert) {
+  return {
+    firstYearRate: offer.firstYearRate,
+    baseMargin: offer.margin,
+    sellStartDate: offer.sellStartDate,
+    sellEndDate: offer.sellEndDate,
+    maturityDate: offer.maturityDate,
+    ...(offer.earlyWithdrawalFee !== undefined
+      ? { earlyWithdrawalFee: offer.earlyWithdrawalFee }
+      : {}),
+    ...(offer.redemptionFeeCap !== undefined ? { redemptionFeeCap: offer.redemptionFeeCap } : {}),
+    ...(offer.termsSourceUrl !== undefined ? { termsSourceUrl: offer.termsSourceUrl } : {}),
+    ...(offer.termsRevision !== undefined ? { termsRevision: offer.termsRevision } : {}),
+  };
+}
+
+export async function upsertBondSeriesOffer(offer: BondSeriesOfferUpsert) {
   await db
     .insert(bondSeries)
     .values({
@@ -85,16 +104,6 @@ export async function upsertBondSeriesOffer(offer: {
     })
     .onConflictDoUpdate({
       target: bondSeries.seriesCode,
-      set: {
-        firstYearRate: offer.firstYearRate,
-        baseMargin: offer.margin,
-        sellStartDate: offer.sellStartDate,
-        sellEndDate: offer.sellEndDate,
-        maturityDate: offer.maturityDate,
-        earlyWithdrawalFee: offer.earlyWithdrawalFee,
-        redemptionFeeCap: offer.redemptionFeeCap,
-        termsSourceUrl: offer.termsSourceUrl,
-        termsRevision: offer.termsRevision,
-      },
+      set: bondSeriesOfferConflictValues(offer),
     });
 }
