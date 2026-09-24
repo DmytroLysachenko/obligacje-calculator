@@ -50,6 +50,7 @@ export const ComparisonContainer: React.FC = () => {
     inputsB,
     committedInputsA,
     committedInputsB,
+    committedComparisonDraft,
     resultsA,
     resultsB,
     envelopeA,
@@ -164,27 +165,108 @@ export const ComparisonContainer: React.FC = () => {
     ],
   );
   const durationMismatchText = durationMismatch ? t('comparison.auto_rollover_notice') : null;
+  const receiptSharedConfig = committedComparisonDraft?.sharedConfig ?? sharedConfig;
+  const receiptScenarioA = committedComparisonDraft?.scenarioA ?? scenarioA;
+  const receiptScenarioB = committedComparisonDraft?.scenarioB ?? scenarioB;
 
   const planSummary = [
     {
       label: t('bonds.bond_quantity'),
-      value: `${bondQuantityFromInvestment(sharedConfig.initialInvestment)} ${t('bonds.units')}`,
+      value: `${bondQuantityFromInvestment(receiptSharedConfig.initialInvestment)} ${t('bonds.units')}`,
     },
     {
       label: t('bonds.investment_horizon'),
-      value: formatHorizonMonths(sharedConfig.investmentHorizonMonths ?? 120, language),
+      value: formatHorizonMonths(receiptSharedConfig.investmentHorizonMonths ?? 120, language),
     },
-    { label: t('comparison.scenario_a'), value: scenarioA.bondType },
-    { label: t('comparison.scenario_b'), value: scenarioB.bondType },
+    { label: t('bonds.purchase_date'), value: receiptSharedConfig.purchaseDate },
+    { label: t('bonds.withdrawal_date'), value: receiptSharedConfig.withdrawalDate },
+    {
+      label: t('bonds.tax_strategy'),
+      value: t(
+        receiptSharedConfig.taxStrategy === 'IKE'
+          ? 'bonds.tax_ike'
+          : receiptSharedConfig.taxStrategy === 'IKZE'
+            ? 'bonds.tax_ikze'
+            : 'bonds.tax_standard',
+      ),
+    },
+    { label: t('comparison.scenario_a'), value: receiptScenarioA.bondType },
+    { label: t('comparison.scenario_b'), value: receiptScenarioB.bondType },
     {
       label: t('comparison.maturity_policy'),
       value:
-        sharedConfig.strategyPolicy === 'cash_after_maturity'
+        receiptSharedConfig.strategyPolicy === 'cash_after_maturity'
           ? t('comparison.maturity_cash')
-          : sharedConfig.strategyPolicy === 'hold_to_maturity'
+          : receiptSharedConfig.strategyPolicy === 'hold_to_maturity'
             ? t('comparison.maturity_hold')
             : t('comparison.maturity_reinvest'),
     },
+    {
+      label: t('comparison.coupon_policy'),
+      value:
+        receiptSharedConfig.couponDisposition === 'cash'
+          ? t('comparison.coupon_cash')
+          : t('comparison.coupon_reinvest'),
+    },
+    ...(
+      [
+        ['A', receiptScenarioA],
+        ['B', receiptScenarioB],
+      ] as const
+    ).flatMap(([label, scenario]) => [
+      ...(scenario.purchaseDate
+        ? [{ label: `${label} · ${t('bonds.purchase_date')}`, value: scenario.purchaseDate }]
+        : []),
+      ...(scenario.withdrawalDate
+        ? [{ label: `${label} · ${t('bonds.withdrawal_date')}`, value: scenario.withdrawalDate }]
+        : []),
+      ...(scenario.investmentHorizonMonths
+        ? [
+            {
+              label: `${label} · ${t('bonds.investment_horizon')}`,
+              value: formatHorizonMonths(scenario.investmentHorizonMonths, language),
+            },
+          ]
+        : []),
+      ...(scenario.strategyPolicy
+        ? [
+            {
+              label: `${label} · ${t('comparison.maturity_policy')}`,
+              value:
+                scenario.strategyPolicy === 'cash_after_maturity'
+                  ? t('comparison.maturity_cash')
+                  : scenario.strategyPolicy === 'hold_to_maturity'
+                    ? t('comparison.maturity_hold')
+                    : t('comparison.maturity_reinvest'),
+            },
+          ]
+        : []),
+      ...(scenario.couponDisposition
+        ? [
+            {
+              label: `${label} · ${t('comparison.coupon_policy')}`,
+              value:
+                scenario.couponDisposition === 'cash'
+                  ? t('comparison.coupon_cash')
+                  : t('comparison.coupon_reinvest'),
+            },
+          ]
+        : []),
+      ...(scenario.taxStrategy
+        ? [
+            {
+              label: `${label} · ${t('bonds.tax_strategy')}`,
+              value: t(
+                scenario.taxStrategy === 'IKE'
+                  ? 'bonds.tax_ike'
+                  : scenario.taxStrategy === 'IKZE'
+                    ? 'bonds.tax_ikze'
+                    : 'bonds.tax_standard',
+              ),
+            },
+          ]
+        : []),
+    ]),
   ];
   const showPlanReceipt = hasComparisonResults && !isPlanOpen;
 
@@ -311,6 +393,9 @@ export const ComparisonContainer: React.FC = () => {
                   onBondTypeChange('A', bondType);
                 },
                 onTaxStrategyChange: (value) => onScenarioChange('A', 'taxStrategy', value),
+                onStrategyPolicyChange: (value) => onScenarioChange('A', 'strategyPolicy', value),
+                onCouponDispositionChange: (value) =>
+                  onScenarioChange('A', 'couponDisposition', value),
                 onCustomHorizonEnabledChange: (enabled) =>
                   onCustomHorizonChange('A', undefined, enabled),
                 onCustomHorizonMonthsChange: (value) => onCustomHorizonChange('A', value),
@@ -323,6 +408,9 @@ export const ComparisonContainer: React.FC = () => {
                   onBondTypeChange('B', bondType);
                 },
                 onTaxStrategyChange: (value) => onScenarioChange('B', 'taxStrategy', value),
+                onStrategyPolicyChange: (value) => onScenarioChange('B', 'strategyPolicy', value),
+                onCouponDispositionChange: (value) =>
+                  onScenarioChange('B', 'couponDisposition', value),
                 onCustomHorizonEnabledChange: (enabled) =>
                   onCustomHorizonChange('B', undefined, enabled),
                 onCustomHorizonMonthsChange: (value) => onCustomHorizonChange('B', value),

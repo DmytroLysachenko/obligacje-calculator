@@ -52,14 +52,14 @@ export function ComparisonPlanReceipt({
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0 space-y-3">
             <p className="ui-kicker">{planLabel}</p>
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:flex sm:flex-wrap sm:items-start">
+            <dl className="grid grid-cols-1 gap-x-6 gap-y-3 min-[400px]:grid-cols-2 sm:flex sm:flex-wrap sm:items-start">
               {summary.map((item) => (
                 <div
                   key={item.label}
                   className="min-w-0 border-l border-border pl-3 first:border-l-0 first:pl-0"
                 >
                   <dt className="ui-kicker">{item.label}</dt>
-                  <dd className="mt-1 truncate text-sm font-semibold text-foreground">
+                  <dd className="mt-1 break-words text-sm font-semibold text-foreground">
                     {item.value}
                   </dd>
                 </div>

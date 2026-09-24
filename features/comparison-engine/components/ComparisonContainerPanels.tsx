@@ -184,6 +184,10 @@ export function ComparisonAssumptionsMetaPanel({
               calculationNotes={entry.envelope?.calculationNotes}
               dataQualityFlags={entry.envelope?.dataQualityFlags}
               dataFreshness={entry.envelope?.dataFreshness}
+              calculationVersion={entry.envelope?.calculationVersion}
+              taxRulesRevision={entry.envelope?.taxRulesRevision}
+              diagnostics={entry.envelope?.diagnostics}
+              offerTerms={entry.envelope?.offerTerms}
               compact
             />
           </section>

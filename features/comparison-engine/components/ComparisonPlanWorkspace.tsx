@@ -23,6 +23,8 @@ interface ComparisonScenarioControls {
   onCustomHorizonEnabledChange: (enabled: boolean) => void;
   onCustomHorizonMonthsChange: (value: number | undefined) => void;
   onTaxStrategyChange: (value: ScenarioOverride['taxStrategy']) => void;
+  onStrategyPolicyChange: (value: ScenarioOverride['strategyPolicy']) => void;
+  onCouponDispositionChange: (value: ScenarioOverride['couponDisposition']) => void;
 }
 
 interface ComparisonPlanWorkspaceProps {
@@ -74,6 +76,10 @@ export function ComparisonPlanWorkspace({
                 onBondTypeChange={scenario.onBondTypeChange}
                 taxStrategy={scenario.scenario.taxStrategy}
                 onTaxStrategyChange={scenario.onTaxStrategyChange}
+                strategyPolicy={scenario.scenario.strategyPolicy}
+                onStrategyPolicyChange={scenario.onStrategyPolicyChange}
+                couponDisposition={scenario.scenario.couponDisposition}
+                onCouponDispositionChange={scenario.onCouponDispositionChange}
                 customHorizonEnabled={scenario.scenario.investmentHorizonMonths !== undefined}
                 onCustomHorizonEnabledChange={scenario.onCustomHorizonEnabledChange}
                 customHorizonMonths={scenario.scenario.investmentHorizonMonths}
