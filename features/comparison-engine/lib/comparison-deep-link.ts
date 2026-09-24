@@ -1,10 +1,11 @@
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { isIsoCalendarDate } from '@/features/bond-core/types/iso-calendar-date';
+import { BondComparisonScenarioPayloadSchema } from '@/features/bond-core/types/schemas';
 import type {
   ScenarioOverride,
   SharedComparisonConfig,
 } from '@/features/comparison-engine/lib/comparison-calculator-state';
-import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import {
   createComparisonScenarioPackage,
   decodeScenarioFromUrl,
@@ -52,7 +53,8 @@ export function parseComparisonUrlState(
   searchParams: SearchParams,
   defaults: SharedComparisonConfig,
 ): ComparisonUrlState | null {
-  const portable = decodeScenarioFromUrl(searchParams.get('scenario'));
+  const encodedScenario = searchParams.get('scenario');
+  const portable = decodeScenarioFromUrl(encodedScenario);
   if (portable.ok && portable.scenario.kind === 'bond-comparison') {
     const intent = portable.scenario.intent;
     return {
@@ -61,38 +63,72 @@ export function parseComparisonUrlState(
       scenarioB: intent.scenarioB,
     };
   }
+  if (encodedScenario !== null) return null;
   const pair = parseComparisonBondPair(searchParams);
   if (!pair) return null;
 
+  const legacyFields = [
+    ['purchase', parseDate],
+    ['withdrawal', parseDate],
+    ['horizon', (value: string | null) => parseInteger(value, 1, 360)],
+    ['horizonA', (value: string | null) => parseInteger(value, 1, 360)],
+    ['horizonB', (value: string | null) => parseInteger(value, 1, 360)],
+    ['amount', (value: string | null) => parseNumber(value, 100, 100_000_000_000)],
+    ['inflation', (value: string | null) => parseNumber(value, -20, 100)],
+    ['nbp', (value: string | null) => parseNumber(value, -10, 100)],
+    ['tax', parseTaxStrategy],
+    ['taxA', parseTaxStrategy],
+    ['taxB', parseTaxStrategy],
+  ] as const;
+  if (
+    legacyFields.some(
+      ([key, parse]) => searchParams.get(key) !== null && parse(searchParams.get(key)) === null,
+    )
+  )
+    return null;
+  const timing = searchParams.get('timing');
+  if (timing !== null && timing !== 'exact' && timing !== 'general') return null;
+  if (timing === 'general' && searchParams.get('withdrawal') !== null) return null;
+
   const purchaseDate = parseDate(searchParams.get('purchase')) ?? defaults.purchaseDate;
-  const timingMode = searchParams.get('timing') === 'exact' ? 'exact' : 'general';
+  const timingMode =
+    timing === 'exact' || (timing === null && searchParams.get('withdrawal') !== null)
+      ? 'exact'
+      : 'general';
+  const exactWithdrawal = parseDate(searchParams.get('withdrawal'));
   const horizon =
-    parseNumber(searchParams.get('horizon'), 1, 600) ?? defaults.investmentHorizonMonths ?? 120;
+    parseInteger(searchParams.get('horizon'), 1, 360) ??
+    (exactWithdrawal ? getHorizonMonths(purchaseDate, exactWithdrawal) : undefined) ??
+    defaults.investmentHorizonMonths ??
+    120;
   const withdrawalDate =
     timingMode === 'exact'
-      ? (parseDate(searchParams.get('withdrawal')) ?? defaults.withdrawalDate)
+      ? (exactWithdrawal ?? getWithdrawalDateFromMonths(purchaseDate, horizon))
       : getWithdrawalDateFromMonths(purchaseDate, horizon);
   const taxStrategy =
     parseTaxStrategy(searchParams.get('tax')) ?? defaults.taxStrategy ?? TaxStrategy.STANDARD;
   const sharedConfig: SharedComparisonConfig = {
     ...defaults,
     initialInvestment:
-      parseNumber(searchParams.get('amount'), 100, 10_000_000) ?? defaults.initialInvestment,
+      parseNumber(searchParams.get('amount'), 100, 100_000_000_000) ?? defaults.initialInvestment,
     purchaseDate,
     withdrawalDate,
     investmentHorizonMonths: horizon,
     timingMode,
     taxStrategy,
     expectedInflation:
-      parseNumber(searchParams.get('inflation'), -20, 50) ?? defaults.expectedInflation,
-    expectedNbpRate: parseNumber(searchParams.get('nbp'), -5, 50) ?? defaults.expectedNbpRate,
+      parseNumber(searchParams.get('inflation'), -20, 100) ?? defaults.expectedInflation,
+    expectedNbpRate: parseNumber(searchParams.get('nbp'), -10, 100) ?? defaults.expectedNbpRate,
   };
 
-  return {
+  const state = {
     sharedConfig,
     scenarioA: buildScenario(pair[0], searchParams.get('taxA'), searchParams.get('horizonA')),
     scenarioB: buildScenario(pair[1], searchParams.get('taxB'), searchParams.get('horizonB')),
   };
+  return BondComparisonScenarioPayloadSchema.safeParse({ mode: 'independent', ...state }).success
+    ? state
+    : null;
 }
 
 export function withComparisonUrlState(
@@ -129,7 +165,7 @@ export function withComparisonBondPair(
 
 function buildScenario(bondType: BondType, taxValue: string | null, horizonValue: string | null) {
   const taxStrategy = parseTaxStrategy(taxValue);
-  const investmentHorizonMonths = parseNumber(horizonValue, 1, 600);
+  const investmentHorizonMonths = parseInteger(horizonValue, 1, 360);
   return {
     bondType,
     isRebought: false,
@@ -152,6 +188,11 @@ function parseNumber(value: string | null, min: number, max: number) {
   if (!value || !/^-?\d+(?:\.\d+)?$/.test(value)) return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= min && parsed <= max ? parsed : null;
+}
+
+function parseInteger(value: string | null, min: number, max: number) {
+  const parsed = parseNumber(value, min, max);
+  return parsed !== null && Number.isInteger(parsed) ? parsed : null;
 }
 
 function parseDate(value: string | null) {

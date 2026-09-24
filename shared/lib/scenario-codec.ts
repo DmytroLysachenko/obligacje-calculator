@@ -61,11 +61,12 @@ export function isComparisonPortableScenario(
  * owner identity, historical observations and issuer data are never portable.
  */
 export function createSingleScenarioPackage(inputs: BondInputs): PortableScenario {
-  const { historicalData: _historicalData, ...intent } = inputs;
+  const intent = { ...inputs };
+  delete intent.historicalData;
   return {
     version: SCENARIO_CODEC_VERSION,
     kind: 'single-bond',
-    intent: { ...intent, historicalData: undefined },
+    intent,
   };
 }
 

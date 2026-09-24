@@ -251,6 +251,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     inputsB,
     committedInputsA,
     committedInputsB,
+    committedComparisonDraft: session.committedInputs,
     resultsA,
     resultsB,
     envelopeA,
