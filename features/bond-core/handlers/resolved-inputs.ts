@@ -39,7 +39,8 @@ export async function resolveScenarioInputs({
       earlyWithdrawalFee: resolvedOffer.earlyWithdrawalFee ?? definition.earlyWithdrawalFee,
       redemptionFeeCap:
         resolvedOffer.redemptionFeeCap === 'interest' ||
-        resolvedOffer.redemptionFeeCap === 'principal'
+        resolvedOffer.redemptionFeeCap === 'principal' ||
+        resolvedOffer.redemptionFeeCap === 'first-interest-then-principal'
           ? resolvedOffer.redemptionFeeCap
           : undefined,
       isCapitalized: definition.isCapitalized,

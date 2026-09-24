@@ -15,6 +15,7 @@ const RATE_SOURCE_KEYS: Record<RateSource, string> = {
   projected_cpi: 'bonds.timeline_display.rate_source.projected_cpi',
   historical_nbp: 'bonds.timeline_display.rate_source.historical_nbp',
   projected_nbp: 'bonds.timeline_display.rate_source.projected_nbp',
+  cash_after_maturity: 'bonds.timeline_display.rate_source.cash_after_maturity',
 };
 
 const EVENT_LABEL_KEYS: Record<SimulationEventType, string> = {
