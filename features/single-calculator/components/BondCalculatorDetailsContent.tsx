@@ -104,6 +104,10 @@ export function BondCalculatorDetailsContent({
           calculationNotes={envelope?.calculationNotes}
           dataQualityFlags={envelope?.dataQualityFlags}
           dataFreshness={envelope?.dataFreshness}
+          calculationVersion={envelope?.calculationVersion}
+          taxRulesRevision={envelope?.taxRulesRevision}
+          offerTerms={envelope?.offerTerms}
+          diagnostics={envelope?.diagnostics}
         />
       </SecondaryInsightAccordion>
     </div>

@@ -10,6 +10,7 @@ import {
   BondOptimizerResultItem,
   ScenarioKind,
 } from '../types/scenarios';
+import { buildAssumptionDiagnostics } from '../utils/calculation-evidence';
 import { calculateBondInvestment } from '../utils/calculations';
 
 import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
@@ -117,6 +118,15 @@ export class OptimizerHandler
       [],
       assumptions,
       context.dataFreshness,
+      undefined,
+      [
+        ...buildAssumptionDiagnostics(payload),
+        {
+          code: 'ranking_net_payout',
+          severity: 'assumption',
+          params: { years: horizonYears.toFixed(1) },
+        },
+      ],
     );
   }
 }

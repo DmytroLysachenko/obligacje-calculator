@@ -5,6 +5,11 @@ import {
   ScenarioKind,
 } from '../types/scenarios';
 import { RegularInvestmentCalculationIntentSchema } from '../types/schemas';
+import {
+  buildAssumptionDiagnostics,
+  buildHistoricalDiagnostics,
+  buildOfferDiagnostics,
+} from '../utils/calculation-evidence';
 import { calculateRegularInvestment } from '../utils/calculations';
 import { buildContributionSchedule } from '../utils/engine/contribution-schedule';
 
@@ -77,7 +82,11 @@ export class RegularInvestmentHandler
       result.mixedAllocation = await this.calculateMixedAllocation(inputsToCalculate, context);
     }
 
-    return this.createEnvelope(result, warnings, assumptions, context.dataFreshness);
+    return this.createEnvelope(result, warnings, assumptions, context.dataFreshness, undefined, [
+      ...buildAssumptionDiagnostics(inputsToCalculate),
+      ...buildHistoricalDiagnostics(inputsToCalculate.historicalData),
+      ...buildOfferDiagnostics(resolvedOffer),
+    ]);
   }
 
   private async calculateMixedAllocation(

@@ -8,6 +8,7 @@ import {
   SingleBondCalculationIntent,
 } from '../types/scenarios';
 import { SingleBondCalculationIntentSchema } from '../types/schemas';
+import { buildSingleBondDiagnostics } from '../utils/calculation-evidence';
 import { calculateBondInvestment } from '../utils/calculations';
 
 import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
@@ -67,7 +68,7 @@ export class SingleBondHandler
           taxStrategy: TaxStrategy.STANDARD,
           rollover: shouldAutoRollover(inputsToCalculate, def.duration),
         } as BondInputs & { rollover: boolean });
-        return this.createEnvelope(
+        const envelope = await this.createEnvelope(
           result,
           [
             'No verified annual wrapper limit is available for this purchase year; standard taxation was used.',
@@ -77,10 +78,44 @@ export class SingleBondHandler
           ],
           context.dataFreshness,
         );
+        return {
+          ...envelope,
+          offerTerms: resolvedOffer,
+          diagnostics: [
+            ...buildSingleBondDiagnostics(
+              inputsToCalculate,
+              resolvedOffer,
+              shouldAutoRollover(inputsToCalculate, def.duration),
+            ),
+            ...(result.noteDiagnostics ?? []),
+            { code: 'wrapper_limit_unavailable' as const, severity: 'warning' as const },
+          ],
+        };
       }
 
       if (limitValue > 0 && inputsToCalculate.initialInvestment > limitValue) {
-        return this.calculateSplitTaxWrapper(inputsToCalculate, limitValue, context.dataFreshness);
+        const envelope = await this.calculateSplitTaxWrapper(
+          inputsToCalculate,
+          limitValue,
+          context.dataFreshness,
+        );
+        return {
+          ...envelope,
+          offerTerms: resolvedOffer,
+          diagnostics: [
+            ...buildSingleBondDiagnostics(
+              inputsToCalculate,
+              resolvedOffer,
+              shouldAutoRollover(inputsToCalculate, def.duration),
+            ),
+            ...(envelope.result.noteDiagnostics ?? []),
+            {
+              code: 'wrapper_limit_split' as const,
+              severity: 'assumption' as const,
+              params: { limit: limitValue },
+            },
+          ],
+        };
       }
     }
 
@@ -142,13 +177,21 @@ export class SingleBondHandler
 
     const historicalAverages = await this.data.getHistoricalAverages();
 
-    return this.createEnvelope(
+    const envelope = await this.createEnvelope(
       result,
       warnings,
       assumptions,
       context.dataFreshness,
       historicalAverages,
     );
+    return {
+      ...envelope,
+      offerTerms: resolvedOffer,
+      diagnostics: [
+        ...buildSingleBondDiagnostics(inputsToCalculate, resolvedOffer, resolvedRollover),
+        ...(result.noteDiagnostics ?? []),
+      ],
+    };
   }
 
   /**
@@ -258,6 +301,7 @@ export class SingleBondHandler
         ...(wrapperPart.calculationNotes || []),
         `Investment split: ${limit} PLN in ${inputs.taxStrategy} wrapper, ${inputs.initialInvestment - limit} PLN in Standard account due to annual limit.`,
       ],
+      noteDiagnostics: wrapperPart.noteDiagnostics,
       overflowInfo: {
         limitApplied: limit,
         amountInWrapper: limit,
