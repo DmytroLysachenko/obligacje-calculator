@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
@@ -7,6 +8,32 @@ import { BondType } from '@/features/bond-core/types';
 import { PortfolioLotsTableSection } from './PortfolioLotsTabSections';
 
 describe('PortfolioLotsTableSection', () => {
+  it('traps focus in the lot editor and restores the add control on Escape', async () => {
+    const user = userEvent.setup();
+    render(
+      <PortfolioLotsTableSection
+        isLoading={false}
+        lots={[]}
+        definitions={BOND_DEFINITIONS}
+        language="en"
+        formatCurrency={(value) => `${value} PLN`}
+        t={(key) => key}
+        onCreateLot={async () => undefined}
+        onUpdateLot={async () => undefined}
+        onDeleteLot={async () => undefined}
+        portfolios={[]}
+      />,
+    );
+    const add = screen.getByRole('button', { name: 'notebook.add_lot' });
+    await user.click(add);
+    const dialog = screen.getByRole('dialog', { name: 'notebook.add_lot' });
+    await user.tab();
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(document.activeElement).toBe(add);
+  });
+
   it('renders each stored holding as a readable mobile card as well as a desktop row', () => {
     render(
       <PortfolioLotsTableSection

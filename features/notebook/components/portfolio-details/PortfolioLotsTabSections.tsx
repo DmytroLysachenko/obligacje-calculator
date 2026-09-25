@@ -1,7 +1,8 @@
 'use client';
 
 import { ExternalLink, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Dialog } from 'radix-ui';
+import { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -353,6 +354,7 @@ function LotEditorDialog({
   const [series, setSeries] = useState<BondSeriesMetadata[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState(lot?.bondSeriesId ?? '');
   const [seriesError, setSeriesError] = useState(false);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -373,126 +375,142 @@ function LotEditorDialog({
   }, [bondType, lot?.bondSeriesId, lot?.bondType]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="lot-editor-title"
+    <Dialog.Root
+      open
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) onCancel();
+      }}
     >
-      <form
-        className="w-full max-w-2xl space-y-4 border border-border bg-background p-5 shadow-lg"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void onSubmit({
-            portfolioId: targetPortfolioId,
-            bondType,
-            purchaseDate,
-            bondQuantity: Number(bondQuantity),
-            selectedSeriesId: selectedSeriesId || null,
-            isRebought: lot?.isRebought ?? false,
-            notes,
-          });
-        }}
-      >
-        <div>
-          <h3 id="lot-editor-title" className="ui-card-title">
-            {lot ? t('notebook.edit_lot') : t('notebook.add_lot')}
-          </h3>
-          <p className="mt-1 text-sm text-muted-foreground">{t('notebook.lot_editor_desc')}</p>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2">
-          <label className="text-sm">
-            {t('notebook.column_type')}
-            <select
-              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
-              value={bondType}
-              onChange={(event) => setBondType(event.target.value as BondType)}
-            >
-              {Object.keys(definitions).map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm">
-            {t('notebook.column_amount')}
-            <input
-              required
-              min="0.01"
-              step="0.01"
-              type="number"
-              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
-              value={bondQuantity}
-              onChange={(event) => setBondQuantity(event.target.value)}
-            />
-          </label>
-          <label className="text-sm">
-            {t('notebook.column_purchase_date')}
-            <input
-              required
-              type="date"
-              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
-              value={purchaseDate}
-              onChange={(event) => setPurchaseDate(event.target.value)}
-            />
-          </label>
-          <label className="text-sm">
-            {t('notebook.series')}
-            <select
-              className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
-              value={selectedSeriesId}
-              onChange={(event) => setSelectedSeriesId(event.target.value)}
-            >
-              <option value="">{t('notebook.current_offer')}</option>
-              {series.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.seriesCode}
-                </option>
-              ))}
-            </select>
-            {seriesError ? (
-              <span className="mt-1 block text-xs text-warning">
-                {t('notebook.series_load_error')}
-              </span>
-            ) : null}
-          </label>
-          {lot ? (
-            <label className="text-sm md:col-span-2">
-              {t('notebook.move_to_portfolio')}
-              <select
-                className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
-                value={targetPortfolioId}
-                onChange={(event) => setTargetPortfolioId(event.target.value)}
-              >
-                {portfolios.map((portfolio) => (
-                  <option key={portfolio.id} value={portfolio.id}>
-                    {portfolio.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          <label className="text-sm md:col-span-2">
-            {t('notebook.notes')}
-            <textarea
-              className="mt-1 min-h-20 w-full rounded border border-input bg-background px-2 py-1"
-              value={notes}
-              onChange={(event) => setNotes(event.target.value)}
-              maxLength={2000}
-            />
-          </label>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit" disabled={isMutating}>
-            {t('common.save')}
-          </Button>
-        </div>
-      </form>
-    </div>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-foreground/30" />
+        <Dialog.Content
+          className="fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-2xl max-h-[calc(100dvh-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto border border-border bg-background p-5 shadow-lg"
+          onOpenAutoFocus={() => {
+            returnFocusRef.current = document.activeElement as HTMLElement;
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            returnFocusRef.current?.focus();
+          }}
+        >
+          <form
+            className="space-y-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void onSubmit({
+                portfolioId: targetPortfolioId,
+                bondType,
+                purchaseDate,
+                bondQuantity: Number(bondQuantity),
+                selectedSeriesId: selectedSeriesId || null,
+                isRebought: lot?.isRebought ?? false,
+                notes,
+              });
+            }}
+          >
+            <div>
+              <Dialog.Title className="ui-card-title">
+                {lot ? t('notebook.edit_lot') : t('notebook.add_lot')}
+              </Dialog.Title>
+              <Dialog.Description className="mt-1 text-sm text-muted-foreground">
+                {t('notebook.lot_editor_desc')}
+              </Dialog.Description>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="text-sm">
+                {t('notebook.column_type')}
+                <select
+                  className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+                  value={bondType}
+                  onChange={(event) => setBondType(event.target.value as BondType)}
+                >
+                  {Object.keys(definitions).map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm">
+                {t('notebook.column_amount')}
+                <input
+                  required
+                  min="0.01"
+                  step="0.01"
+                  type="number"
+                  className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+                  value={bondQuantity}
+                  onChange={(event) => setBondQuantity(event.target.value)}
+                />
+              </label>
+              <label className="text-sm">
+                {t('notebook.column_purchase_date')}
+                <input
+                  required
+                  type="date"
+                  className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+                  value={purchaseDate}
+                  onChange={(event) => setPurchaseDate(event.target.value)}
+                />
+              </label>
+              <label className="text-sm">
+                {t('notebook.series')}
+                <select
+                  className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+                  value={selectedSeriesId}
+                  onChange={(event) => setSelectedSeriesId(event.target.value)}
+                >
+                  <option value="">{t('notebook.current_offer')}</option>
+                  {series.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.seriesCode}
+                    </option>
+                  ))}
+                </select>
+                {seriesError ? (
+                  <span className="mt-1 block text-xs text-warning">
+                    {t('notebook.series_load_error')}
+                  </span>
+                ) : null}
+              </label>
+              {lot ? (
+                <label className="text-sm md:col-span-2">
+                  {t('notebook.move_to_portfolio')}
+                  <select
+                    className="mt-1 h-9 w-full rounded border border-input bg-background px-2"
+                    value={targetPortfolioId}
+                    onChange={(event) => setTargetPortfolioId(event.target.value)}
+                  >
+                    {portfolios.map((portfolio) => (
+                      <option key={portfolio.id} value={portfolio.id}>
+                        {portfolio.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
+              <label className="text-sm md:col-span-2">
+                {t('notebook.notes')}
+                <textarea
+                  className="mt-1 min-h-20 w-full rounded border border-input bg-background px-2 py-1"
+                  value={notes}
+                  onChange={(event) => setNotes(event.target.value)}
+                  maxLength={2000}
+                />
+              </label>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={onCancel}>
+                {t('common.cancel')}
+              </Button>
+              <Button type="submit" disabled={isMutating}>
+                {t('common.save')}
+              </Button>
+            </div>
+          </form>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 
