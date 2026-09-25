@@ -67,7 +67,7 @@ export function BondCalculatorResultsPanel({
   const { t } = useAppI18n();
 
   return (
-    <div id="bond-report-content" className="min-w-0" aria-live="polite">
+    <div id="bond-report-content" className="min-w-0">
       {!results && !isCalculating ? (
         <ScenarioReadyPanel
           badge={t('bonds.simulation.ready')}
@@ -125,6 +125,7 @@ export function BondCalculatorResultsPanel({
             onExportPDF={onExportPDF}
             canManageWorkspace={canManageWorkspace}
             dataQualityFlags={envelope?.dataQualityFlags}
+            envelope={envelope}
           />
           <SensitivityPanel inputs={inputs} onPrepareDraft={onPrepareSensitivityDraft} />
         </div>
