@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useId } from 'react';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 export function ProjectedRatePathEditor({
   values,
   prefix,
+  variableLabel,
   min,
   max,
   step,
@@ -15,11 +16,13 @@ export function ProjectedRatePathEditor({
 }: {
   values: number[];
   prefix: string;
+  variableLabel: string;
   min: number;
   max: number;
   step: number;
   onChange: (values: number[]) => void;
 }) {
+  const id = useId();
   return (
     <div className="custom-scrollbar grid max-h-64 grid-cols-2 gap-2 overflow-y-auto border-t border-dashed border-border pt-3 md:grid-cols-3">
       {values.map((value, index) => (
@@ -27,11 +30,16 @@ export function ProjectedRatePathEditor({
           key={`${prefix}-${index}`}
           className="flex items-center gap-2 border-b border-dashed border-border pb-2"
         >
-          <Label className="w-8 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">
+          <Label
+            htmlFor={`${id}-${index}`}
+            className="w-8 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground"
+          >
             {prefix}
             {index + 1}
           </Label>
           <Input
+            id={`${id}-${index}`}
+            aria-label={`${variableLabel}, ${prefix}${index + 1}`}
             type="number"
             min={min}
             max={max}

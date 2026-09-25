@@ -35,6 +35,7 @@ export function AdvancedRatePathSection({
         <ProjectedRatePathEditor
           values={values}
           prefix="Y"
+          variableLabel={title}
           min={min}
           max={max}
           step={step}
