@@ -12,9 +12,13 @@ test('persists theme and locale preferences through the browser shell', async ({
   await stubWebVitals(page);
   await page.goto('/', { waitUntil: 'networkidle' });
 
+  const mobileNavigation = page.getByRole('button', {
+    name: /open navigation|otwórz nawigacje/i,
+  });
+  if (await mobileNavigation.isVisible()) await mobileNavigation.click();
   await page
-    .getByText(/settings|ustawienia/i)
-    .first()
+    .locator('summary:visible')
+    .filter({ hasText: /settings|ustawienia/i })
     .click();
   const themeToggle = page.getByRole('button', { name: /dark mode|tryb ciemny/i }).first();
   await themeToggle.click();

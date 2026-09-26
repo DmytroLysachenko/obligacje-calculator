@@ -58,20 +58,24 @@ export function createContentSecurityPolicy(nonce: string, isDevelopment = false
     scriptSource,
     styleElementSource,
     styleElementDirective,
-    "style-src-attr 'none'",
+    // Recharts, Radix and the route announcer set runtime dimensions/positioning
+    // attributes. Their values are dynamic, so hashes cannot cover them. Keep
+    // script eval forbidden and style elements nonce-protected; only style
+    // attributes are relaxed for these presentation primitives.
+    "style-src-attr 'unsafe-inline'",
     'report-to csp',
   ].join('; ');
 }
 
 /**
- * Production rejects inline style attributes; chart palette presentation is
- * expressed through reviewed utility classes instead of DOM style mutation.
+ * Runtime library positioning needs style attributes, while style elements
+ * remain nonce protected and cannot be injected without a request nonce.
  */
 export function supportsRuntimePresentationStyles(policy: string) {
   const directives = parseContentSecurityPolicy(policy);
 
   return (
-    hasCspSource(directives, 'style-src-attr', "'none'") &&
+    hasCspSource(directives, 'style-src-attr', "'unsafe-inline'") &&
     hasCspSource(directives, 'style-src-elem', "'self'") &&
     !hasCspSource(directives, 'style-src', "'unsafe-inline'")
   );

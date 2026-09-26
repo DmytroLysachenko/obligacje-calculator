@@ -111,7 +111,7 @@ async function RequestAwareBody({ children }: { children: React.ReactNode }) {
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }}
       />
-      <ClientAppProviders locale={language} messages={messages}>
+      <ClientAppProviders locale={language} messages={messages} cspNonce={nonce}>
         <div className="flex min-h-screen bg-background">
           <WebVitalsReporter />
           <React.Suspense fallback={null}>
