@@ -108,6 +108,7 @@ type StatusTone = 'success' | 'error';
 
 export interface SingleCalculatorActionDependencies {
   results: CalculationResult | null;
+  envelope?: SingleBondCalculationEnvelope | null;
   lastCommittedInputs: BondInputs | null;
   selectedSeriesId: string | null | undefined;
   language: Language;
@@ -122,6 +123,7 @@ export interface SingleCalculatorActionDependencies {
  */
 export function createSingleCalculatorActions({
   results,
+  envelope,
   lastCommittedInputs,
   selectedSeriesId,
   language,
@@ -201,6 +203,7 @@ export function createSingleCalculatorActions({
           lastCommittedInputs,
           language,
           buildSingleReportFilename(lastCommittedInputs, language),
+          envelope ?? undefined,
         );
         setStatus('success', t('bonds.results.pdf_export_success'));
       } catch (error) {

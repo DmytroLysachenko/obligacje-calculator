@@ -79,9 +79,12 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
   }, [initialInputs, inputs.bondType, isPersistenceReady, pathname]);
 
-  const handleBondTypeChange = (type: import('@/features/bond-core/types').BondType) => {
+  const handleBondTypeChange = (
+    type: import('@/features/bond-core/types').BondType,
+    horizonChoice: 'preserve' | 'native',
+  ) => {
     shouldSyncBondToUrl.current = true;
-    setBondType(type);
+    setBondType(type, horizonChoice);
   };
   const translate = useMemo(
     () => (key: string, params?: Record<string, string | number>) => t(key, params),
@@ -110,6 +113,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     () =>
       createSingleCalculatorActions({
         results,
+        envelope,
         lastCommittedInputs,
         selectedSeriesId: lastCommittedInputs?.selectedSeriesId ?? selectedSeriesId,
         language,
@@ -120,7 +124,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           setStatusMessage(message);
         },
       }),
-    [canManageWorkspace, language, lastCommittedInputs, results, selectedSeriesId, t],
+    [canManageWorkspace, envelope, language, lastCommittedInputs, results, selectedSeriesId, t],
   );
   const committedInputs = lastCommittedInputs ?? inputs;
 
@@ -161,14 +165,49 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           isDirty={isDirty}
           isCalculating={isCalculating}
           scenarioSummary={[
-            { label: t('bonds.bond.type'), value: committedInputs.bondType },
             {
-              label: t('bonds.bond_quantity'),
-              value: `${Math.floor(committedInputs.initialInvestment / 100)} ${t('bonds.units')}`,
+              label: t('bonds.bond.type'),
+              value: committedInputs.bondType,
+              editTargetId: 'single-core-setup',
+            },
+            {
+              label: t('bonds.bond.series'),
+              value:
+                availableSeries.find((series) => series.id === committedInputs.selectedSeriesId)
+                  ?.seriesCode ?? t('bonds.offer.current'),
+              editTargetId: 'single-core-setup',
+            },
+            {
+              label: t('bonds.initial_investment'),
+              value: `${committedInputs.initialInvestment} PLN`,
+              editTargetId: 'single-core-setup',
+            },
+            {
+              label: t('bonds.purchase_date'),
+              value: committedInputs.purchaseDate,
+              editTargetId: 'single-timing-setup',
+            },
+            {
+              label: t('bonds.withdrawal_date'),
+              value: committedInputs.withdrawalDate,
+              editTargetId: 'single-timing-setup',
             },
             {
               label: t('bonds.investment_horizon'),
               value: `${committedInputs.investmentHorizonMonths ?? Math.round(committedInputs.duration * 12)} ${t('common.month_compact')}`,
+              editTargetId: 'single-timing-setup',
+            },
+            {
+              label: t('bonds.tax_strategy'),
+              value: committedInputs.taxStrategy,
+              editTargetId: 'single-timing-setup',
+            },
+            {
+              label: t('bonds.receipt_cash_policy'),
+              value: committedInputs.rollover
+                ? t('bonds.receipt_rollover')
+                : t('bonds.receipt_no_rollover'),
+              editTargetId: 'single-timing-setup',
             },
           ]}
           controls={

@@ -104,6 +104,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         ) : null}
         <div className="ui-control-stack">
           <ScenarioFieldset
+            id="regular-instrument-setup"
             title={t('regular_investment_page.core_plan_title')}
             description={t('regular_investment_page.core_plan_description')}
           >
@@ -116,7 +117,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             />
           </ScenarioFieldset>
 
-          <ScenarioFieldset title={t('comparison.configuration')} divided>
+          <ScenarioFieldset id="regular-budget-setup" title={t('comparison.configuration')} divided>
             <ContributionPlanSection
               contributionAmount={inputs.contributionAmount}
               initialLumpSum={inputs.initialLumpSum ?? 0}
@@ -133,7 +134,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             />
           </ScenarioFieldset>
 
-          <ScenarioFieldset title={t('bonds.step_timing')} divided>
+          <ScenarioFieldset id="regular-timing-setup" title={t('bonds.step_timing')} divided>
             <TimingSection
               timingMode={inputs.timingMode}
               purchaseDate={inputs.purchaseDate}
@@ -145,7 +146,11 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             />
           </ScenarioFieldset>
 
-          <ScenarioFieldset title={t('regular_investment_page.allocation_title')} divided>
+          <ScenarioFieldset
+            id="regular-policy-setup"
+            title={t('regular_investment_page.allocation_title')}
+            divided
+          >
             <AllocationStrategySection inputs={inputs} onUpdate={onUpdate} t={t} />
           </ScenarioFieldset>
 

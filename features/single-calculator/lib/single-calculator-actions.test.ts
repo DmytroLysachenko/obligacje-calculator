@@ -142,7 +142,7 @@ describe('single calculator result actions', () => {
     const { actions, setStatus } = createActions();
     await actions.exportPdf();
 
-    expect(mocks.exportPdf).toHaveBeenCalledWith(results, inputs, 'pl', 'report.pdf');
+    expect(mocks.exportPdf).toHaveBeenCalledWith(results, inputs, 'pl', 'report.pdf', undefined);
     expect(setStatus).toHaveBeenCalledWith('success', 'bonds.results.pdf_export_success');
   });
 

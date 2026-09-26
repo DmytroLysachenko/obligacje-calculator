@@ -173,11 +173,11 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
   }, []);
 
   const setBondType = useCallback(
-    (type: BondType) => {
+    (type: BondType, horizonChoice: 'preserve' | 'native' = 'preserve') => {
       if (!definitions) return;
       setIsDirty(true);
       setSelectedSeriesId('current');
-      setInputs((prev) => resolveBondTypeInputUpdate(prev, type, definitions[type]));
+      setInputs((prev) => resolveBondTypeInputUpdate(prev, type, definitions[type], horizonChoice));
     },
     [definitions],
   );

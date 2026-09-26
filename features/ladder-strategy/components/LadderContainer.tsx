@@ -78,8 +78,10 @@ export const LadderContainer: React.FC = () => {
     envelope,
     isPersistenceReady,
     hasPreviousOfferResult,
+    committedInputs,
   } = useLadder();
   const { t } = useAppI18n();
+  const receiptInputs = committedInputs ?? inputs;
   const readingGuide = [
     t('ladder_page.reading_guide.check_peak_month'),
     t('ladder_page.reading_guide.check_clustering'),
@@ -107,14 +109,45 @@ export const LadderContainer: React.FC = () => {
         isDirty={isDirty}
         isCalculating={isCalculating}
         scenarioSummary={[
-          { label: t('bonds.bond.type'), value: inputs.bondType },
           {
-            label: t('bonds.bond_quantity'),
-            value: `${inputs.contributionAmount} ${t('bonds.units')}`,
+            label: t('bonds.bond.type'),
+            value: receiptInputs.bondType,
+            editTargetId: 'regular-instrument-setup',
+          },
+          {
+            label: t('bonds.monthly_investment'),
+            value: `${receiptInputs.contributionAmount} PLN`,
+            editTargetId: 'regular-budget-setup',
+          },
+          {
+            label: t('bonds.frequency.label'),
+            value: t(`bonds.frequency.${receiptInputs.frequency.toLowerCase()}`),
+            editTargetId: 'regular-budget-setup',
+          },
+          {
+            label: t('bonds.start_date'),
+            value: receiptInputs.purchaseDate,
+            editTargetId: 'regular-timing-setup',
+          },
+          {
+            label: t('bonds.withdrawal_date'),
+            value: receiptInputs.withdrawalDate,
+            editTargetId: 'regular-timing-setup',
           },
           {
             label: t('bonds.investment_horizon'),
-            value: `${inputs.investmentHorizonMonths} ${t('common.month_compact')}`,
+            value: `${receiptInputs.investmentHorizonMonths} ${t('common.month_compact')}`,
+            editTargetId: 'regular-timing-setup',
+          },
+          {
+            label: t('bonds.tax_strategy'),
+            value: receiptInputs.taxStrategy,
+            editTargetId: 'regular-budget-setup',
+          },
+          {
+            label: t('bonds.receipt_cash_policy'),
+            value: t('bonds.timing.rollover_title'),
+            editTargetId: 'regular-policy-setup',
           },
         ]}
         controls={

@@ -38,7 +38,7 @@ interface BondInputsFormProps {
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
   inputs: BondInputs;
   onUpdate: (key: keyof BondInputs, value: unknown) => void;
-  onBondTypeChange: (type: BondType) => void;
+  onBondTypeChange: (type: BondType, horizonChoice: 'preserve' | 'native') => void;
   availableSeries?: BondSeries[];
   selectedSeriesId?: string | null;
   guardrails?: InputGuardrailIssue[];
@@ -162,6 +162,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
         <div className="ui-control-stack">
           <FormSection
+            id="single-core-setup"
             title={t('bonds.step_core')}
             description={t('bonds.form.step_core_desc')}
             headingLevel="h3"
@@ -179,6 +180,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </FormSection>
 
           <FormSection
+            id="single-timing-setup"
             title={t('bonds.step_timing')}
             description={t('bonds.form.step_timing_desc')}
             headingLevel="h3"
@@ -251,6 +253,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           currentDef={currentDef}
           maturityDate={maturityDate}
           hasMounted={hasMounted}
+        />
+        <button
+          type="submit"
+          tabIndex={-1}
+          className="sr-only"
+          aria-label={t('common.calculate')}
         />
       </form>
     </TooltipProvider>
