@@ -41,9 +41,13 @@ describe('package scripts contract', () => {
     );
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/app-smoke.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/home-page.spec.ts');
+    expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/issue-explorer.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/web-vitals.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/preferences.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('--workers=1');
+    expect(pkg.scripts['test:browser:strict-csp']).toContain(
+      'tests/browser/issue-explorer.spec.ts',
+    );
     expect(pkg.scripts['test:browser:integration']).toBe(
       'playwright test --config playwright.integration.config.ts',
     );

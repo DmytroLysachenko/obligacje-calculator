@@ -71,6 +71,9 @@ jobs:
       - name: Release tests
         run: pnpm test:release
 
+      - name: Node server boundary tests
+        run: pnpm test:server
+
       - name: Trusted-core evidence
         run: pnpm test:trusted-core
 
@@ -137,7 +140,7 @@ jobs:
 
   database-integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     services:
       postgres:
         image: postgres:16
@@ -174,6 +177,12 @@ jobs:
 
       - name: Verify migrated PostgreSQL constraints and rollback
         run: pnpm test:db --reporter=json --outputFile=test-results/database-integration.json
+
+      - name: Install authenticated browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Authenticated portfolio ownership and mutation workflow
+        run: pnpm test:browser:integration --workers=1
 
       - name: Upload database integration result
         if: always()
@@ -296,6 +305,9 @@ jobs:
       - name: Browser smoke, trusted-core journeys, accessibility, and web vitals
         run: pnpm test:browser:ci && pnpm test:trusted-core:browser && pnpm test:a11y && pnpm test:browser:visual
 
+      - name: Populated strict-CSP calculator interaction
+        run: pnpm test:browser:strict-csp
+
       - name: Lighthouse quality gate
         run: pnpm test:lighthouse
 
@@ -357,6 +369,9 @@ jobs:
 
       - name: Firefox strict-CSP calculator regression
         run: pnpm test:browser:firefox-csp
+
+      - name: Populated strict-CSP calculator matrix
+        run: pnpm exec playwright test tests/browser/strict-csp-interactions.spec.ts tests/browser/issue-explorer.spec.ts --project=firefox-csp --project=webkit-csp --workers=1
 
       - name: Browser smoke summary
         if: always()
