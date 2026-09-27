@@ -83,7 +83,7 @@ export function usePortfolioDetailsWorkspace({
   const runSimulation = useCallback(async () => {
     const epoch = ++simulationEpoch.current;
     const revision = mutationRevision.current;
-    if (lots.length === 0) {
+    if (lotsRevision.length === 0) {
       if (epoch === simulationEpoch.current && activePortfolioId.current === portfolio.id)
         setSimulation(null);
       return;

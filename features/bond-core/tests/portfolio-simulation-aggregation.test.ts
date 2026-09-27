@@ -115,6 +115,33 @@ describe('portfolio simulation aggregation', () => {
     expect(result.items).toHaveLength(2);
   });
 
+  it('keeps a 100-lot overview bounded without losing aggregate accounting', async () => {
+    const started = performance.now();
+    const result = await calculatePortfolio({
+      investments: Array.from({ length: 100 }, () => ({
+        bondType: BondType.ROR,
+        amount: 100,
+        purchaseDate: '2024-01-01',
+        taxStrategy: TaxStrategy.STANDARD,
+        rollover: true,
+      })),
+      withdrawalDate: '2033-01-01',
+    });
+    const overview = { ...result, items: [] };
+    const serializedBytes = new TextEncoder().encode(JSON.stringify(overview)).length;
+    expect(result.items).toHaveLength(100);
+    expect(result.summary.totalInvested).toBe(10_000);
+    expect(overview.aggregatedTimeline.at(-1)?.totalNetValue).toBeCloseTo(
+      result.summary.totalNetValue,
+      6,
+    );
+    expect(serializedBytes).toBeLessThan(400_000);
+    // Diagnostic evidence, not a CI timing threshold; recorded with workload.
+    process.stdout.write(
+      `portfolio benchmark: lots=100 months=108 wallMs=${Math.round(performance.now() - started)} overviewBytes=${serializedBytes}\n`,
+    );
+  }, 60_000);
+
   it('does not include future lots before their purchase date', async () => {
     const result = await calculatePortfolio();
     const beforeSecondLot = monthRow(result, '2024-06');

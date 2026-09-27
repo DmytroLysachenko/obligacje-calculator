@@ -162,5 +162,7 @@ export async function summarizeOwnerPortfolios(ownerId: string) {
     payload: buildPortfolioSimulationPayload(lots),
   });
 
-  return envelope.result;
+  // The overview needs aggregate checkpoints, not every accounting event of
+  // every holding. Full lot detail remains available through simulation/export.
+  return { ...envelope.result, items: [] };
 }
