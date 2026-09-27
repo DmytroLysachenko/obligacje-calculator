@@ -50,6 +50,7 @@ export const CPI_SLUGS = ['pl-cpi', 'inflation-pl'];
 export const NBP_RATE_SLUGS = ['nbp-ref-rate', 'nbp-reference-rate', 'nbp-rate'];
 export const SP500_SLUGS = ['sp500'];
 export const GOLD_SLUGS = ['gold-usd', 'gold'];
+export const USD_PLN_SLUGS = ['usd-pln', 'usdpln'];
 
 export function getCached<T>(key: string): T | null {
   return macroCache.get<T>(key);

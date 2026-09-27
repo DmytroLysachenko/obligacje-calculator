@@ -29,6 +29,7 @@ interface MultiAssetHistoryStatePanelProps {
   historySourceLabel: string;
   historyAsOfLabel: string;
   availabilitySummary: string;
+  coverageGaps: string[];
   priceIndexIsApproximate: boolean;
   t: Translate;
 }
@@ -39,6 +40,7 @@ export function MultiAssetHistoryStatePanel({
   historySourceLabel,
   historyAsOfLabel,
   availabilitySummary,
+  coverageGaps,
   priceIndexIsApproximate,
   t,
 }: MultiAssetHistoryStatePanelProps) {
@@ -86,6 +88,11 @@ export function MultiAssetHistoryStatePanel({
           <span className="font-medium text-foreground">{availabilitySummary}</span>
         </p>
       ) : null}
+      {coverageGaps.length > 0 ? (
+        <p className="text-sm text-warning">
+          {t('multi_asset_page.history_state.coverage_gaps', { months: coverageGaps.join(', ') })}
+        </p>
+      ) : null}
       {priceIndexIsApproximate ? (
         <p className="text-sm text-warning">
           {t('multi_asset_page.history_state.price_index_approximation')}
@@ -94,6 +101,11 @@ export function MultiAssetHistoryStatePanel({
       {usedFallbackHistory ? (
         <p className="text-sm text-warning">
           {t('multi_asset_page.history_state.fallback_warning')}
+        </p>
+      ) : null}
+      {usedFallbackHistory ? (
+        <p className="text-sm text-warning">
+          {t('multi_asset_page.history_state.currency_unavailable')}
         </p>
       ) : null}
     </section>

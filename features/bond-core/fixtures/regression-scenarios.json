@@ -1,5 +1,5 @@
 {
-  "modelVersion": "3.2.0-comparison-cash-horizon",
+  "modelVersion": "3.2.1-annual-macro-fallback",
   "rounding": "Exact IEEE-754 engine outputs are asserted; presentation rounding is not part of this fixture.",
   "scenarios": [
     {

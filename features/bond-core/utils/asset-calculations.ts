@@ -36,7 +36,8 @@ export function calculateAssetPerformance(
 ): AssetPerformanceSeries {
   const series: DataPoint[] = [];
   let currentValue = initialSum;
-  let peakValue = initialSum;
+  let unitValue = 1;
+  let peakUnitValue = 1;
   const priceIndexPath = historicalPricePath(data);
   const startDate = data[0] ? parseISO(`${data[0].date}-01`) : new Date(2000, 0, 1);
 
@@ -59,10 +60,9 @@ export function calculateAssetPerformance(
     currentValue *= 1 + monthlyReturn / 100;
 
     // 3. Calculate Drawdown
-    if (currentValue > peakValue) {
-      peakValue = currentValue;
-    }
-    const drawdown = ((peakValue - currentValue) / peakValue) * 100;
+    unitValue *= 1 + monthlyReturn / 100;
+    peakUnitValue = Math.max(peakUnitValue, unitValue);
+    const drawdown = ((peakUnitValue - unitValue) / peakUnitValue) * 100;
 
     series.push({
       date: row.date,
@@ -91,7 +91,8 @@ export function calculateBondsPerformance(
 ): AssetPerformanceSeries {
   const series: DataPoint[] = [];
   let currentValue = initialSum;
-  let peakValue = initialSum;
+  let unitValue = 1;
+  let peakUnitValue = 1;
   const priceIndexPath = historicalPricePath(data);
   const startDate = data[0] ? parseISO(`${data[0].date}-01`) : new Date(2000, 0, 1);
 
@@ -108,6 +109,7 @@ export function calculateBondsPerformance(
   const lots: { value: number; monthsHeld: number }[] = [{ value: initialSum, monthsHeld: 0 }];
 
   for (const row of data) {
+    const previousValue = currentValue;
     // Add new monthly contribution as a new lot
     if (monthlyContribution > 0) {
       lots.push({ value: monthlyContribution, monthsHeld: 0 });
@@ -129,10 +131,11 @@ export function calculateBondsPerformance(
 
     currentValue = totalMonthValue;
 
-    if (currentValue > peakValue) {
-      peakValue = currentValue;
-    }
-    const drawdown = ((peakValue - currentValue) / peakValue) * 100;
+    const investedBeforeReturn = previousValue + Math.max(0, monthlyContribution);
+    const periodFactor = investedBeforeReturn > 0 ? currentValue / investedBeforeReturn : 1;
+    unitValue *= periodFactor;
+    peakUnitValue = Math.max(peakUnitValue, unitValue);
+    const drawdown = ((peakUnitValue - unitValue) / peakUnitValue) * 100;
 
     series.push({
       date: row.date,
@@ -162,7 +165,8 @@ export function calculateSavingsPerformance(
 ): AssetPerformanceSeries {
   const series: DataPoint[] = [];
   let currentValue = initialSum;
-  let peakValue = initialSum;
+  let unitValue = 1;
+  let peakUnitValue = 1;
   const priceIndexPath = historicalPricePath(data);
   const startDate = data[0] ? parseISO(`${data[0].date}-01`) : new Date(2000, 0, 1);
 
@@ -190,10 +194,9 @@ export function calculateSavingsPerformance(
     currentValue += netInterest;
 
     // 3. Track Drawdown
-    if (currentValue > peakValue) {
-      peakValue = currentValue;
-    }
-    const drawdown = ((peakValue - currentValue) / peakValue) * 100;
+    unitValue *= 1 + netInterest / (currentValue - netInterest || 1);
+    peakUnitValue = Math.max(peakUnitValue, unitValue);
+    const drawdown = ((peakUnitValue - unitValue) / peakUnitValue) * 100;
 
     series.push({
       date: row.date,

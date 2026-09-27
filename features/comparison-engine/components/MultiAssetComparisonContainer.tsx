@@ -58,6 +58,7 @@ export const MultiAssetComparisonContainer = () => {
     historySourceLabel,
     usedFallbackHistory,
     historySeriesAvailability,
+    historyCoverageGaps,
     priceIndexIsApproximate,
     committedScenario,
   } = useMultiAssetComparison();
@@ -141,6 +142,7 @@ export const MultiAssetComparisonContainer = () => {
             historySourceLabel={historySourceLabel}
             historyAsOfLabel={historyAsOfLabel}
             availabilitySummary={availabilitySummary}
+            coverageGaps={historyCoverageGaps}
             priceIndexIsApproximate={priceIndexIsApproximate}
             t={t}
           />

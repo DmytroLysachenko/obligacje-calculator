@@ -35,6 +35,9 @@ interface MultiAssetHistoryResponse {
     inflation: boolean;
     nbpRate: boolean;
   };
+  currencyBasis?: 'PLN' | 'mixed-USD-PLN';
+  observationBasis?: 'observed' | 'illustrative';
+  coverageGaps?: string[];
 }
 
 export function useMultiAssetComparison() {
@@ -220,8 +223,11 @@ export function useMultiAssetComparison() {
     isDirty,
     isLoading,
     recalculate,
-    assets: [sp500, gold, bonds, savings],
-    purchasingPowerLoss,
+    assets:
+      historyResponse?.currencyBasis === 'PLN' && historyResponse.observationBasis === 'observed'
+        ? [sp500, gold, bonds, savings]
+        : [],
+    purchasingPowerLoss: historyResponse?.currencyBasis === 'PLN' ? purchasingPowerLoss : 0,
     metadata: ASSETS_METADATA,
     availableDates: sourceData.map((row) => row.date),
     historySource: historyResponse?.source ?? 'fallback',
@@ -233,6 +239,7 @@ export function useMultiAssetComparison() {
     usedFallbackHistory: historyResponse?.usedFallback ?? true,
     historyLastSyncedAt: historyResponse?.lastSyncedAt,
     historySeriesAvailability: historyResponse?.seriesAvailability,
+    historyCoverageGaps: historyResponse?.coverageGaps ?? [],
     priceIndexIsApproximate: sourceData.some((row) => row.inflationKind === 'year_over_year'),
     historyData: filteredData,
     committedScenario: committed,
