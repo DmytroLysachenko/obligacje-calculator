@@ -38,6 +38,7 @@ interface RetirementResultsPanelProps {
   scenarioCoverage: string | null;
   language: 'pl' | 'en';
   inputsHorizonYears: number;
+  assumptions: string[];
   taxStrategyLabel: string;
   formatCurrency: (value: number) => string;
 }
@@ -50,6 +51,7 @@ export function RetirementResultsPanel({
   scenarioCoverage,
   language,
   inputsHorizonYears,
+  assumptions,
   taxStrategyLabel,
   formatCurrency,
 }: RetirementResultsPanelProps) {
@@ -111,7 +113,7 @@ export function RetirementResultsPanel({
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <RetirementSupportList
             title={labels.assumptions}
-            items={results.assumptions}
+            items={assumptions}
             emptyLabel={labels.noExtraAssumptions}
           />
           <RetirementSupportList

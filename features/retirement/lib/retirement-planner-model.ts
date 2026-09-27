@@ -16,7 +16,7 @@ export function getSupportedRetirementBondType(bondType: BondType) {
 export function createRetirementChartData(results: RetirementPlannerCalculationEnvelope | null) {
   return (
     results?.result.timeline
-      .filter((_, index) => index % 12 === 0)
+      .filter((_, index, timeline) => index % 12 === 0 || index === timeline.length - 1)
       .map((point) => ({
         year: point.year,
         date: point.date,
