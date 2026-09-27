@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { pageRouteByKey } from '@/lib/page-metadata';
+import { getIndexableRoutes, pageRouteByKey, pageRoutePolicy } from '@/lib/page-metadata';
 import { getCanonicalBaseUrl, getCanonicalUrl, isIndexableDeployment } from '@/lib/site-url';
 
 import robots from './robots';
@@ -44,6 +44,10 @@ describe('SEO metadata contract', () => {
         ]),
       );
       expect(sitemap().every((item) => item.lastModified === undefined)).toBe(true);
+      expect(sitemap().map((item) => item.url)).toEqual(
+        getIndexableRoutes().map((route) => `https://seo.example${route === '/' ? '' : route}`),
+      );
+      expect(sitemap().some((item) => item.url.includes('/notebook'))).toBe(false);
     } finally {
       process.env.NEXT_PUBLIC_APP_URL = previous;
       process.env.NEXT_PUBLIC_DEPLOYMENT_TIER = previousTier;
@@ -97,6 +101,12 @@ describe('SEO metadata contract', () => {
         '/retirement',
       ]),
     );
+  });
+
+  it('keeps private and experimental routes explicitly nonindexable', () => {
+    for (const key of ['notebook', 'login', 'multi_asset', 'retirement', 'recovery_lab'] as const) {
+      expect(pageRoutePolicy[key].indexable).toBe(false);
+    }
   });
 
   it('defines non-empty, unique metadata for every routed page key', () => {

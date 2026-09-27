@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
 vi.mock('next-intl/server', () => ({
+  getLocale: vi.fn(async () => 'en'),
   getTranslations: vi.fn(async (namespace: string) => {
     if (namespace === 'common') {
       return (key: string) => ({ title: 'Bonds Calculator' })[key as 'title'];
@@ -30,6 +31,7 @@ describe('getLocalizedPageMetadata', () => {
     await expect(getLocalizedPageMetadata('single_calculator')).resolves.toEqual({
       title: 'Single Calculator',
       description: 'Localized page description',
+      robots: undefined,
       alternates: {
         canonical: 'http://localhost:3000/single-calculator',
       },
@@ -38,6 +40,7 @@ describe('getLocalizedPageMetadata', () => {
         description: 'Localized page description',
         url: 'http://localhost:3000/single-calculator',
         siteName: 'Bonds Calculator',
+        locale: 'en_US',
         type: 'website',
       },
       twitter: {

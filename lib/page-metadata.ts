@@ -1,23 +1,12 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
+import { getMetadataLocale } from '@/i18n/locale-utils';
+
+import { pageRoutePolicy } from './route-policy';
 import { getCanonicalUrl } from './site-url';
 
-export const pageRouteByKey: Record<string, string> = {
-  home: '/',
-  single_calculator: '/single-calculator',
-  comparison: '/compare',
-  economic_data: '/economic-data',
-  education: '/education',
-  notebook: '/notebook',
-  login: '/login',
-  optimize: '/optimize',
-  regular_investment: '/regular-investment',
-  ladder: '/ladder',
-  multi_asset: '/multi-asset',
-  retirement: '/retirement',
-  recovery_lab: '/recovery-lab',
-};
+export { getIndexableRoutes, pageRouteByKey, pageRoutePolicy } from './route-policy';
 
 export async function getLocalizedPageMetadata(pageKey: string): Promise<Metadata> {
   const common = await getTranslations('common');
@@ -26,11 +15,15 @@ export async function getLocalizedPageMetadata(pageKey: string): Promise<Metadat
   const title = page('title');
   const socialTitle = `${title} | ${common('title')}`;
   const description = page('description');
-  const canonicalUrl = getCanonicalUrl(pageRouteByKey[pageKey] ?? '/');
+  const route = pageRoutePolicy[pageKey as keyof typeof pageRoutePolicy];
+  if (!route) throw new Error(`Unregistered page metadata route: ${pageKey}`);
+  const canonicalUrl = getCanonicalUrl(route.path);
+  const locale = await getLocale();
 
   return {
     title,
     description,
+    robots: route.indexable ? undefined : { index: false, follow: false },
     alternates: {
       canonical: canonicalUrl,
     },
@@ -39,6 +32,7 @@ export async function getLocalizedPageMetadata(pageKey: string): Promise<Metadat
       description,
       url: canonicalUrl,
       siteName: common('title'),
+      locale: getMetadataLocale(locale === 'en' ? 'en' : 'pl'),
       type: 'website',
     },
     twitter: {
