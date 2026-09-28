@@ -1,5 +1,5 @@
 import { BondInputs } from '@/features/bond-core/types';
-import { parseScenarioPackage,SCENARIO_CODEC_VERSION } from '@/shared/lib/scenario-codec';
+import { parseScenarioPackage, SCENARIO_CODEC_VERSION } from '@/shared/lib/scenario-codec';
 
 const STORAGE_KEY = 'obligacje.saved-single-scenarios.v1';
 export const MAX_SCENARIOS = 12;

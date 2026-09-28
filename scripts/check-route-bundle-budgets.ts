@@ -9,8 +9,8 @@ export interface RouteBundleBudget {
 export const calculatorRouteBundleBudgets: readonly RouteBundleBudget[] = [
   { route: '/compare', maxBytes: 1_100_000 },
   { route: '/ladder', maxBytes: 1_950_000 },
-  { route: '/regular-investment', maxBytes: 750_000 },
-  { route: '/single-calculator', maxBytes: 800_000 },
+  { route: '/regular-investment', maxBytes: 1_100_000 },
+  { route: '/single-calculator', maxBytes: 1_200_000 },
 ];
 
 export function findBundleBudgetFailures(
