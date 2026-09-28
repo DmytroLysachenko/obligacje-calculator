@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RegularInvestmentInputs } from '@/features/bond-core/types';
 import { RegularInvestmentCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { ScenarioKind } from '@/features/bond-core/types/scenarios';
+import { useAppI18n } from '@/i18n/client';
 import { postCalculation } from '@/shared/lib/calculation-client';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
@@ -19,21 +20,33 @@ export function RecurringGoalPlanner({
   inputs: RegularInvestmentInputs;
   onApply: (value: number) => void;
 }) {
+  const { t } = useAppI18n();
   const [target, setTarget] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{
     contribution: number | null;
     achieved: number;
     reachable: boolean;
   } | null>(null);
   const [running, setRunning] = useState(false);
+  useEffect(() => {
+    setResult(null);
+    setError(null);
+  }, [inputs]);
   const solve = async () => {
     const desired = Number(target);
-    if (!(desired > 0)) return;
+    if (!Number.isFinite(desired) || desired <= 0) {
+      setError(t('bonds.simulation.regular_goal_invalid_target'));
+      return;
+    }
+    setError(null);
+    setResult(null);
     setRunning(true);
     try {
       setResult(
         await solveRequiredRecurringContribution({
           target: desired,
+          minContribution: 100,
           calculate: async (contributionAmount) =>
             (
               await postCalculation<RegularInvestmentCalculationEnvelope>(
@@ -43,6 +56,8 @@ export function RecurringGoalPlanner({
             ).result.finalNominalValue,
         }),
       );
+    } catch {
+      setError(t('bonds.simulation.regular_goal_error'));
     } finally {
       setRunning(false);
     }
@@ -68,6 +83,11 @@ export function RecurringGoalPlanner({
           {running ? 'Solving…' : 'Solve'}
         </Button>
       </div>
+      {error ? (
+        <p className="ui-meta mt-3 text-destructive" role="alert">
+          {error}
+        </p>
+      ) : null}
       {result ? (
         <p className="ui-meta mt-3" role="status">
           {result.reachable ? (
