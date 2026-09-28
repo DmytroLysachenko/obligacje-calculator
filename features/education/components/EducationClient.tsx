@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { BondEducationCard } from '@/features/education/components/BondEducationCard';
+import { BondIssueExplorer } from '@/features/education/components/BondIssueExplorer';
 import { EducationDecisionRail } from '@/features/education/components/EducationDecisionRail';
 import { EducationOfferComparison } from '@/features/education/components/EducationOfferComparison';
 import {
@@ -107,6 +108,7 @@ export default function EducationClient({
           description={t('education.bond_types_subtitle')}
         >
           <OfferProvenance dataFreshness={dataFreshness} />
+          <BondIssueExplorer />
           <div className="space-y-12">
             {educationOfferGroups.map((group) => {
               const bonds = group.bondTypes.map((type) => definitions[type]).filter(Boolean);

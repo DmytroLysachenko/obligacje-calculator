@@ -128,3 +128,9 @@ export async function apiGetRaw<T>(url: string, options: ApiRequestOptions = {})
     )
   ).data;
 }
+
+export async function fetchPublicTextAsset(path: `/fonts/${string}`): Promise<string> {
+  const response = await fetch(path);
+  if (!response.ok) throw new ApiClientError('Report font is unavailable', response.status);
+  return response.text();
+}
